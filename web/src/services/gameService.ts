@@ -37,6 +37,25 @@ export type Game = {
     room?: RoomSummary | null;
 };
 
+export type SyahoShogiSquare = {
+    row: number;
+    col: number;
+};
+
+export type SyahoShogiHandPieceType = "SON" | "MIKITANI" | "MIZOGUCHI";
+
+export type SyahoShogiAction =
+    | {
+        kind: "MOVE";
+        from: SyahoShogiSquare;
+        to: SyahoShogiSquare;
+    }
+    | {
+        kind: "DROP";
+        pieceType: SyahoShogiHandPieceType;
+        to: SyahoShogiSquare;
+    };
+
 export type UpdateGameStateInput = {
     gameId: number;
     boardState: unknown;
@@ -50,6 +69,12 @@ export type FinishGameInput = {
     boardState?: unknown;
 };
 
+export type SubmitGameActionInput = {
+    gameId: number;
+    playerId: number;
+    action: SyahoShogiAction;
+};
+
 export const gameService = {
     getGame(gameId: number) {
         return apiClient.get<Game>(`/games/${gameId}`);
@@ -60,6 +85,13 @@ export const gameService = {
             boardState: input.boardState,
             currentTurn: input.currentTurn,
             status: input.status,
+        });
+    },
+
+    submitAction(input: SubmitGameActionInput) {
+        return apiClient.patch<Game>(`/games/${input.gameId}/action`, {
+            playerId: input.playerId,
+            action: input.action,
         });
     },
 

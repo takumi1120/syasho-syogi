@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { db } from "../lib/db";
+import { createInitialSyahoShogiState } from "../lib/syahosyogi";
 
 const router = Router();
 
@@ -274,7 +275,6 @@ router.patch("/:roomCode/ready", async (req, res) => {
 /**
  * POST /rooms/:roomCode/start
  * ゲーム開始
- * body: なし
  */
 router.post("/:roomCode/start", async (req, res) => {
     try {
@@ -321,6 +321,11 @@ router.post("/:roomCode/start", async (req, res) => {
         const player1Character = hostFirst ? room.hostCharacter : room.guestCharacter;
         const player2Character = hostFirst ? room.guestCharacter : room.hostCharacter;
 
+        const initialBoardState = createInitialSyahoShogiState({
+            player1BossCharacter: player1Character ?? null,
+            player2BossCharacter: player2Character ?? null,
+        });
+
         const result = await db.$transaction(async (tx) => {
             const game = await tx.game.create({
                 data: {
@@ -332,6 +337,7 @@ router.post("/:roomCode/start", async (req, res) => {
                     status: "PLAYING",
                     currentTurn: 1,
                     startedAt: new Date(),
+                    boardState: initialBoardState as any,
                 },
             });
 
