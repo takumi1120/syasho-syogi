@@ -10,6 +10,7 @@ import type {
 const props = defineProps<{
   board: SyahoShogiBoard;
   selectedSquare: SyahoShogiSquare | null;
+  legalTargets: SyahoShogiSquare[];
   activePlayer: SyahoShogiPlayer;
 }>();
 
@@ -21,6 +22,12 @@ function isSelected(row: number, col: number) {
   return (
     props.selectedSquare?.row === row &&
     props.selectedSquare?.col === col
+  );
+}
+
+function isLegalTarget(row: number, col: number) {
+  return props.legalTargets.some(
+    (square) => square.row === row && square.col === col,
   );
 }
 
@@ -39,6 +46,7 @@ function pieceLabel(cell: SyahoShogiCell) {
           class="cell"
           :class="{
             selected: isSelected(rowIndex, colIndex),
+            movable: isLegalTarget(rowIndex, colIndex),
             own: cell && cell.owner === activePlayer,
             enemy: cell && cell.owner !== activePlayer,
             empty: !cell,
@@ -46,6 +54,11 @@ function pieceLabel(cell: SyahoShogiCell) {
           type="button"
           @click="emit('cell-click', rowIndex, colIndex)"
         >
+          <span
+            v-if="isLegalTarget(rowIndex, colIndex)"
+            class="move-marker"
+          />
+
           <template v-if="cell">
             <span class="owner-badge">{{ cell.owner === 1 ? "先" : "後" }}</span>
             <span class="piece-text">{{ pieceLabel(cell) }}</span>
@@ -89,10 +102,18 @@ function pieceLabel(cell: SyahoShogiCell) {
   cursor: pointer;
   display: grid;
   place-items: center;
+  overflow: hidden;
 }
 
 .cell.selected {
   outline: 3px solid #8ec5ff;
+}
+
+.cell.movable {
+  border-color: rgba(142, 197, 255, 0.55);
+  box-shadow:
+    inset 0 0 0 2px rgba(142, 197, 255, 0.22),
+    0 0 18px rgba(142, 197, 255, 0.16);
 }
 
 .cell.own {
@@ -101,6 +122,15 @@ function pieceLabel(cell: SyahoShogiCell) {
 
 .cell.enemy {
   box-shadow: inset 0 0 0 1px rgba(255, 137, 137, 0.28);
+}
+
+.move-marker {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(142, 197, 255, 0.9);
+  box-shadow: 0 0 14px rgba(142, 197, 255, 0.5);
 }
 
 .owner-badge {
@@ -115,6 +145,8 @@ function pieceLabel(cell: SyahoShogiCell) {
 }
 
 .piece-text {
+  position: relative;
+  z-index: 1;
   text-align: center;
   font-size: 18px;
   font-weight: 800;
@@ -123,6 +155,8 @@ function pieceLabel(cell: SyahoShogiCell) {
 }
 
 .empty-dot {
+  position: relative;
+  z-index: 1;
   font-size: 24px;
   opacity: 0.35;
 }
@@ -134,6 +168,11 @@ function pieceLabel(cell: SyahoShogiCell) {
 
   .piece-text {
     font-size: 15px;
+  }
+
+  .move-marker {
+    width: 14px;
+    height: 14px;
   }
 }
 </style>

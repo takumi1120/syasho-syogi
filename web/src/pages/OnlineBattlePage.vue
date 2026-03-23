@@ -27,6 +27,7 @@ const {
   errorMessage,
   canInteract,
   isMyTurn,
+  legalTargets,
   fetchGame,
   handleHandClick,
   handleCellClick,
@@ -73,12 +74,13 @@ const {
           :error-message="errorMessage"
         />
 
-        <BattleBoard
-          :board="boardRows"
-          :selected-square="selectedSquare"
-          :active-player="currentPlayer"
-          @cell-click="handleCellClick"
-        />
+      <BattleBoard
+  :board="boardRows"
+  :selected-square="selectedSquare"
+  :legal-targets="legalTargets"
+  :active-player="currentPlayer"
+  @cell-click="handleCellClick"
+/>  
       </div>
 
       <template #sidebar>

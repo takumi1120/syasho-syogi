@@ -1,4 +1,3 @@
-<!-- src/pages/battlepage.vue -->
 <script setup lang="ts">
 import BattleLayout from "../features/battle/components/BattleLayout.vue";
 import BattleBoard from "../features/battle/components/BattleBoard.vue";
@@ -14,6 +13,7 @@ const {
   player1Character,
   player2Character,
   boardRows,
+  legalTargets,
   selectedSquare,
   currentPlayer,
   currentTurnName,
@@ -28,6 +28,7 @@ const {
   resetBattle,
   backToLobby,
 } = useLocalBattle();
+
 </script>
 
 <template>
@@ -62,12 +63,13 @@ const {
           :error-message="errorMessage"
         />
 
-        <BattleBoard
-          :board="boardRows"
-          :selected-square="selectedSquare"
-          :active-player="currentPlayer"
-          @cell-click="handleCellClick"
-        />
+     <BattleBoard
+  :board="boardRows"
+  :selected-square="selectedSquare"
+  :legal-targets="legalTargets"
+  :active-player="currentPlayer"
+  @cell-click="handleCellClick"
+/>
       </div>
 
       <template #sidebar>

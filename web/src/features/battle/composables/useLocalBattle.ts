@@ -3,6 +3,8 @@ import { useRoute, useRouter } from "vue-router";
 import {
   createInitialSyahoShogiState,
   applySyahoShogiAction,
+  getLegalMovesFrom,
+  getLegalDropsForPiece,
   type SyahoShogiAction,
   type SyahoShogiHandPieceType,
   type SyahoShogiPieceType,
@@ -114,6 +116,28 @@ export function useLocalBattle() {
         disabled: count <= 0 || state.value.status === "FINISHED",
       };
     });
+  });
+
+  const legalTargets = computed<SyahoShogiSquare[]>(() => {
+    if (state.value.status === "FINISHED") return [];
+
+    if (selectedHandPiece.value) {
+      return getLegalDropsForPiece(
+        state.value,
+        selectedHandPiece.value,
+        currentPlayer.value,
+      ).map((action) => action.to);
+    }
+
+    if (selectedSquare.value) {
+      return getLegalMovesFrom(
+        state.value,
+        selectedSquare.value,
+        currentPlayer.value,
+      ).map((action) => action.to);
+    }
+
+    return [];
   });
 
   function clearNotice() {
@@ -244,6 +268,7 @@ export function useLocalBattle() {
     winReasonLabel,
     lastActionLabel,
     handPieces,
+    legalTargets,
     selectedSquare,
     selectedHandPiece,
     message,
