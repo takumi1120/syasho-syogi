@@ -1,4 +1,3 @@
-// api/src/domain/syahoShogi.ts
 export const SYAHO_SHOGI_ROWS = 4 as const;
 export const SYAHO_SHOGI_COLS = 3 as const;
 
@@ -41,15 +40,26 @@ export type SyahoShogiDropAction = {
 
 export type SyahoShogiAction = SyahoShogiMoveAction | SyahoShogiDropAction;
 
-export type SyahoShogiLastAction = {
+export type SyahoShogiLastMoveAction = {
     player: SyahoShogiPlayer;
-    kind: SyahoShogiAction["kind"];
-    pieceType: SyahoShogiPieceType | SyahoShogiHandPieceType;
-    from?: SyahoShogiSquare;
+    kind: "MOVE";
+    pieceType: SyahoShogiPieceType;
+    from: SyahoShogiSquare;
     to: SyahoShogiSquare;
     capturedPieceType?: SyahoShogiPieceType;
     promoted?: boolean;
 };
+
+export type SyahoShogiLastDropAction = {
+    player: SyahoShogiPlayer;
+    kind: "DROP";
+    pieceType: SyahoShogiHandPieceType;
+    to: SyahoShogiSquare;
+};
+
+export type SyahoShogiLastAction =
+    | SyahoShogiLastMoveAction
+    | SyahoShogiLastDropAction;
 
 export type SyahoShogiState = {
     board: SyahoShogiBoard;
@@ -155,7 +165,18 @@ export function cloneSyahoShogiState(state: SyahoShogiState): SyahoShogiState {
             1: { ...state.hands[1] },
             2: { ...state.hands[2] },
         },
-        lastAction: state.lastAction ? { ...state.lastAction } : null,
+        lastAction: state.lastAction
+            ? state.lastAction.kind === "MOVE"
+                ? {
+                    ...state.lastAction,
+                    from: { ...state.lastAction.from },
+                    to: { ...state.lastAction.to },
+                }
+                : {
+                    ...state.lastAction,
+                    to: { ...state.lastAction.to },
+                }
+            : null,
     };
 }
 
@@ -299,10 +320,16 @@ export function validateSyahoShogiAction(
         }
     }
 
-    const simulated = applyActionUnsafe(state, action, player).state;
-    if (isPlayerInCheck(simulated, player)) {
-        return "その手では自分の BOSS が取られてしまいます";
-    }
+    // const simulated = applyActionUnsafe(state, action, player).state;
+
+    // const isImmediateBossCaptureWin =
+    //     simulated.status === "FINISHED" &&
+    //     simulated.winner === player &&
+    //     simulated.winReason === "CAPTURE_BOSS";
+
+    // if (!isImmediateBossCaptureWin && isPlayerInCheck(simulated, player)) {
+    //     return "その手では自分の BOSS が取られてしまいます";
+    // }
 
     return null;
 }

@@ -1,4 +1,3 @@
-<!-- src/pages/battlepage.vue -->
 <script setup lang="ts">
 import BattleLayout from "../features/battle/components/BattleLayout.vue";
 import BattleBoard from "../features/battle/components/BattleBoard.vue";
@@ -6,9 +5,12 @@ import BattleHands from "../features/battle/components/BattleHands.vue";
 import BattleStatusPanel from "../features/battle/components/BattleStatusPanel.vue";
 import BattlePlayerPanel from "../features/battle/components/BattlePlayerPanel.vue";
 
-import { useLocalBattle } from "../features/battle/composables/useLocalBattle";
+import { useOnlineBattle } from "../features/battle/composables/useOnlineBattle";
 
 const {
+  loading,
+  roomCode,
+  gameId,
   player1Name,
   player2Name,
   player1Character,
@@ -23,11 +25,13 @@ const {
   handPieces,
   message,
   errorMessage,
+  canInteract,
+  isMyTurn,
+  fetchGame,
   handleHandClick,
   handleCellClick,
-  resetBattle,
   backToLobby,
-} = useLocalBattle();
+} = useOnlineBattle();
 </script>
 
 <template>
@@ -36,17 +40,24 @@ const {
       <template #header>
         <div class="hero-card">
           <div>
-            <p class="eyebrow">LOCAL BATTLE</p>
+            <p class="eyebrow">ONLINE BATTLE</p>
             <h1>社長将棋</h1>
-            <p class="sub">{{ player1Name }} vs {{ player2Name }}</p>
+            <p class="sub">
+              {{ player1Name }} vs {{ player2Name }}
+            </p>
+            <p class="meta">
+              <span v-if="roomCode">ROOM: {{ roomCode }}</span>
+              <span v-if="gameId">GAME ID: {{ gameId }}</span>
+              <span>{{ loading ? "同期中..." : isMyTurn ? "あなたの手番" : "相手の手番" }}</span>
+            </p>
           </div>
 
           <div class="hero-actions">
+            <button class="ghost-button" type="button" @click="fetchGame">
+              更新
+            </button>
             <button class="ghost-button" type="button" @click="backToLobby">
               ロビーへ戻る
-            </button>
-            <button class="ghost-button" type="button" @click="resetBattle">
-              リセット
             </button>
           </div>
         </div>
@@ -90,6 +101,12 @@ const {
           :pieces="handPieces"
           @select="handleHandClick"
         />
+
+        <section class="online-note">
+          <h3>オンライン状態</h3>
+          <p>{{ loading ? "サーバーと同期中です" : "同期済みです" }}</p>
+          <p>{{ canInteract ? "操作できます" : "今は操作できません" }}</p>
+        </section>
       </template>
     </BattleLayout>
   </section>
@@ -134,6 +151,15 @@ h1 {
   color: #bcd4ef;
 }
 
+.meta {
+  margin: 10px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: #8ec5ff;
+  font-size: 13px;
+}
+
 .hero-actions {
   display: flex;
   gap: 10px;
@@ -153,6 +179,29 @@ h1 {
 .main-stack {
   display: grid;
   gap: 16px;
+}
+
+.online-note {
+  padding: 20px;
+  border-radius: 24px;
+  border: 1px solid rgba(160, 205, 255, 0.16);
+  background: rgba(12, 20, 37, 0.82);
+  color: #eef5ff;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.22);
+}
+
+.online-note h3 {
+  margin: 0 0 10px;
+}
+
+.online-note p {
+  margin: 0;
+  color: #bcd4ef;
+  line-height: 1.7;
+}
+
+.online-note p + p {
+  margin-top: 6px;
 }
 
 @media (max-width: 640px) {
