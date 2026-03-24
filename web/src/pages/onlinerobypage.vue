@@ -22,9 +22,7 @@ import OnlineLobbyContent from "../features/online-lobby/components/OnlineLobbyC
 .lobby-page {
   min-height: 100vh;
   padding: 32px 20px 40px;
-  background:
-    radial-gradient(circle at top, rgba(104, 184, 255, 0.18), transparent 35%),
-    linear-gradient(180deg, #16233d 0%, #0b1221 55%, #070c16 100%);
+ background: url("../assets/background/loby.png") center / cover no-repeat;
   color: #eef5ff;
 }
 

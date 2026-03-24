@@ -1,24 +1,89 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import { userService, type User } from "../services/userServices";
 
 const router = useRouter();
 
-const onlineUserId = computed(() => {
-  const raw = Number(localStorage.getItem("onlineUserId"));
-  return Number.isInteger(raw) && raw > 0 ? raw : null;
-});
+const users = ref<User[]>([]);
+const loadingUsers = ref(false);
+const errorMessage = ref("");
 
-const onlineUserName = computed(() => {
-  return localStorage.getItem("onlineUserName")?.trim() || "";
-});
+const currentOnlineUserId = ref<number | null>(null);
+const currentOnlineUserName = ref("");
+
+const selectedOnlineUserId = ref("");
+
+function syncCurrentUserFromStorage() {
+  const rawId = Number(localStorage.getItem("onlineUserId"));
+  currentOnlineUserId.value = Number.isInteger(rawId) && rawId > 0 ? rawId : null;
+  currentOnlineUserName.value = localStorage.getItem("onlineUserName")?.trim() || "";
+  selectedOnlineUserId.value = currentOnlineUserId.value
+    ? String(currentOnlineUserId.value)
+    : "";
+}
+
+function saveOnlineUser(user: User) {
+  currentOnlineUserId.value = user.id;
+  currentOnlineUserName.value = user.name;
+  selectedOnlineUserId.value = String(user.id);
+
+  localStorage.setItem("onlineUserId", String(user.id));
+  localStorage.setItem("onlineUserName", user.name);
+}
+
+async function fetchUsers() {
+  loadingUsers.value = true;
+  errorMessage.value = "";
+
+  try {
+    const fetched = await userService.getUsers();
+
+    if (
+      currentOnlineUserId.value &&
+      !fetched.some((user) => user.id === currentOnlineUserId.value)
+    ) {
+      users.value = [
+        {
+          id: currentOnlineUserId.value,
+          name: currentOnlineUserName.value || `ユーザー ${currentOnlineUserId.value}`,
+        },
+        ...fetched,
+      ];
+    } else {
+      users.value = fetched;
+    }
+
+    selectedOnlineUserId.value = currentOnlineUserId.value
+      ? String(currentOnlineUserId.value)
+      : "";
+  } catch (error) {
+    errorMessage.value =
+      error instanceof Error ? error.message : "ユーザー一覧の取得に失敗しました";
+  } finally {
+    loadingUsers.value = false;
+  }
+}
+
+function handleUserChange(event: Event) {
+  const value = (event.target as HTMLSelectElement).value;
+  selectedOnlineUserId.value = value;
+
+  const nextUserId = Number(value);
+  if (!Number.isInteger(nextUserId) || nextUserId <= 0) return;
+
+  const nextUser = users.value.find((user) => user.id === nextUserId);
+  if (!nextUser) return;
+
+  saveOnlineUser(nextUser);
+}
 
 function goLocal() {
   router.push({ name: "local-lobby" });
 }
 
 function goOnline() {
-  if (!onlineUserId.value) {
+  if (!currentOnlineUserId.value) {
     router.push({ name: "online-user-entry" });
     return;
   }
@@ -26,15 +91,20 @@ function goOnline() {
   router.push({
     name: "online-lobby",
     query: {
-      userId: String(onlineUserId.value),
-      userName: onlineUserName.value,
+      userId: String(currentOnlineUserId.value),
+      userName: currentOnlineUserName.value,
     },
   });
 }
 
-function changeOnlineUser() {
+function goUserRegister() {
   router.push({ name: "online-user-entry" });
 }
+
+onMounted(() => {
+  syncCurrentUserFromStorage();
+  fetchUsers();
+});
 </script>
 
 <template>
@@ -50,21 +120,46 @@ function changeOnlineUser() {
     <section class="online-user-box">
       <p class="online-user-label">オンライン用ユーザー</p>
 
-      <template v-if="onlineUserId">
-        <p class="online-user-name">
-          {{ onlineUserName }} <span>(ID: {{ onlineUserId }})</span>
-        </p>
-        <button class="change-user-button" @click="changeOnlineUser">
-          ユーザー変更
-        </button>
-      </template>
+      <div class="online-user-actions">
+        <select
+          class="change-user-select"
+          :value="selectedOnlineUserId"
+          :disabled="loadingUsers || users.length === 0"
+          @change="handleUserChange"
+        >
+          <option value="">
+            {{
+              loadingUsers
+                ? "ユーザー読込中..."
+                : users.length === 0
+                  ? "登録済みユーザーなし"
+                  : "ユーザーを選択"
+            }}
+          </option>
+          <option
+            v-for="user in users"
+            :key="user.id"
+            :value="String(user.id)"
+          >
+            {{ user.name }} (ID: {{ user.id }})
+          </option>
+        </select>
 
-      <template v-else>
-        <p class="online-user-empty">未選択</p>
-        <button class="change-user-button" @click="changeOnlineUser">
-          ユーザー登録 / 選択
+        <button class="register-user-button" @click="goUserRegister">
+          ユーザー登録
         </button>
-      </template>
+      </div>
+
+      <p v-if="loadingUsers" class="helper-text">
+        ユーザー一覧を読み込み中...
+      </p>
+      <p v-else class="helper-text">
+        上記ボタンでユーザー登録
+      </p>
+
+      <p v-if="errorMessage" class="error-text">
+        {{ errorMessage }}
+      </p>
     </section>
   </div>
 </template>
@@ -117,49 +212,120 @@ function changeOnlineUser() {
 
 .online-user-box {
   position: absolute;
-  left: 50%;
-  bottom: 6%;
-  transform: translateX(-50%);
-  width: min(90vw, 520px);
-  padding: 18px 20px;
-  border-radius: 20px;
-  background: rgba(8, 16, 30, 0.76);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  backdrop-filter: blur(8px);
-  color: #eef5ff;
+  right: 6%;
+  top: 28%;
+  width: min(26vw, 290px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
   text-align: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  transform: none;
 }
 
 .online-user-label {
   margin: 0;
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  color: #8ec5ff;
-}
-
-.online-user-name,
-.online-user-empty {
-  margin: 8px 0 0;
-  font-size: 18px;
-  font-weight: 800;
-}
-
-.online-user-name span {
   font-size: 14px;
-  color: #b8d7f4;
-  font-weight: 600;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: #a91778;
+  text-shadow:
+    0 2px 8px rgba(78, 29, 138, 0.45),
+    0 0 16px rgba(255, 255, 255, 0.65);
 }
 
-.change-user-button {
-  margin-top: 12px;
-  height: 42px;
+.online-user-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.change-user-select {
+  width: 100%;
+  height: 48px;
   padding: 0 18px;
-  border: none;
+  border: 2px solid rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  background: linear-gradient(
+    135deg,
+    rgba(91, 170, 255, 0.95) 0%,
+    rgba(126, 209, 255, 0.95) 55%,
+    rgba(180, 235, 255, 0.95) 100%
+  );
+  color: #10396c;
+  font-size: 14px;
+  font-weight: 900;
+  text-align: center;
+  outline: none;
+  box-shadow:
+    0 10px 24px rgba(76, 127, 255, 0.22),
+    inset 0 2px 8px rgba(255, 255, 255, 0.5);
+}
+
+.change-user-select:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.register-user-button {
+  width: 100%;
+  height: 48px;
+  border: 2px solid rgba(255, 255, 255, 0.72);
   border-radius: 999px;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 900;
+  color: #7b245d;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 197, 236, 0.96) 0%,
+    rgba(255, 224, 244, 0.96) 45%,
+    rgba(255, 246, 186, 0.96) 100%
+  );
+  box-shadow:
+    0 10px 24px rgba(255, 132, 207, 0.24),
+    inset 0 2px 8px rgba(255, 255, 255, 0.55);
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+.register-user-button:hover {
+  transform: translateY(-2px) scale(1.02);
+  filter: brightness(1.04);
+}
+
+.helper-text {
+  margin: 0;
+  font-size: 12px;
   font-weight: 800;
-  color: #10233c;
-  background: linear-gradient(135deg, #86cbff 0%, #dcedff 100%);
+  color: #0c0c0c;
+  text-shadow:
+    0 2px 10px rgba(64, 44, 138, 0.45),
+    0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.error-text {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 900;
+  color: #ff3e7f;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 6px 12px;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(255, 62, 127, 0.18);
+}
+
+@media (max-width: 1100px) {
+  .online-user-box {
+    right: 3.5%;
+    top: 26%;
+    width: min(29vw, 270px);
+  }
 }
 
 @media (max-width: 768px) {
@@ -178,8 +344,11 @@ function changeOnlineUser() {
   }
 
   .online-user-box {
-    bottom: 4%;
-    width: min(94vw, 460px);
+    right: 50%;
+    top: auto;
+    bottom: 5%;
+    transform: translateX(50%);
+    width: min(88vw, 300px);
   }
 }
 
@@ -196,6 +365,17 @@ function changeOnlineUser() {
   .online {
     right: 10%;
     top: 70%;
+  }
+
+  .online-user-box {
+    width: min(90vw, 290px);
+    bottom: 4%;
+  }
+
+  .change-user-select,
+  .register-user-button {
+    height: 44px;
+    font-size: 13px;
   }
 }
 </style>
