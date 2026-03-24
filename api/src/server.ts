@@ -6,6 +6,8 @@ import { logInfo, logError } from "./lib/logger";
 import { config } from "./lib/config";
 import roomsRouter from "./routes/rooms";
 import gamesRouter from "./routes/games";
+import usersRouter from "./routes/users";
+
 
 
 
@@ -23,7 +25,7 @@ app.use((req, _res, next) => {
 app.get("/", (_req, res) => {
     res.send("root ok");
 });
-
+app.use("/users", usersRouter);
 app.get("/health", (_req, res) => {
     res.json({ status: "ok" });
 });
@@ -41,3 +43,7 @@ app.use((err: unknown, _req: Request, res: Response, _next: unknown) => {
     });
 });
 
+app.listen(port, () => {
+    logInfo("server started", { port });
+    console.log(`Server running on port ${port}`);
+});

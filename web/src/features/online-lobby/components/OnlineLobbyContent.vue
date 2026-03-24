@@ -7,10 +7,15 @@ import { useOnlineLobby } from "../composables/useOnlineLobby";
 
 const {
   loading,
+  loadingUsers,
   message,
   errorMessage,
   room,
   roomCodeInput,
+
+  users,
+  selectedLobbyUserId,
+  currentUserSummary,
 
   userId,
   userName,
@@ -26,6 +31,11 @@ const {
   canJoinRoom,
   canToggleReady,
   canStartGame,
+  canChangeLobbyUser,
+
+  fetchUsersList,
+  updateSelectedLobbyUserId,
+  applySelectedLobbyUser,
 
   copyRoomCode,
   handleCreateRoom,
@@ -47,6 +57,15 @@ function updateRoomCodeInput(value: string) {
       :user-name="userName"
       :user-id="userId"
       :selected-character="selectedCharacter"
+      :users="users"
+      :selected-lobby-user-id="selectedLobbyUserId"
+      :current-user-summary="currentUserSummary"
+      :loading-users="loadingUsers"
+      :can-change-lobby-user="canChangeLobbyUser"
+      :is-member="isMember"
+      @refresh-users="fetchUsersList"
+      @update:selected-lobby-user-id="updateSelectedLobbyUserId"
+      @apply-selected-lobby-user="applySelectedLobbyUser"
     />
 
     <div class="content-grid">

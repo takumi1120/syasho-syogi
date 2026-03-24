@@ -1,6 +1,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { roomService, type Room } from "../../../services/roomService";
+import { userService, type User } from "../../../services/userServices";
 
 function readStringQuery(route: ReturnType<typeof useRoute>, keys: string[]): string {
   for (const key of keys) {
@@ -24,11 +25,15 @@ export function useOnlineLobby() {
   const route = useRoute();
 
   const loading = ref(false);
+  const loadingUsers = ref(false);
   const message = ref("");
   const errorMessage = ref("");
   const room = ref<Room | null>(null);
   const roomCodeInput = ref("");
   const pollingId = ref<ReturnType<typeof window.setInterval> | null>(null);
+
+  const users = ref<User[]>([]);
+  const selectedLobbyUserId = ref("");
 
   const userId = computed(() => {
     const fromQuery = readNumberQuery(route, ["userId", "playerId", "selectedUserId", "p1Id"]);
@@ -46,7 +51,12 @@ export function useOnlineLobby() {
   });
 
   const selectedCharacter = computed(() => {
-    const fromQuery = readStringQuery(route, ["character", "selectedCharacter", "playerCharacter"]);
+    const fromQuery = readStringQuery(route, [
+      "character",
+      "selectedCharacter",
+      "playerCharacter",
+      "p1Character",
+    ]);
     if (fromQuery) return fromQuery;
 
     return localStorage.getItem("onlineCharacter")?.trim() || "";
@@ -58,6 +68,14 @@ export function useOnlineLobby() {
       if (id) localStorage.setItem("onlineUserId", String(id));
       if (name) localStorage.setItem("onlineUserName", name);
       if (character) localStorage.setItem("onlineCharacter", character);
+    },
+    { immediate: true }
+  );
+
+  watch(
+    userId,
+    (id) => {
+      selectedLobbyUserId.value = id ? String(id) : "";
     },
     { immediate: true }
   );
@@ -95,6 +113,18 @@ export function useOnlineLobby() {
     }
   });
 
+  const currentUserSummary = computed<User | null>(() => {
+    const found = users.value.find((user) => user.id === userId.value);
+    if (found) return found;
+
+    if (!userId.value) return null;
+
+    return {
+      id: userId.value,
+      name: userName.value,
+    };
+  });
+
   const canCreateRoom = computed(() => !!userId.value && !loading.value);
   const canJoinRoom = computed(() => !!userId.value && roomCodeInput.value.trim().length >= 4 && !loading.value);
   const canToggleReady = computed(() => {
@@ -113,6 +143,10 @@ export function useOnlineLobby() {
     );
   });
 
+  const canChangeLobbyUser = computed(() => {
+    return !loading.value && !loadingUsers.value && !isMember.value;
+  });
+
   function setMessage(text = "") {
     message.value = text;
     errorMessage.value = "";
@@ -128,6 +162,68 @@ export function useOnlineLobby() {
     errorMessage.value = "";
   }
 
+  async function fetchUsersList() {
+    loadingUsers.value = true;
+
+    try {
+      const fetched = await userService.getUsers();
+      users.value = fetched;
+
+      if (userId.value && !fetched.some((user) => user.id === userId.value)) {
+        users.value = [
+          {
+            id: userId.value,
+            name: userName.value,
+          },
+          ...fetched,
+        ];
+      }
+    } catch (error) {
+      const text =
+        error instanceof Error ? error.message : "ユーザー一覧の取得に失敗しました";
+      setError(text);
+    } finally {
+      loadingUsers.value = false;
+    }
+  }
+
+  function updateSelectedLobbyUserId(value: string) {
+    selectedLobbyUserId.value = value;
+  }
+
+  async function applySelectedLobbyUser() {
+    if (isMember.value) {
+      setError("部屋参加中はユーザー変更できません。先に退出してください。");
+      return;
+    }
+
+    const nextUserId = Number(selectedLobbyUserId.value);
+    if (!Number.isInteger(nextUserId) || nextUserId <= 0) {
+      setError("変更するユーザーを選択してください。");
+      return;
+    }
+
+    const nextUser = users.value.find((user) => user.id === nextUserId);
+    if (!nextUser) {
+      setError("選択したユーザーが見つかりません。");
+      return;
+    }
+
+    localStorage.setItem("onlineUserId", String(nextUser.id));
+    localStorage.setItem("onlineUserName", nextUser.name);
+
+    await router.replace({
+      path: route.path,
+      query: {
+        ...route.query,
+        userId: String(nextUser.id),
+        userName: nextUser.name,
+      },
+    });
+
+    setMessage(`使用ユーザーを「${nextUser.name}」に変更しました`);
+  }
+
   async function refreshRoom(code?: string) {
     const targetCode = (code || room.value?.roomCode || roomCodeInput.value).trim().toUpperCase();
     if (!targetCode) return;
@@ -141,7 +237,8 @@ export function useOnlineLobby() {
         goToBattle(latest.gameId, latest.roomCode);
       }
     } catch (error) {
-      const text = error instanceof Error ? error.message : "部屋情報の取得に失敗しました";
+      const text =
+        error instanceof Error ? error.message : "部屋情報の取得に失敗しました";
       setError(text);
     }
   }
@@ -175,7 +272,7 @@ export function useOnlineLobby() {
 
   function goToBattle(gameId: number, roomCode: string) {
     router.push({
-      path: "/online-battle",
+      path: "/onlinebattle",
       query: {
         gameId: String(gameId),
         roomCode,
@@ -204,7 +301,8 @@ export function useOnlineLobby() {
       setMessage(`ルームを作成しました。コード: ${created.roomCode}`);
       startPolling();
     } catch (error) {
-      const text = error instanceof Error ? error.message : "部屋作成に失敗しました";
+      const text =
+        error instanceof Error ? error.message : "部屋作成に失敗しました";
       setError(text);
     } finally {
       loading.value = false;
@@ -238,7 +336,8 @@ export function useOnlineLobby() {
       setMessage(`ルーム ${joined.roomCode} に参加しました`);
       startPolling();
     } catch (error) {
-      const text = error instanceof Error ? error.message : "部屋参加に失敗しました";
+      const text =
+        error instanceof Error ? error.message : "部屋参加に失敗しました";
       setError(text);
     } finally {
       loading.value = false;
@@ -262,7 +361,8 @@ export function useOnlineLobby() {
       setMessage(`ルーム ${fetched.roomCode} を取得しました`);
       startPolling();
     } catch (error) {
-      const text = error instanceof Error ? error.message : "部屋取得に失敗しました";
+      const text =
+        error instanceof Error ? error.message : "部屋取得に失敗しました";
       setError(text);
     } finally {
       loading.value = false;
@@ -283,9 +383,14 @@ export function useOnlineLobby() {
       });
 
       room.value = updated;
-      setMessage(updated.hostReady || updated.guestReady ? "準備状態を更新しました" : "準備を解除しました");
+      setMessage(
+        updated.hostReady || updated.guestReady
+          ? "準備状態を更新しました"
+          : "準備を解除しました"
+      );
     } catch (error) {
-      const text = error instanceof Error ? error.message : "ready 更新に失敗しました";
+      const text =
+        error instanceof Error ? error.message : "ready 更新に失敗しました";
       setError(text);
     } finally {
       loading.value = false;
@@ -304,7 +409,8 @@ export function useOnlineLobby() {
       setMessage("ゲームを開始します");
       goToBattle(result.game.id, result.room.roomCode);
     } catch (error) {
-      const text = error instanceof Error ? error.message : "ゲーム開始に失敗しました";
+      const text =
+        error instanceof Error ? error.message : "ゲーム開始に失敗しました";
       setError(text);
     } finally {
       loading.value = false;
@@ -329,7 +435,8 @@ export function useOnlineLobby() {
       stopPolling();
       setMessage(`ルーム ${oldCode} から退出しました`);
     } catch (error) {
-      const text = error instanceof Error ? error.message : "退出に失敗しました";
+      const text =
+        error instanceof Error ? error.message : "退出に失敗しました";
       setError(text);
     } finally {
       loading.value = false;
@@ -337,6 +444,8 @@ export function useOnlineLobby() {
   }
 
   onMounted(() => {
+    fetchUsersList();
+
     const initialCode = readStringQuery(route, ["roomCode"]);
     if (initialCode) {
       roomCodeInput.value = initialCode.toUpperCase();
@@ -351,10 +460,15 @@ export function useOnlineLobby() {
 
   return {
     loading,
+    loadingUsers,
     message,
     errorMessage,
     room,
     roomCodeInput,
+
+    users,
+    selectedLobbyUserId,
+    currentUserSummary,
 
     userId,
     userName,
@@ -371,6 +485,11 @@ export function useOnlineLobby() {
     canJoinRoom,
     canToggleReady,
     canStartGame,
+    canChangeLobbyUser,
+
+    fetchUsersList,
+    updateSelectedLobbyUserId,
+    applySelectedLobbyUser,
 
     copyRoomCode,
     handleCreateRoom,

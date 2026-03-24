@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LocalLobbyPage from "../pages/localrobypage.vue";
 import ModeSelectPage from "../pages/ModeSelectPage.vue";
+import OnlineBattlePage from "../pages/OnlineBattlePage.vue";
 import OnlineLobbyPage from "../pages/onlinerobypage.vue";
+import OnlineUserEntryPage from "../pages/OnlineUserEntryPage.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -11,6 +13,12 @@ const router = createRouter({
             name: "mode-select",
             component: ModeSelectPage,
             alias: ["/mode-select"],
+        },
+
+        {
+            path: "/onlinebattle",
+            component: () => import("../pages/OnlineBattlePage.vue"),
+
         },
         {
             path: "/local-lobby",
@@ -33,7 +41,12 @@ const router = createRouter({
             path: "/battle",
             component: () => import("../pages/battlepage.vue"),
 
-        }
+        },
+        {
+            path: "/online-user-entry",
+            name: "online-user-entry",
+            component: OnlineUserEntryPage,
+        },
     ],
 });
 
