@@ -166,6 +166,61 @@ h1 {
   font-size: 12px;
   line-height: 1.6;
 }
+.hero-card {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  text-align: center;
+  gap: 14px;
+  padding: 18px 0 12px;
+}
+
+.hero-main {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+
+.eyebrow {
+  color: #ffd978;
+  text-shadow: 0 0 12px rgba(255, 217, 120, 0.28);
+}
+
+h1 {
+  color: #fff0b8;
+  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.32);
+}
+
+.description {
+  max-width: 680px;
+  color: rgba(255, 245, 214, 0.92);
+}
+
+.hero-tools {
+  justify-content: center;
+}
+
+.hero-inline {
+  background: rgba(10, 18, 33, 0.52);
+  border: 1px solid rgba(255, 226, 154, 0.20);
+}
+
+.inline-label {
+  color: rgba(255, 230, 171, 0.84);
+}
+
+.inline-value {
+  color: #fff7dc;
+}
+
+.user-select {
+  background: rgba(9, 16, 30, 0.70);
+  border: 1px solid rgba(255, 221, 150, 0.26);
+  color: #fff4cf;
+}
+
+.switch-hint {
+  color: #ffd9a8;
+}
 
 @media (max-width: 980px) {
   .hero-card {

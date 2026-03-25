@@ -195,6 +195,54 @@ h2 {
   backdrop-filter: blur(8px);
 }
 
+.mini-label {
+  color: #ffd978;
+  text-shadow: none;
+}
+
+h2 {
+  color: #fff0b8;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.24);
+}
+
+.subtext {
+  color: rgba(255, 244, 211, 0.90);
+}
+
+.field-label {
+  color: #ffe7ad;
+}
+
+.room-code-input {
+  background: rgba(8, 14, 28, 0.66);
+  border-color: rgba(255, 221, 150, 0.24);
+  color: #fff5d4;
+}
+
+.room-code-input::placeholder {
+  color: rgba(255, 231, 173, 0.46);
+}
+
+.join-button {
+  color: #162138;
+  background: linear-gradient(180deg, rgba(145, 227, 255, 0.92) 0%, rgba(190, 159, 255, 0.86) 100%);
+  border: 1px solid rgba(255, 247, 221, 0.58);
+}
+
+.create-button {
+  color: #18223a;
+  background: linear-gradient(90deg, rgba(120, 236, 255, 0.96) 0%, rgba(173, 190, 255, 0.92) 52%, rgba(238, 181, 255, 0.92) 100%);
+  border: 1px solid rgba(255, 248, 225, 0.60);
+}
+
+.notice.success {
+  color: #f3fff7;
+}
+
+.notice.error {
+  color: #fff3f6;
+}
+
 .notice.success {
   background: rgba(76, 193, 137, 0.12);
   border: 1px solid rgba(76, 193, 137, 0.18);

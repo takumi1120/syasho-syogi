@@ -117,7 +117,30 @@ async function handleHeaderUserChange(value: string) {
   min-height: 0;
   align-items: start;
 }
+.online-lobby-content {
+  gap: 16px;
+  color: #fff5d6;
+  justify-items: center;
+}
 
+.content-grid {
+  width: min(100%, 1040px);
+  gap: 16px;
+}
+
+.right-column {
+  width: 100%;
+}
+
+@media (max-width: 980px) {
+  .online-lobby-content {
+    justify-items: stretch;
+  }
+
+  .content-grid {
+    width: 100%;
+  }
+}
 .right-column {
   display: grid;
   gap: 14px;

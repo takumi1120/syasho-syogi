@@ -71,6 +71,31 @@ import OnlineLobbyContent from "../features/online-lobby/components/OnlineLobbyC
   backdrop-filter: blur(8px);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
 }
+.lobby-page {
+  display: grid;
+  place-items: start center;
+  color: #fff4cf;
+}
+
+.page-overlay {
+  background:
+    radial-gradient(circle at 14% 16%, rgba(110, 210, 255, 0.10), transparent 24%),
+    radial-gradient(circle at 86% 20%, rgba(176, 128, 255, 0.10), transparent 22%),
+    radial-gradient(circle at 50% 100%, rgba(97, 199, 255, 0.08), transparent 28%),
+    linear-gradient(
+      180deg,
+      rgba(5, 10, 20, 0.40) 0%,
+      rgba(5, 10, 20, 0.26) 28%,
+      rgba(5, 10, 20, 0.48) 100%
+    );
+}
+
+.back-link {
+  color: #2a1a05;
+  background: rgba(255, 229, 153, 0.96);
+  border: 1px solid rgba(255, 245, 210, 0.72);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
+}
 
 @media (max-width: 980px) {
   .lobby-page {

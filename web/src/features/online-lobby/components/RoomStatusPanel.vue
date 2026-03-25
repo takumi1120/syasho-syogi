@@ -246,6 +246,61 @@ h2 {
   color: #ddffef;
 }
 
+.mini-label,
+.code-label {
+  color: #ffd978;
+  text-shadow: none;
+}
+
+h2 {
+  color: #fff0b8;
+}
+
+.status-badge {
+  background: rgba(14, 22, 40, 0.56);
+  color: #fff4cf;
+  border: 1px solid rgba(255, 223, 156, 0.18);
+}
+
+.room-code {
+  background: rgba(8, 14, 28, 0.68);
+  border: 1px solid rgba(255, 223, 156, 0.20);
+  color: #fff4c8;
+}
+
+.copy-button {
+  color: #18213a;
+  background: linear-gradient(180deg, rgba(145, 227, 255, 0.94) 0%, rgba(196, 161, 255, 0.90) 100%);
+  border: 1px solid rgba(255, 247, 221, 0.56);
+}
+
+.member-row {
+  background: rgba(10, 18, 33, 0.54);
+  border: 1px solid rgba(255, 223, 156, 0.16);
+}
+
+.member-role {
+  color: #ffd978;
+}
+
+.member-name {
+  color: #fff7dc;
+}
+
+.member-character {
+  color: rgba(255, 238, 198, 0.84);
+}
+
+.ready-badge {
+  color: #fff2c7;
+}
+
+.empty-state {
+  background: rgba(10, 18, 33, 0.54);
+  border-color: rgba(255, 223, 156, 0.16);
+  color: rgba(255, 244, 214, 0.92);
+}
+
 .empty-state {
   padding: 12px 14px;
   border-radius: 14px;

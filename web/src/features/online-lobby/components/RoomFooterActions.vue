@@ -141,6 +141,37 @@ const emit = defineEmits<{
   border: 1px solid rgba(255, 168, 186, 0.16);
 }
 
+.state-pill {
+  background: rgba(10, 18, 33, 0.54);
+  border: 1px solid rgba(255, 223, 156, 0.16);
+  color: #fff6d9;
+}
+
+.state-pill span {
+  color: rgba(255, 229, 171, 0.82);
+}
+
+.ready-button {
+  color: #133022;
+  background: linear-gradient(180deg, rgba(143, 244, 198, 0.96) 0%, rgba(97, 226, 165, 0.88) 100%);
+  border: 1px solid rgba(226, 255, 241, 0.58);
+}
+
+.start-button {
+  color: #3a2908;
+  background: linear-gradient(180deg, rgba(255, 225, 145, 0.96) 0%, rgba(255, 198, 96, 0.88) 100%);
+  border: 1px solid rgba(255, 245, 214, 0.56);
+}
+
+.leave-button {
+  color: #4a1826;
+  background: linear-gradient(180deg, rgba(255, 188, 205, 0.94) 0%, rgba(255, 149, 177, 0.84) 100%);
+  border: 1px solid rgba(255, 241, 246, 0.56);
+}
+
+.hint {
+  color: rgba(255, 242, 210, 0.86);
+}
 .hint {
   margin: 0;
   color: rgba(230, 239, 255, 0.76);
