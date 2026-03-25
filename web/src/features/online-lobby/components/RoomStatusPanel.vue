@@ -104,15 +104,18 @@ const emit = defineEmits<{
   margin: 0;
   letter-spacing: 0.18em;
   font-size: 10px;
-  color: #7fe7ff;
-  text-shadow: 0 0 10px rgba(127, 231, 255, 0.24);
+  font-weight: 800;
+  color: #ffe892;
+  text-shadow:
+    0 0 12px rgba(255, 232, 146, 0.28),
+    0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
 h2 {
   margin: 2px 0 0;
   font-size: 20px;
-  color: #ffffff;
-  text-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+  color: #fff7d2;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .status-badge,
@@ -131,29 +134,29 @@ h2 {
   min-width: 92px;
   height: 30px;
   padding: 0 12px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #e5f3ff;
-  border: 1px solid rgba(232, 241, 255, 0.14);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff7dc;
+  border: 1px solid rgba(255, 245, 214, 0.20);
 }
 
 .status-badge.open {
-  background: rgba(255, 196, 92, 0.14);
-  color: #ffe1a2;
+  background: rgba(255, 208, 120, 0.20);
+  color: #fff0c6;
 }
 
 .status-badge.matched {
-  background: rgba(98, 171, 255, 0.16);
-  color: #cde7ff;
+  background: rgba(138, 202, 255, 0.20);
+  color: #eef8ff;
 }
 
 .status-badge.playing {
-  background: rgba(111, 255, 207, 0.14);
-  color: #c7ffed;
+  background: rgba(126, 239, 188, 0.22);
+  color: #f2fff9;
 }
 
 .status-badge.closed {
-  background: rgba(255, 103, 130, 0.14);
-  color: #ffd6df;
+  background: rgba(255, 131, 156, 0.20);
+  color: #fff3f6;
 }
 
 .room-code-wrap {
@@ -168,12 +171,12 @@ h2 {
   min-height: 40px;
   padding: 0 14px;
   border-radius: 14px;
-  background: rgba(11, 21, 40, 0.30);
-  border: 1px solid rgba(232, 241, 255, 0.14);
+  background: rgba(16, 22, 40, 0.34);
+  border: 1px solid rgba(255, 245, 214, 0.18);
   font-size: clamp(20px, 3vw, 28px);
   font-weight: 900;
   letter-spacing: 0.14em;
-  color: #ffffff;
+  color: #fffaf0;
   backdrop-filter: blur(8px);
 }
 
@@ -182,10 +185,9 @@ h2 {
   min-height: 40px;
   padding: 0 12px;
   border-radius: 12px;
-  border: 1px solid rgba(232, 241, 255, 0.16);
-  background:
-    linear-gradient(180deg, rgba(120, 214, 255, 0.20) 0%, rgba(165, 123, 255, 0.16) 100%);
-  color: #f2f9ff;
+  border: 1px solid rgba(255, 247, 221, 0.56);
+  background: linear-gradient(180deg, rgba(145, 227, 255, 0.92) 0%, rgba(196, 161, 255, 0.86) 100%);
+  color: #36270d;
   font-weight: 800;
   cursor: pointer;
   backdrop-filter: blur(8px);
@@ -199,8 +201,8 @@ h2 {
 .member-row {
   padding: 10px 12px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(232, 241, 255, 0.14);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 245, 214, 0.20);
   backdrop-filter: blur(8px);
 }
 
@@ -208,13 +210,13 @@ h2 {
   flex: 0 0 auto;
   font-size: 10px;
   letter-spacing: 0.18em;
-  color: #7fe7ff;
+  color: #ffe892;
 }
 
 .member-name {
   flex: 1 1 auto;
   min-width: 0;
-  color: #ffffff;
+  color: #fffaf0;
   font-size: 15px;
   font-weight: 800;
   white-space: nowrap;
@@ -225,7 +227,7 @@ h2 {
 .member-character {
   flex: 0 1 auto;
   min-width: 0;
-  color: rgba(228, 238, 255, 0.82);
+  color: rgba(255, 244, 214, 0.90);
   font-size: 12px;
   white-space: nowrap;
   overflow: hidden;
@@ -236,77 +238,22 @@ h2 {
   min-width: 82px;
   height: 28px;
   padding: 0 10px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #dcecff;
-  border: 1px solid rgba(232, 241, 255, 0.14);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff7dc;
+  border: 1px solid rgba(255, 245, 214, 0.18);
 }
 
 .ready-badge.active {
-  background: rgba(106, 239, 183, 0.22);
-  color: #ddffef;
-}
-
-.mini-label,
-.code-label {
-  color: #ffd978;
-  text-shadow: none;
-}
-
-h2 {
-  color: #fff0b8;
-}
-
-.status-badge {
-  background: rgba(14, 22, 40, 0.56);
-  color: #fff4cf;
-  border: 1px solid rgba(255, 223, 156, 0.18);
-}
-
-.room-code {
-  background: rgba(8, 14, 28, 0.68);
-  border: 1px solid rgba(255, 223, 156, 0.20);
-  color: #fff4c8;
-}
-
-.copy-button {
-  color: #18213a;
-  background: linear-gradient(180deg, rgba(145, 227, 255, 0.94) 0%, rgba(196, 161, 255, 0.90) 100%);
-  border: 1px solid rgba(255, 247, 221, 0.56);
-}
-
-.member-row {
-  background: rgba(10, 18, 33, 0.54);
-  border: 1px solid rgba(255, 223, 156, 0.16);
-}
-
-.member-role {
-  color: #ffd978;
-}
-
-.member-name {
-  color: #fff7dc;
-}
-
-.member-character {
-  color: rgba(255, 238, 198, 0.84);
-}
-
-.ready-badge {
-  color: #fff2c7;
-}
-
-.empty-state {
-  background: rgba(10, 18, 33, 0.54);
-  border-color: rgba(255, 223, 156, 0.16);
-  color: rgba(255, 244, 214, 0.92);
+  background: rgba(126, 239, 188, 0.22);
+  color: #f3fff9;
 }
 
 .empty-state {
   padding: 12px 14px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(232, 241, 255, 0.14);
-  color: rgba(230, 239, 255, 0.86);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 245, 214, 0.20);
+  color: rgba(255, 249, 230, 0.98);
   line-height: 1.7;
   backdrop-filter: blur(8px);
 }

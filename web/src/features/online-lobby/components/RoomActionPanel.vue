@@ -82,29 +82,33 @@ function onInput(event: Event) {
   margin: 0;
   letter-spacing: 0.18em;
   font-size: 10px;
-  color: #7fe7ff;
-  text-shadow: 0 0 10px rgba(127, 231, 255, 0.24);
+  font-weight: 800;
+  color: #ffe892;
+  text-shadow:
+    0 0 12px rgba(255, 232, 146, 0.28),
+    0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
 h2 {
   margin: 0;
   font-size: 20px;
-  color: #ffffff;
-  text-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+  color: #fff7d2;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .subtext {
   margin: 0;
-  color: rgba(230, 239, 255, 0.82);
+  color: rgba(255, 247, 225, 0.94);
   font-size: 12px;
   line-height: 1.6;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
 .field-label {
   display: inline-block;
   margin-top: 2px;
   font-size: 12px;
-  color: rgba(234, 243, 255, 0.9);
+  color: rgba(255, 244, 214, 0.96);
 }
 
 .join-row {
@@ -121,9 +125,9 @@ h2 {
   height: 44px;
   padding: 0 14px;
   border-radius: 14px;
-  border: 1px solid rgba(193, 230, 255, 0.20);
-  background: rgba(12, 21, 39, 0.34);
-  color: #f7fbff;
+  border: 1px solid rgba(255, 244, 214, 0.28);
+  background: rgba(16, 22, 40, 0.38);
+  color: #fffaf0;
   font-size: 16px;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -134,13 +138,12 @@ h2 {
 }
 
 .room-code-input::placeholder {
-  color: rgba(200, 220, 245, 0.35);
+  color: rgba(255, 231, 173, 0.42);
   letter-spacing: 0.04em;
 }
 
 .join-button,
 .create-button {
-  border: none;
   cursor: pointer;
   transition: transform 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease;
   font-weight: 800;
@@ -150,7 +153,7 @@ h2 {
 .join-button:hover,
 .create-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
 
 .join-button:disabled,
@@ -168,10 +171,9 @@ h2 {
   padding: 0 10px;
   border-radius: 14px;
   white-space: nowrap;
-  color: #eef7ff;
-  background:
-    linear-gradient(180deg, rgba(120, 214, 255, 0.30) 0%, rgba(165, 123, 255, 0.24) 100%);
-  border: 1px solid rgba(228, 238, 255, 0.18);
+  color: #3d2d0f;
+  background: linear-gradient(180deg, rgba(145, 227, 255, 0.92) 0%, rgba(196, 161, 255, 0.86) 100%);
+  border: 1px solid rgba(255, 247, 221, 0.56);
   backdrop-filter: blur(8px);
 }
 
@@ -180,10 +182,14 @@ h2 {
   min-height: 46px;
   margin-top: 2px;
   border-radius: 14px;
-  color: #ffffff;
-  background:
-    linear-gradient(90deg, rgba(75, 225, 255, 0.34) 0%, rgba(126, 160, 255, 0.30) 52%, rgba(194, 118, 255, 0.32) 100%);
-  border: 1px solid rgba(232, 241, 255, 0.20);
+  color: #2d2238;
+  background: linear-gradient(
+    90deg,
+    rgba(120, 236, 255, 0.94) 0%,
+    rgba(173, 190, 255, 0.90) 52%,
+    rgba(238, 181, 255, 0.90) 100%
+  );
+  border: 1px solid rgba(255, 247, 221, 0.58);
   backdrop-filter: blur(8px);
 }
 
@@ -195,64 +201,16 @@ h2 {
   backdrop-filter: blur(8px);
 }
 
-.mini-label {
-  color: #ffd978;
-  text-shadow: none;
-}
-
-h2 {
-  color: #fff0b8;
-  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.24);
-}
-
-.subtext {
-  color: rgba(255, 244, 211, 0.90);
-}
-
-.field-label {
-  color: #ffe7ad;
-}
-
-.room-code-input {
-  background: rgba(8, 14, 28, 0.66);
-  border-color: rgba(255, 221, 150, 0.24);
-  color: #fff5d4;
-}
-
-.room-code-input::placeholder {
-  color: rgba(255, 231, 173, 0.46);
-}
-
-.join-button {
-  color: #162138;
-  background: linear-gradient(180deg, rgba(145, 227, 255, 0.92) 0%, rgba(190, 159, 255, 0.86) 100%);
-  border: 1px solid rgba(255, 247, 221, 0.58);
-}
-
-.create-button {
-  color: #18223a;
-  background: linear-gradient(90deg, rgba(120, 236, 255, 0.96) 0%, rgba(173, 190, 255, 0.92) 52%, rgba(238, 181, 255, 0.92) 100%);
-  border: 1px solid rgba(255, 248, 225, 0.60);
-}
-
 .notice.success {
-  color: #f3fff7;
+  background: rgba(110, 223, 166, 0.18);
+  border: 1px solid rgba(110, 223, 166, 0.24);
+  color: #f5fff9;
 }
 
 .notice.error {
-  color: #fff3f6;
-}
-
-.notice.success {
-  background: rgba(76, 193, 137, 0.12);
-  border: 1px solid rgba(76, 193, 137, 0.18);
-  color: #c6f5da;
-}
-
-.notice.error {
-  background: rgba(255, 92, 122, 0.12);
-  border: 1px solid rgba(255, 92, 122, 0.18);
-  color: #ffd4dd;
+  background: rgba(255, 124, 154, 0.18);
+  border: 1px solid rgba(255, 124, 154, 0.24);
+  color: #fff4f7;
 }
 
 @media (max-width: 640px) {

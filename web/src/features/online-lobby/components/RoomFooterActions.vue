@@ -77,9 +77,9 @@ const emit = defineEmits<{
   min-width: 132px;
   padding: 9px 12px;
   border-radius: 15px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(232, 241, 255, 0.14);
-  color: #eef5ff;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 245, 214, 0.20);
+  color: #fff8e8;
   backdrop-filter: blur(8px);
 }
 
@@ -87,7 +87,7 @@ const emit = defineEmits<{
   display: block;
   margin-bottom: 3px;
   font-size: 10px;
-  color: rgba(214, 232, 255, 0.78);
+  color: rgba(255, 241, 198, 0.84);
 }
 
 .state-pill strong {
@@ -111,7 +111,7 @@ const emit = defineEmits<{
 .start-button:hover,
 .leave-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
 
 .ready-button:disabled,
@@ -121,34 +121,6 @@ const emit = defineEmits<{
   opacity: 0.55;
   transform: none;
   box-shadow: none;
-}
-
-.ready-button {
-  color: #f0fff7;
-  background: linear-gradient(180deg, rgba(95, 236, 180, 0.24) 0%, rgba(95, 236, 180, 0.16) 100%);
-  border: 1px solid rgba(160, 248, 212, 0.18);
-}
-
-.start-button {
-  color: #fffaf0;
-  background: linear-gradient(180deg, rgba(255, 206, 113, 0.24) 0%, rgba(255, 206, 113, 0.16) 100%);
-  border: 1px solid rgba(255, 224, 156, 0.18);
-}
-
-.leave-button {
-  color: #ffeef3;
-  background: linear-gradient(180deg, rgba(255, 118, 146, 0.18) 0%, rgba(255, 118, 146, 0.10) 100%);
-  border: 1px solid rgba(255, 168, 186, 0.16);
-}
-
-.state-pill {
-  background: rgba(10, 18, 33, 0.54);
-  border: 1px solid rgba(255, 223, 156, 0.16);
-  color: #fff6d9;
-}
-
-.state-pill span {
-  color: rgba(255, 229, 171, 0.82);
 }
 
 .ready-button {
@@ -170,11 +142,8 @@ const emit = defineEmits<{
 }
 
 .hint {
-  color: rgba(255, 242, 210, 0.86);
-}
-.hint {
   margin: 0;
-  color: rgba(230, 239, 255, 0.76);
+  color: rgba(255, 247, 225, 0.94);
   font-size: 12px;
   line-height: 1.6;
 }

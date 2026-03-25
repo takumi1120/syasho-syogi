@@ -24,7 +24,7 @@ import OnlineLobbyContent from "../features/online-lobby/components/OnlineLobbyC
   min-height: 100dvh;
   padding: 14px 16px 18px;
   background: url("../assets/background/loby.png") center / cover no-repeat;
-  color: #eef5ff;
+  color: #fff8ea;
   overflow: hidden;
 }
 
@@ -32,14 +32,16 @@ import OnlineLobbyContent from "../features/online-lobby/components/OnlineLobbyC
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 14% 16%, rgba(104, 226, 255, 0.16), transparent 26%),
-    radial-gradient(circle at 86% 20%, rgba(192, 124, 255, 0.14), transparent 24%),
-    radial-gradient(circle at 50% 100%, rgba(97, 199, 255, 0.10), transparent 32%),
+    radial-gradient(circle at 16% 14%, rgba(255, 242, 180, 0.16), transparent 24%),
+    radial-gradient(circle at 18% 22%, rgba(112, 220, 255, 0.18), transparent 26%),
+    radial-gradient(circle at 82% 18%, rgba(200, 146, 255, 0.16), transparent 24%),
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.10), transparent 30%),
+    radial-gradient(circle at 50% 100%, rgba(110, 205, 255, 0.10), transparent 32%),
     linear-gradient(
       180deg,
-      rgba(6, 12, 24, 0.10) 0%,
-      rgba(6, 12, 24, 0.03) 28%,
-      rgba(6, 12, 24, 0.14) 100%
+      rgba(6, 12, 24, 0.02) 0%,
+      rgba(6, 12, 24, 0.01) 30%,
+      rgba(6, 12, 24, 0.05) 100%
     );
   pointer-events: none;
 }
@@ -65,36 +67,11 @@ import OnlineLobbyContent from "../features/online-lobby/components/OnlineLobbyC
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.04em;
-  color: #ffffff;
-  background: rgba(14, 24, 45, 0.34);
-  border: 1px solid rgba(232, 241, 255, 0.18);
+  color: #4b3608;
+  background: rgba(255, 229, 150, 0.95);
+  border: 1px solid rgba(255, 245, 214, 0.76);
   backdrop-filter: blur(8px);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
-}
-.lobby-page {
-  display: grid;
-  place-items: start center;
-  color: #fff4cf;
-}
-
-.page-overlay {
-  background:
-    radial-gradient(circle at 14% 16%, rgba(110, 210, 255, 0.10), transparent 24%),
-    radial-gradient(circle at 86% 20%, rgba(176, 128, 255, 0.10), transparent 22%),
-    radial-gradient(circle at 50% 100%, rgba(97, 199, 255, 0.08), transparent 28%),
-    linear-gradient(
-      180deg,
-      rgba(5, 10, 20, 0.40) 0%,
-      rgba(5, 10, 20, 0.26) 28%,
-      rgba(5, 10, 20, 0.48) 100%
-    );
-}
-
-.back-link {
-  color: #2a1a05;
-  background: rgba(255, 229, 153, 0.96);
-  border: 1px solid rgba(255, 245, 210, 0.72);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
 }
 
 @media (max-width: 980px) {
