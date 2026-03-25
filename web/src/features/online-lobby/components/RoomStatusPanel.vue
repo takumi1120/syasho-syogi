@@ -12,47 +12,48 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <section class="panel status-panel">
-    <div class="status-head">
-      <div>
+  <section class="panel status-area">
+    <div class="topline">
+      <div class="title-wrap">
         <p class="mini-label">ROOM STATUS</p>
         <h2>現在の部屋</h2>
       </div>
+
       <span class="status-badge" :class="room?.status?.toLowerCase()">
         {{ statusLabel }}
       </span>
     </div>
 
     <template v-if="room">
-      <div class="room-topline">
-        <div>
-          <span class="mini-label">ROOM CODE</span>
-          <div class="room-code-box">{{ room.roomCode }}</div>
+      <div class="room-code-line">
+        <div class="room-code-wrap">
+          <span class="code-label">ROOM CODE</span>
+          <strong class="room-code">{{ room.roomCode }}</strong>
         </div>
 
-        <button class="ghost-button" @click="emit('copy')">
+        <button class="copy-button" @click="emit('copy')">
           コピー
         </button>
       </div>
 
-      <div class="members-grid">
-        <article class="member-card host">
-          <p class="member-role">HOST</p>
-          <strong class="member-name">{{ room.hostUser?.name || `User ${room.hostUserId}` }}</strong>
-          <p class="member-sub">ID: {{ room.hostUserId }}</p>
-          <p class="member-sub">キャラ: {{ room.hostCharacter || "未選択" }}</p>
+      <div class="member-list">
+        <article class="member-row">
+          <span class="member-role">HOST</span>
+          <strong class="member-name">{{ room.hostUser?.name || "ホスト" }}</strong>
+          <span class="member-character">
+            {{ room.hostCharacter || "キャラ未選択" }}
+          </span>
           <span class="ready-badge" :class="{ active: room.hostReady }">
             {{ room.hostReady ? "READY" : "WAITING" }}
           </span>
         </article>
 
-        <article class="member-card guest">
-          <p class="member-role">GUEST</p>
-          <strong class="member-name">
-            {{ room.guestUser?.name || (room.guestUserId ? `User ${room.guestUserId}` : "参加待ち") }}
-          </strong>
-          <p class="member-sub">ID: {{ room.guestUserId ?? "未参加" }}</p>
-          <p class="member-sub">キャラ: {{ room.guestCharacter || "未選択" }}</p>
+        <article class="member-row">
+          <span class="member-role">GUEST</span>
+          <strong class="member-name">{{ room.guestUser?.name || "参加待ち" }}</strong>
+          <span class="member-character">
+            {{ room.guestCharacter || "キャラ未選択" }}
+          </span>
           <span class="ready-badge" :class="{ active: room.guestReady }">
             {{ room.guestReady ? "READY" : "WAITING" }}
           </span>
@@ -62,8 +63,7 @@ const emit = defineEmits<{
 
     <template v-else>
       <div class="empty-state">
-        <p>まだ部屋に入っていません。</p>
-        <p>左側からルーム作成、またはルームコード入力で参加してください。</p>
+        まだ部屋に入っていません。左側からルーム作成または参加をしてください。
       </div>
     </template>
   </section>
@@ -71,34 +71,48 @@ const emit = defineEmits<{
 
 <style scoped>
 .panel {
-  border-radius: 24px;
-  padding: 24px;
-  border: 1px solid rgba(157, 206, 255, 0.18);
-  background: rgba(18, 29, 52, 0.74);
-  backdrop-filter: blur(10px);
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  color: #eef5ff;
+  min-width: 0;
 }
 
-.status-head,
-.room-topline {
+.status-area {
+  display: grid;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.topline,
+.room-code-line,
+.member-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
+  min-width: 0;
 }
 
-.mini-label {
+.topline,
+.room-code-line {
+  justify-content: space-between;
+}
+
+.title-wrap {
+  min-width: 0;
+}
+
+.mini-label,
+.code-label {
+  display: block;
   margin: 0;
-  letter-spacing: 0.28em;
-  font-size: 12px;
-  color: #8ec5ff;
+  letter-spacing: 0.18em;
+  font-size: 10px;
+  color: #7fe7ff;
+  text-shadow: 0 0 10px rgba(127, 231, 255, 0.24);
 }
 
 h2 {
-  margin: 10px 0 0;
+  margin: 2px 0 0;
+  font-size: 20px;
+  color: #ffffff;
+  text-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
 }
 
 .status-badge,
@@ -107,138 +121,156 @@ h2 {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
 }
 
 .status-badge {
-  min-width: 110px;
-  height: 36px;
-  padding: 0 14px;
+  min-width: 92px;
+  height: 30px;
+  padding: 0 12px;
   background: rgba(255, 255, 255, 0.08);
-  color: #dff0ff;
+  color: #e5f3ff;
+  border: 1px solid rgba(232, 241, 255, 0.14);
 }
 
 .status-badge.open {
-  background: rgba(255, 196, 92, 0.16);
+  background: rgba(255, 196, 92, 0.14);
   color: #ffe1a2;
 }
 
 .status-badge.matched {
-  background: rgba(98, 171, 255, 0.18);
+  background: rgba(98, 171, 255, 0.16);
   color: #cde7ff;
 }
 
 .status-badge.playing {
-  background: rgba(111, 255, 207, 0.16);
+  background: rgba(111, 255, 207, 0.14);
   color: #c7ffed;
 }
 
 .status-badge.closed {
-  background: rgba(255, 103, 130, 0.16);
+  background: rgba(255, 103, 130, 0.14);
   color: #ffd6df;
 }
 
-.room-topline {
-  margin-top: 18px;
+.room-code-wrap {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
 }
 
-.room-code-box {
-  margin-top: 6px;
-  padding: 14px 18px;
-  border-radius: 16px;
-  background: rgba(8, 17, 33, 0.72);
-  border: 1px solid rgba(157, 206, 255, 0.16);
-  font-size: clamp(24px, 4vw, 34px);
-  font-weight: 900;
-  letter-spacing: 0.16em;
-  color: #ffffff;
-}
-
-.ghost-button {
-  min-width: 88px;
-  padding: 12px 16px;
+.room-code {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 14px;
   border-radius: 14px;
-  border: 1px solid rgba(157, 206, 255, 0.16);
-  background: rgba(255, 255, 255, 0.06);
-  color: #def0ff;
+  background: rgba(11, 21, 40, 0.30);
+  border: 1px solid rgba(232, 241, 255, 0.14);
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  color: #ffffff;
+  backdrop-filter: blur(8px);
+}
+
+.copy-button {
+  min-width: 78px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(232, 241, 255, 0.16);
+  background:
+    linear-gradient(180deg, rgba(120, 214, 255, 0.20) 0%, rgba(165, 123, 255, 0.16) 100%);
+  color: #f2f9ff;
   font-weight: 800;
   cursor: pointer;
+  backdrop-filter: blur(8px);
 }
 
-.members-grid {
+.member-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 18px;
+  gap: 8px;
 }
 
-.member-card {
-  padding: 18px;
-  border-radius: 20px;
-  border: 1px solid rgba(157, 206, 255, 0.16);
-  background: rgba(255, 255, 255, 0.05);
+.member-row {
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(232, 241, 255, 0.14);
+  backdrop-filter: blur(8px);
 }
 
 .member-role {
-  margin: 0;
-  font-size: 12px;
-  letter-spacing: 0.22em;
-  color: #8ec5ff;
+  flex: 0 0 auto;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: #7fe7ff;
 }
 
 .member-name {
-  display: block;
-  margin-top: 10px;
-  font-size: 22px;
-  color: #f5f9ff;
+  flex: 1 1 auto;
+  min-width: 0;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.member-sub {
-  margin: 8px 0 0;
-  color: rgba(223, 236, 255, 0.74);
-  font-size: 14px;
+.member-character {
+  flex: 0 1 auto;
+  min-width: 0;
+  color: rgba(228, 238, 255, 0.82);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ready-badge {
-  min-width: 96px;
-  height: 34px;
-  margin-top: 16px;
+  min-width: 82px;
+  height: 28px;
+  padding: 0 10px;
   background: rgba(255, 255, 255, 0.08);
   color: #dcecff;
+  border: 1px solid rgba(232, 241, 255, 0.14);
 }
 
 .ready-badge.active {
-  background: linear-gradient(180deg, #7ceeb7 0%, #49d59b 100%);
-  color: #082217;
+  background: rgba(106, 239, 183, 0.22);
+  color: #ddffef;
 }
 
 .empty-state {
-  margin-top: 18px;
-  padding: 28px 20px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(225, 238, 255, 0.8);
-  line-height: 1.8;
-  text-align: center;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(232, 241, 255, 0.14);
+  color: rgba(230, 239, 255, 0.86);
+  line-height: 1.7;
+  backdrop-filter: blur(8px);
 }
 
-@media (max-width: 920px) {
-  .members-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 820px) {
+  .room-code-line,
+  .topline,
+  .member-row {
+    flex-wrap: wrap;
   }
 
-  .room-topline,
-  .status-head {
-    align-items: flex-start;
-    flex-direction: column;
+  .copy-button {
+    width: 100%;
   }
-}
 
-@media (max-width: 640px) {
-  .panel {
-    padding: 18px;
-    border-radius: 20px;
+  .member-name,
+  .member-character {
+    width: 100%;
+    white-space: normal;
   }
 }
 </style>

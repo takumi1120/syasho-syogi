@@ -4,76 +4,42 @@ type LobbyUser = {
   name: string;
 };
 
-type CurrentUserSummary = {
-  id: number;
-  name: string;
-} | null;
-
 defineProps<{
   userName: string;
-  userId: number | null;
   selectedCharacter: string;
   users: LobbyUser[];
   selectedLobbyUserId: string;
-  currentUserSummary: CurrentUserSummary;
-  loadingUsers: boolean;
   canChangeLobbyUser: boolean;
   isMember: boolean;
 }>();
 
 const emit = defineEmits<{
-  (e: "refresh-users"): void;
-  (e: "update:selected-lobby-user-id", value: string): void;
-  (e: "apply-selected-lobby-user"): void;
+  (e: "change-user", value: string): void;
 }>();
+
+function onChangeUser(event: Event) {
+  emit("change-user", (event.target as HTMLSelectElement).value);
+}
 </script>
 
 <template>
   <header class="hero-card">
-    <p class="eyebrow">SHACHO SHOGI ONLINE</p>
-    <h1>オンラインロビー</h1>
-    <p class="description">
-      ルームを作成して待機、またはルームコードを入力して参加できます。
-    </p>
-
-    <div class="player-summary">
-      <div class="summary-chip">
-        <span class="chip-label">ユーザー</span>
-        <strong>{{ userName }}</strong>
-      </div>
-      <div class="summary-chip">
-        <span class="chip-label">ユーザーID</span>
-        <strong>{{ userId ?? "未設定" }}</strong>
-      </div>
-      <div class="summary-chip">
-        <span class="chip-label">キャラクター</span>
-        <strong>{{ selectedCharacter || "未選択" }}</strong>
-      </div>
+    <div class="hero-main">
+      <p class="eyebrow">SHACHO SHOGI ONLINE</p>
+      <h1>オンラインロビー</h1>
+      <p class="description">
+        ルームを作成して待機、またはルームコードを入力して参加できます。
+      </p>
     </div>
 
-    <section class="hero-user-switch">
-      <div class="hero-user-switch-head">
-        <div>
-          <p class="mini-label">USER SELECT</p>
-          <h3>ユーザー変更</h3>
-        </div>
-
-        <button
-          class="refresh-users-button"
-          type="button"
-          :disabled="loadingUsers"
-          @click="emit('refresh-users')"
-        >
-          {{ loadingUsers ? "更新中..." : "再読込" }}
-        </button>
-      </div>
-
-      <div class="hero-user-switch-row">
+    <div class="hero-tools">
+      <label class="hero-inline">
+        <span class="inline-label">ユーザー</span>
         <select
-          class="hero-user-select"
+          class="user-select"
           :value="selectedLobbyUserId"
           :disabled="!canChangeLobbyUser"
-          @change="emit('update:selected-lobby-user-id', ($event.target as HTMLSelectElement).value)"
+          @change="onChangeUser"
         >
           <option value="">ユーザーを選択</option>
           <option
@@ -81,210 +47,148 @@ const emit = defineEmits<{
             :key="user.id"
             :value="String(user.id)"
           >
-            {{ user.name }} (ID: {{ user.id }})
+            {{ user.name }}
           </option>
         </select>
+      </label>
 
-        <button
-          class="apply-user-button"
-          type="button"
-          :disabled="!canChangeLobbyUser || !selectedLobbyUserId"
-          @click="emit('apply-selected-lobby-user')"
-        >
-          このユーザーに変更
-        </button>
+      <div class="hero-inline">
+        <span class="inline-label">現在</span>
+        <strong class="inline-value">{{ userName || "未選択" }}</strong>
       </div>
 
-      <p class="current-user-text">
-        現在のユーザー:
-        <strong>
-          {{
-            currentUserSummary
-              ? `${currentUserSummary.name} (ID: ${currentUserSummary.id})`
-              : "未選択"
-          }}
-        </strong>
-      </p>
+      <div class="hero-inline">
+        <span class="inline-label">キャラクター</span>
+        <strong class="inline-value">{{ selectedCharacter || "未選択" }}</strong>
+      </div>
+    </div>
 
-      <p v-if="isMember" class="switch-hint">
-        部屋参加中はユーザー変更できません。先に退出してください。
-      </p>
-    </section>
+    <p v-if="isMember" class="switch-hint">
+      部屋参加中はユーザー変更できません。先に退出してください。
+    </p>
   </header>
 </template>
 
 <style scoped>
 .hero-card {
-  padding: 32px;
-  border-radius: 28px;
-  border: 1px solid rgba(157, 206, 255, 0.18);
-  background: rgba(18, 29, 52, 0.74);
-  backdrop-filter: blur(10px);
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px 16px;
+  align-items: center;
+  padding: 12px 0 10px;
+}
+
+.hero-main {
+  min-width: 0;
 }
 
 .eyebrow {
   margin: 0;
-  letter-spacing: 0.28em;
-  font-size: 12px;
-  color: #8ec5ff;
+  letter-spacing: 0.24em;
+  font-size: 11px;
+  color: #7fe7ff;
+  text-shadow: 0 0 12px rgba(127, 231, 255, 0.28);
 }
 
 h1 {
-  margin: 10px 0 0;
-  font-size: clamp(32px, 4vw, 48px);
-  line-height: 1.05;
-  color: #f4f8ff;
+  margin: 4px 0 0;
+  font-size: clamp(28px, 3.2vw, 42px);
+  line-height: 1.02;
+  color: #ffffff;
+  text-shadow: 0 6px 20px rgba(0, 0, 0, 0.24);
 }
 
 .description {
-  margin: 14px 0 0;
-  color: rgba(238, 245, 255, 0.82);
-  font-size: 15px;
+  margin: 6px 0 0;
+  color: rgba(238, 244, 255, 0.9);
+  font-size: 13px;
+  line-height: 1.6;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
-.player-summary {
+.hero-tools {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 22px;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
-.summary-chip {
-  min-width: 150px;
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(157, 206, 255, 0.14);
-}
-
-.chip-label {
-  display: block;
-  font-size: 11px;
-  color: rgba(210, 228, 255, 0.7);
-  margin-bottom: 4px;
-}
-
-.hero-user-switch {
-  margin-top: 18px;
-  border-radius: 18px;
-  padding: 16px;
-  border: 1px solid rgba(157, 206, 255, 0.16);
-  background: rgba(18, 29, 52, 0.54);
-  backdrop-filter: blur(8px);
-}
-
-.hero-user-switch-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.mini-label {
-  margin: 0;
-  letter-spacing: 0.22em;
-  font-size: 11px;
-  color: #8ec5ff;
-}
-
-.hero-user-switch-head h3 {
-  margin: 8px 0 0;
-  font-size: 18px;
-  color: #f4f8ff;
-}
-
-.refresh-users-button,
-.apply-user-button {
-  border: none;
-  cursor: pointer;
-  font-weight: 800;
-}
-
-.refresh-users-button:disabled,
-.apply-user-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-
-.refresh-users-button {
-  min-width: 88px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  color: #eef5ff;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(157, 206, 255, 0.16);
-}
-
-.hero-user-switch-row {
+.hero-inline {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 180px;
-  gap: 10px;
-  margin-top: 14px;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(232, 241, 255, 0.14);
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-.hero-user-select {
-  width: 100%;
-  min-height: 48px;
-  padding: 0 14px;
-  border-radius: 14px;
-  border: 1px solid rgba(157, 206, 255, 0.2);
-  background: rgba(7, 16, 31, 0.75);
-  color: #f2f7ff;
-  font-size: 14px;
-  font-weight: 700;
+.inline-label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: rgba(218, 234, 255, 0.84);
+}
+
+.inline-value {
+  display: flex;
+  align-items: center;
+  min-height: 22px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.user-select {
+  min-width: 190px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(193, 230, 255, 0.20);
+  background: rgba(10, 19, 36, 0.34);
+  color: #f5fbff;
+  font-size: 13px;
+  font-weight: 800;
   outline: none;
 }
 
-.apply-user-button {
-  min-height: 48px;
-  border-radius: 14px;
-  color: #081221;
-  background: linear-gradient(180deg, #9ed8ff 0%, #74bfff 100%);
-}
-
-.current-user-text {
-  margin: 12px 0 0;
-  color: rgba(225, 238, 255, 0.88);
+.user-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .switch-hint {
-  margin: 8px 0 0;
-  color: rgba(255, 214, 223, 0.92);
-  font-size: 13px;
+  grid-column: 1 / -1;
+  margin: 0;
+  color: rgba(255, 223, 232, 0.98);
+  font-size: 12px;
   line-height: 1.6;
 }
 
-@media (max-width: 768px) {
-  .hero-user-switch-row {
+@media (max-width: 980px) {
+  .hero-card {
     grid-template-columns: 1fr;
   }
 
-  .hero-user-switch-head {
-    flex-direction: column;
-    align-items: flex-start;
+  .hero-tools {
+    justify-content: flex-start;
   }
 }
 
 @media (max-width: 640px) {
-  .hero-card {
-    padding: 18px;
-    border-radius: 20px;
+  .hero-inline {
+    width: 100%;
+  }
+
+  .user-select {
+    min-width: 0;
+    width: 100%;
   }
 
   h1 {
-    font-size: 28px;
-  }
-
-  .player-summary {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .summary-chip {
-    width: 100%;
+    font-size: 30px;
   }
 }
 </style>

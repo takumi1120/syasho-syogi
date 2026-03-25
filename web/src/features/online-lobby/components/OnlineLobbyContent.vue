@@ -7,7 +7,6 @@ import { useOnlineLobby } from "../composables/useOnlineLobby";
 
 const {
   loading,
-  loadingUsers,
   message,
   errorMessage,
   room,
@@ -15,9 +14,7 @@ const {
 
   users,
   selectedLobbyUserId,
-  currentUserSummary,
 
-  userId,
   userName,
   selectedCharacter,
 
@@ -33,14 +30,12 @@ const {
   canStartGame,
   canChangeLobbyUser,
 
-  fetchUsersList,
   updateSelectedLobbyUserId,
   applySelectedLobbyUser,
 
   copyRoomCode,
   handleCreateRoom,
   handleJoinRoom,
-  handleSearchRoom,
   handleToggleReady,
   handleStartGame,
   handleLeaveRoom,
@@ -49,23 +44,25 @@ const {
 function updateRoomCodeInput(value: string) {
   roomCodeInput.value = value;
 }
+
+async function handleHeaderUserChange(value: string) {
+  updateSelectedLobbyUserId(value);
+
+  if (!value) return;
+  await applySelectedLobbyUser();
+}
 </script>
 
 <template>
   <div class="online-lobby-content">
     <OnlineLobbyHero
       :user-name="userName"
-      :user-id="userId"
       :selected-character="selectedCharacter"
       :users="users"
       :selected-lobby-user-id="selectedLobbyUserId"
-      :current-user-summary="currentUserSummary"
-      :loading-users="loadingUsers"
       :can-change-lobby-user="canChangeLobbyUser"
       :is-member="isMember"
-      @refresh-users="fetchUsersList"
-      @update:selected-lobby-user-id="updateSelectedLobbyUserId"
-      @apply-selected-lobby-user="applySelectedLobbyUser"
+      @change-user="handleHeaderUserChange"
     />
 
     <div class="content-grid">
@@ -77,7 +74,6 @@ function updateRoomCodeInput(value: string) {
         :message="message"
         :error-message="errorMessage"
         @update:model-value="updateRoomCodeInput"
-        @search="handleSearchRoom"
         @create="handleCreateRoom"
         @join="handleJoinRoom"
       />
@@ -109,23 +105,27 @@ function updateRoomCodeInput(value: string) {
 <style scoped>
 .online-lobby-content {
   display: grid;
-  gap: 20px;
+  gap: 12px;
+  min-height: 0;
   color: #eef5ff;
 }
 
 .content-grid {
   display: grid;
-  grid-template-columns: 380px minmax(0, 1fr);
-  gap: 20px;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 14px;
+  min-height: 0;
+  align-items: start;
 }
 
 .right-column {
   display: grid;
-  gap: 20px;
+  gap: 14px;
+  min-height: 0;
   align-self: start;
 }
 
-@media (max-width: 920px) {
+@media (max-width: 980px) {
   .content-grid {
     grid-template-columns: 1fr;
   }

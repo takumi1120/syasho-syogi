@@ -17,19 +17,22 @@
 <style scoped>
 .lobby-shell {
   display: grid;
-  gap: 24px;
-  width: min(100%, 1100px);
+  gap: 12px;
+  width: min(100%, 1180px);
+  height: 100%;
   margin: 0 auto;
 }
 
 .shell-body {
   display: grid;
-  gap: 20px;
+  gap: 12px;
+  min-height: 0;
+  align-content: start;
 }
 
 .shell-header,
 .shell-footer {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 </style>
