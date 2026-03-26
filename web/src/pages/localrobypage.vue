@@ -1,206 +1,101 @@
 <script setup lang="ts">
-import BattleLayout from "../features/battle/components/BattleLayout.vue";
-import BattleBoard from "../features/battle/components/BattleBoard.vue";
-import BattleHands from "../features/battle/components/BattleHands.vue";
-import BattleStatusPanel from "../features/battle/components/BattleStatusPanel.vue";
-import BattlePlayerPanel from "../features/battle/components/BattlePlayerPanel.vue";
-
-import { useLocalBattle } from "../features/battle/composables/useLocalBattle";
-
-const {
-  player1Name,
-  player2Name,
-  player1Character,
-  player2Character,
-  boardRows,
-  legalTargets,
-  selectedSquare,
-  currentPlayer,
-  currentTurnName,
-  resultLabel,
-  winReasonLabel,
-  lastActionLabel,
-  handPieces,
-  message,
-  errorMessage,
-  handleHandClick,
-  handleCellClick,
-  resetBattle,
-  backToLobby,
-} = useLocalBattle();
+import { RouterLink } from "vue-router";
+import LobbyShell from "../components/lobby/LobbyShell.vue";
+import LocalLobbyContent from "../features/local-lobby/components/LocalLobbyContent.vue";
 </script>
 
 <template>
-  <section class="battle-page">
-    <BattleLayout>
-      <template #header>
-        <div class="hero-card">
-          <div class="hero-text">
-            <p class="eyebrow">LOCAL BATTLE</p>
-            <h1>社長将棋</h1>
-            <p class="sub">{{ player1Name }} vs {{ player2Name }}</p>
-          </div>
+  <section class="lobby-page">
+    <div class="page-overlay"></div>
 
-          <div class="hero-actions">
-            <button class="ghost-button" type="button" @click="backToLobby">
-              戻る
-            </button>
-            <button class="ghost-button" type="button" @click="resetBattle">
-              リセット
-            </button>
-          </div>
-        </div>
-      </template>
+    <LobbyShell>
+      <LocalLobbyContent />
+    </LobbyShell>
 
-      <div class="main-stack">
-        <BattleBoard
-          :board="boardRows"
-          :selected-square="selectedSquare"
-          :legal-targets="legalTargets"
-          :active-player="currentPlayer"
-          @cell-click="handleCellClick"
-        />
-      </div>
-
-      <template #sidebar>
-        <BattleStatusPanel
-          :turn-label="currentTurnName"
-          :result-label="resultLabel"
-          :win-reason-label="winReasonLabel"
-          :last-action-label="lastActionLabel"
-          :message="message"
-          :error-message="errorMessage"
-        />
-
-        <div class="player-grid">
-          <BattlePlayerPanel
-            position="先手"
-            :name="player1Name"
-            :character-name="player1Character || '未設定'"
-            :active="currentPlayer === 1"
-          />
-
-          <BattlePlayerPanel
-            position="後手"
-            :name="player2Name"
-            :character-name="player2Character || '未設定'"
-            :active="currentPlayer === 2"
-          />
-        </div>
-
-        <BattleHands
-          title="現在の持ち駒"
-          :pieces="handPieces"
-          @select="handleHandClick"
-        />
-      </template>
-    </BattleLayout>
+    <RouterLink class="back-link" to="/">
+      mode選択へ
+    </RouterLink>
   </section>
 </template>
 
 <style scoped>
-.battle-page {
+.lobby-page {
+  position: relative;
   min-height: 100dvh;
-  background:
-    radial-gradient(circle at top, rgba(128, 196, 255, 0.18), transparent 32%),
-    linear-gradient(180deg, #16233d 0%, #0d162a 58%, #07101d 100%);
-  color: #eef5ff;
+  padding: 14px 16px 18px;
+  background: url("../assets/background/loby.png") center / cover no-repeat;
+  color: #fff8ea;
   overflow: hidden;
 }
 
-.hero-card {
-  display: flex;
-  justify-content: space-between;
+.page-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 16% 14%, rgba(255, 242, 180, 0.16), transparent 24%),
+    radial-gradient(circle at 18% 22%, rgba(112, 220, 255, 0.18), transparent 26%),
+    radial-gradient(circle at 82% 18%, rgba(200, 146, 255, 0.16), transparent 24%),
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.10), transparent 30%),
+    radial-gradient(circle at 50% 100%, rgba(110, 205, 255, 0.10), transparent 32%),
+ linear-gradient(
+      180deg,
+      rgba(6, 12, 24, 0.2) 0%,
+      rgba(6, 12, 24, 0.2) 30%,
+      rgba(6, 12, 24, 0.2) 100%
+    );
+  pointer-events: none;
+}
+
+:deep(.lobby-shell) {
+  position: relative;
+  z-index: 1;
+  height: calc(100dvh - 32px);
+}
+
+.back-link {
+  position: fixed;
+  right: 16px;
+  bottom: 14px;
+  z-index: 3;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  border: 1px solid rgba(160, 205, 255, 0.16);
-  background: rgba(12, 20, 37, 0.82);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-  border-radius: 18px;
-}
-
-.hero-text {
-  min-width: 0;
-}
-
-.eyebrow {
-  margin: 0 0 3px;
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  color: #8ec5ff;
-}
-
-h1 {
-  margin: 0;
-  font-size: 20px;
-  line-height: 1.15;
-}
-
-.sub {
-  margin: 4px 0 0;
-  color: #bcd4ef;
-  font-size: 12px;
-  line-height: 1.35;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.ghost-button {
-  padding: 7px 12px;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid rgba(160, 205, 255, 0.22);
-  font-weight: 800;
-  cursor: pointer;
-  background: rgba(24, 36, 60, 0.95);
-  color: #eef5ff;
+  text-decoration: none;
   font-size: 12px;
-}
-
-.main-stack {
-  min-height: 0;
-  display: grid;
-}
-
-.player-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #4b3608;
+  background: rgba(255, 229, 150, 0.95);
+  border: 1px solid rgba(255, 245, 214, 0.76);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
 }
 
 @media (max-width: 980px) {
-  .battle-page {
+  .lobby-page {
     overflow: auto;
+    padding-bottom: 72px;
   }
 
-  .player-grid {
-    grid-template-columns: 1fr;
+  :deep(.lobby-shell) {
+    height: auto;
   }
 }
 
 @media (max-width: 640px) {
-  .battle-page {
-    overflow: auto;
+  .lobby-page {
+    padding: 12px 10px 72px;
   }
 
-  .hero-card {
-    padding: 12px;
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  h1 {
-    font-size: 18px;
-  }
-
-  .sub {
+  .back-link {
+    right: 10px;
+    bottom: 10px;
+    min-height: 32px;
     font-size: 11px;
+    padding: 0 10px;
   }
 }
-</style>
+</style>  

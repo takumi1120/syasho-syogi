@@ -404,9 +404,9 @@ import OnlineLobbyContent from "../features/online-lobby/components/OnlineLobbyC
     radial-gradient(circle at 50% 100%, rgba(110, 205, 255, 0.10), transparent 32%),
     linear-gradient(
       180deg,
-      rgba(6, 12, 24, 0.02) 0%,
-      rgba(6, 12, 24, 0.01) 30%,
-      rgba(6, 12, 24, 0.05) 100%
+      rgba(6, 12, 24, 0.12) 0%,
+      rgba(6, 12, 24, 0.12) 30%,
+      rgba(6, 12, 24, 0.12) 100%
     );
   pointer-events: none;
 }
