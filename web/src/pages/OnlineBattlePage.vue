@@ -3,7 +3,6 @@ import BattleLayout from "../features/battle/components/BattleLayout.vue";
 import BattleBoard from "../features/battle/components/BattleBoard.vue";
 import BattleHands from "../features/battle/components/BattleHands.vue";
 import BattleStatusPanel from "../features/battle/components/BattleStatusPanel.vue";
-import BattlePlayerPanel from "../features/battle/components/BattlePlayerPanel.vue";
 
 import { useOnlineBattle } from "../features/battle/composables/useOnlineBattle";
 
@@ -25,7 +24,6 @@ const {
   handPieces,
   message,
   errorMessage,
-  canInteract,
   isMyTurn,
   legalTargets,
   fetchGame,
@@ -40,17 +38,35 @@ const {
     <BattleLayout>
       <template #header>
         <div class="hero-card">
-          <div class="hero-text">
+          <div class="hero-left">
             <p class="eyebrow">ONLINE BATTLE</p>
             <h1>社長将棋</h1>
             <p class="sub">
-              {{ player1Name }} vs {{ player2Name }}
+              {{ roomCode ? `ROOM: ${roomCode}` : "オンライン対戦" }}
             </p>
             <p class="meta">
-              <span v-if="roomCode">ROOM: {{ roomCode }}</span>
               <span v-if="gameId">GAME: {{ gameId }}</span>
               <span>{{ loading ? "同期中..." : isMyTurn ? "あなたの手番" : "相手の手番" }}</span>
+              <span>現在手番: {{ currentTurnName }}</span>
             </p>
+          </div>
+
+          <div class="hero-players">
+            <div class="hero-player" :class="{ active: currentPlayer === 1 }">
+              <span class="hero-player-position">先手</span>
+              <strong class="hero-player-name">{{ player1Name }}</strong>
+              <span class="hero-player-character">
+                {{ player1Character || "未設定" }}
+              </span>
+            </div>
+
+            <div class="hero-player" :class="{ active: currentPlayer === 2 }">
+              <span class="hero-player-position">後手</span>
+              <strong class="hero-player-name">{{ player2Name }}</strong>
+              <span class="hero-player-character">
+                {{ player2Character || "未設定" }}
+              </span>
+            </div>
           </div>
 
           <div class="hero-actions">
@@ -58,7 +74,7 @@ const {
               更新
             </button>
             <button class="ghost-button" type="button" @click="backToLobby">
-              ロビーへ戻る
+              戻る
             </button>
           </div>
         </div>
@@ -84,31 +100,11 @@ const {
           :error-message="errorMessage"
         />
 
-        <BattlePlayerPanel
-          position="先手"
-          :name="player1Name"
-          :character-name="player1Character || '未設定'"
-          :active="currentPlayer === 1"
-        />
-
-        <BattlePlayerPanel
-          position="後手"
-          :name="player2Name"
-          :character-name="player2Character || '未設定'"
-          :active="currentPlayer === 2"
-        />
-
         <BattleHands
           title="現在の持ち駒"
           :pieces="handPieces"
           @select="handleHandClick"
         />
-
-        <section class="online-state">
-          <h3>オンライン状態</h3>
-          <p>{{ loading ? "サーバー同期中" : "同期済み" }}</p>
-          <p>{{ canInteract ? "操作できます" : "今は操作できません" }}</p>
-        </section>
       </template>
     </BattleLayout>
   </section>
@@ -125,67 +121,112 @@ const {
 }
 
 .hero-card {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 14px;
-  padding: 14px 18px;
+  gap: 10px;
+  padding: 10px 14px;
   border: 1px solid rgba(160, 205, 255, 0.16);
   background: rgba(12, 20, 37, 0.82);
   backdrop-filter: blur(8px);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.24);
-  border-radius: 22px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  border-radius: 18px;
 }
 
-.hero-text {
+.hero-left {
   min-width: 0;
 }
 
 .eyebrow {
-  margin: 0 0 4px;
-  font-size: 11px;
+  margin: 0 0 2px;
+  font-size: 10px;
   letter-spacing: 0.16em;
   color: #8ec5ff;
 }
 
 h1 {
   margin: 0;
-  font-size: 24px;
-  line-height: 1.2;
+  font-size: 20px;
+  line-height: 1.1;
 }
 
 .sub {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   color: #bcd4ef;
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: 11px;
+  line-height: 1.3;
 }
 
 .meta {
-  margin: 8px 0 0;
+  margin: 4px 0 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   color: #8ec5ff;
-  font-size: 12px;
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.hero-players {
+  width: 100%;
+  max-width: 520px;
+  justify-self: center;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.hero-player {
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(160, 205, 255, 0.16);
+  background: rgba(18, 30, 53, 0.9);
+  display: grid;
+  gap: 2px;
+  text-align: center;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.hero-player.active {
+  outline: 2px solid #8ec5ff;
+}
+
+.hero-player-position {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: #8ec5ff;
+}
+
+.hero-player-name {
+  font-size: 14px;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.hero-player-character {
+  color: #bcd4ef;
+  font-size: 11px;
+  line-height: 1.3;
+  word-break: break-word;
 }
 
 .hero-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
   justify-content: flex-end;
 }
 
 .ghost-button {
-  padding: 9px 14px;
+  padding: 7px 12px;
   border-radius: 999px;
   border: 1px solid rgba(160, 205, 255, 0.22);
   font-weight: 800;
   cursor: pointer;
   background: rgba(24, 36, 60, 0.95);
   color: #eef5ff;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .main-stack {
@@ -193,34 +234,22 @@ h1 {
   display: grid;
 }
 
-.online-state {
-  padding: 14px 16px;
-  border-radius: 20px;
-  border: 1px solid rgba(160, 205, 255, 0.16);
-  background: rgba(12, 20, 37, 0.82);
-  color: #eef5ff;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.2);
-}
-
-.online-state h3 {
-  margin: 0 0 8px;
-  font-size: 16px;
-}
-
-.online-state p {
-  margin: 0;
-  color: #bcd4ef;
-  line-height: 1.5;
-  font-size: 13px;
-}
-
-.online-state p + p {
-  margin-top: 4px;
-}
-
 @media (max-width: 980px) {
   .battle-page {
     overflow: auto;
+  }
+
+  .hero-card {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .hero-players {
+    max-width: none;
+  }
+
+  .hero-actions {
+    justify-content: flex-start;
   }
 }
 
@@ -230,19 +259,18 @@ h1 {
   }
 
   .hero-card {
-    padding: 14px;
-    align-items: flex-start;
-    flex-direction: column;
+    padding: 12px;
   }
 
   h1 {
-    font-size: 21px;
+    font-size: 18px;
   }
 
-  .sub {
-    font-size: 13px;
+  .hero-players {
+    grid-template-columns: 1fr;
   }
 
+  .sub,
   .meta {
     font-size: 11px;
   }

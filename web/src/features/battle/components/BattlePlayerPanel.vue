@@ -23,12 +23,12 @@ withDefaults(
 
 <style scoped>
 .panel {
-  padding: 14px 16px;
-  border-radius: 20px;
+  padding: 10px 12px;
+  border-radius: 16px;
   border: 1px solid rgba(160, 205, 255, 0.16);
   background: rgba(12, 20, 37, 0.82);
   color: #eef5ff;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
 }
 
 .panel.active {
@@ -36,22 +36,24 @@ withDefaults(
 }
 
 .position {
-  margin: 0 0 6px;
-  font-size: 11px;
-  letter-spacing: 0.16em;
+  margin: 0 0 4px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
   color: #8ec5ff;
 }
 
 h3 {
   margin: 0;
-  font-size: 17px;
-  line-height: 1.3;
+  font-size: 14px;
+  line-height: 1.25;
+  word-break: break-word;
 }
 
 .character {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   color: #bcd4ef;
-  font-size: 13px;
-  line-height: 1.4;
+  font-size: 11px;
+  line-height: 1.35;
+  word-break: break-word;
 }
 </style>
