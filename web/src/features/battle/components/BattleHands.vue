@@ -39,48 +39,52 @@ const emit = defineEmits<{
         type="button"
         @click="emit('select', piece.pieceType)"
       >
-        <span>{{ piece.label }}</span>
-        <strong>×{{ piece.count }}</strong>
+        <span class="label">{{ piece.label }}</span>
+        <strong class="count">×{{ piece.count }}</strong>
       </button>
     </div>
 
     <p class="hint">
-      自分の持ち駒を選んでから、空きマスをクリックしてください。
+      持ち駒を選んでから空きマスを押します
     </p>
   </section>
 </template>
 
 <style scoped>
 .panel {
-  padding: 20px;
-  border-radius: 24px;
+  padding: 14px 16px;
+  border-radius: 20px;
   border: 1px solid rgba(160, 205, 255, 0.16);
   background: rgba(12, 20, 37, 0.82);
   color: #eef5ff;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.2);
 }
 
 h3 {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
+  font-size: 16px;
 }
 
 .hand-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .hand-chip {
-  display: inline-flex;
-  gap: 8px;
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+  justify-items: center;
   align-items: center;
-  border-radius: 999px;
+  border-radius: 16px;
   border: 1px solid rgba(160, 205, 255, 0.22);
   background: rgba(24, 36, 60, 0.95);
   color: #eef5ff;
-  padding: 10px 14px;
+  padding: 10px 6px;
   cursor: pointer;
   font-weight: 700;
+  text-align: center;
 }
 
 .hand-chip.active {
@@ -93,10 +97,21 @@ h3 {
   cursor: not-allowed;
 }
 
-.hint {
-  margin: 12px 0 0;
-  color: #bcd4ef;
-  line-height: 1.6;
+.label {
+  font-size: 11px;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.count {
   font-size: 14px;
+  line-height: 1;
+}
+
+.hint {
+  margin: 10px 0 0;
+  color: #bcd4ef;
+  line-height: 1.45;
+  font-size: 12px;
 }
 </style>

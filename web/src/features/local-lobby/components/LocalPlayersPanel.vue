@@ -19,10 +19,10 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <section class="panel players-panel">
+  <section class="players-panel">
     <div class="panel-head">
-      <div>
-        <p class="mini-label">PLAYERS</p>
+      <div class="title-wrap">
+        <p class="mini-label">LOCAL PLAYERS</p>
         <h2>プレイヤー設定</h2>
       </div>
 
@@ -32,9 +32,11 @@ const emit = defineEmits<{
     </div>
 
     <div class="players-grid">
-      <article class="player-card p1">
-        <div class="player-badge">P1</div>
-        <h3>プレイヤー1</h3>
+      <article class="player-card">
+        <div class="player-topline">
+          <span class="player-badge">P1</span>
+          <strong class="player-title">プレイヤー1</strong>
+        </div>
 
         <label class="field-label" for="p1-name">名前</label>
         <input
@@ -51,7 +53,7 @@ const emit = defineEmits<{
           プレイヤー1の名前を入力してください
         </p>
 
-        <label class="field-label" for="p1-character">キャラクター名</label>
+        <label class="field-label" for="p1-character">キャラクター</label>
         <input
           id="p1-character"
           class="text-input"
@@ -63,9 +65,11 @@ const emit = defineEmits<{
         />
       </article>
 
-      <article class="player-card p2">
-        <div class="player-badge">P2</div>
-        <h3>プレイヤー2</h3>
+      <article class="player-card">
+        <div class="player-topline">
+          <span class="player-badge alt">P2</span>
+          <strong class="player-title">プレイヤー2</strong>
+        </div>
 
         <label class="field-label" for="p2-name">名前</label>
         <input
@@ -82,7 +86,7 @@ const emit = defineEmits<{
           プレイヤー2の名前を入力してください
         </p>
 
-        <label class="field-label" for="p2-character">キャラクター名</label>
+        <label class="field-label" for="p2-character">キャラクター</label>
         <input
           id="p2-character"
           class="text-input"
@@ -98,134 +102,174 @@ const emit = defineEmits<{
 </template>
 
 <style scoped>
-.panel {
-  border-radius: 24px;
-  padding: 24px;
-  border: 1px solid rgba(255, 221, 166, 0.16);
-  background: rgba(56, 34, 22, 0.72);
-  backdrop-filter: blur(10px);
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  color: #fff5e8;
+.players-panel {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .panel-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
+}
+
+.title-wrap {
+  min-width: 0;
 }
 
 .mini-label {
   margin: 0;
-  letter-spacing: 0.28em;
-  font-size: 12px;
-  color: #f2cb86;
+  letter-spacing: 0.18em;
+  font-size: 10px;
+  font-weight: 900;
+  color: #ffe27a;
+  text-shadow:
+    0 1px 0 rgba(84, 52, 0, 0.48),
+    0 2px 8px rgba(0, 0, 0, 0.18);
 }
 
 h2 {
-  margin: 10px 0 0;
+  margin: 2px 0 0;
+  font-size: 20px;
+  color: #fff2a8;
+  text-shadow:
+    0 1px 0 rgba(96, 60, 0, 0.52),
+    0 4px 14px rgba(0, 0, 0, 0.22);
+}
+
+.swap-button {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 247, 221, 0.5);
+  background: linear-gradient(180deg, rgba(145, 227, 255, 0.82) 0%, rgba(196, 161, 255, 0.74) 100%);
+  color: #3a2b16;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
 }
 
 .players-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 18px;
+  gap: 12px;
 }
 
 .player-card {
-  position: relative;
-  padding: 20px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 221, 166, 0.14);
-  background: rgba(255, 255, 255, 0.05);
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 247, 221, 0.14);
+  backdrop-filter: blur(5px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 6px 18px rgba(0, 0, 0, 0.06);
 }
 
-.player-card h3 {
-  margin: 8px 0 0;
-  font-size: 24px;
-}
-
-.player-card.p1 {
-  box-shadow: inset 0 0 0 1px rgba(255, 170, 102, 0.08);
-}
-
-.player-card.p2 {
-  box-shadow: inset 0 0 0 1px rgba(255, 215, 130, 0.08);
+.player-topline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .player-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 52px;
-  height: 30px;
-  padding: 0 12px;
+  min-width: 46px;
+  height: 26px;
+  padding: 0 10px;
   border-radius: 999px;
-  background: rgba(255, 214, 137, 0.14);
-  color: #ffe7bb;
-  font-size: 12px;
+  background: rgba(255, 208, 120, 0.16);
+  border: 1px solid rgba(255, 245, 214, 0.18);
+  color: #fff2c1;
+  font-size: 11px;
   font-weight: 900;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.16em;
+}
+
+.player-badge.alt {
+  background: rgba(138, 202, 255, 0.16);
+  color: #eef8ff;
+}
+
+.player-title {
+  color: #fff7d6;
+  font-size: 15px;
+  font-weight: 900;
+  text-shadow:
+    0 1px 0 rgba(84, 52, 0, 0.38),
+    0 3px 10px rgba(0, 0, 0, 0.16);
 }
 
 .field-label {
-  display: inline-block;
-  margin-top: 18px;
-  margin-bottom: 10px;
-  font-size: 13px;
-  color: rgba(255, 243, 222, 0.88);
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #ffd96a;
+  text-shadow:
+    0 1px 0 rgba(90, 56, 0, 0.42),
+    0 2px 8px rgba(0, 0, 0, 0.14);
 }
 
 .text-input {
   width: 100%;
-  height: 52px;
-  padding: 0 16px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 221, 166, 0.18);
-  background: rgba(25, 14, 10, 0.72);
-  color: #fff8ef;
-  font-size: 16px;
+  min-width: 0;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 244, 214, 0.16);
+  background: rgba(22, 34, 64, 0.28);
+  color: #fff4cf;
+  font-size: 14px;
+  font-weight: 800;
   outline: none;
+  box-sizing: border-box;
+  text-shadow: none;
 }
 
 .text-input::placeholder {
-  color: rgba(255, 226, 190, 0.34);
+  color: rgba(255, 232, 166, 0.78);
+}
+
+.text-input:focus {
+  border-color: rgba(255, 238, 196, 0.28);
+  background: rgba(22, 34, 64, 0.34);
 }
 
 .field-error {
-  margin: 8px 0 0;
-  color: #ffcfbf;
-  font-size: 13px;
+  margin: -2px 0 0;
+  color: #ffe0c4;
+  font-size: 12px;
+  line-height: 1.5;
+  text-shadow:
+    0 1px 0 rgba(92, 28, 38, 0.22),
+    0 2px 8px rgba(0, 0, 0, 0.14);
 }
 
-.swap-button {
-  min-height: 44px;
-  padding: 0 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 221, 166, 0.16);
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff2dc;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-@media (max-width: 920px) {
+@media (max-width: 980px) {
   .players-grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 640px) {
-  .panel {
-    padding: 18px;
-    border-radius: 20px;
-  }
-
   .panel-head {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .swap-button {

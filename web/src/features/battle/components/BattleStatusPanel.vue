@@ -24,7 +24,7 @@ withDefaults(
 
     <dl class="status-list">
       <div class="row">
-        <dt>現在の手番</dt>
+        <dt>手番</dt>
         <dd>{{ turnLabel }}</dd>
       </div>
 
@@ -34,7 +34,7 @@ withDefaults(
       </div>
 
       <div v-if="winReasonLabel" class="row">
-        <dt>決着理由</dt>
+        <dt>決着</dt>
         <dd>{{ winReasonLabel }}</dd>
       </div>
 
@@ -56,45 +56,52 @@ withDefaults(
 
 <style scoped>
 .panel {
-  padding: 20px;
-  border-radius: 24px;
+  padding: 14px 16px;
+  border-radius: 20px;
   border: 1px solid rgba(160, 205, 255, 0.16);
   background: rgba(12, 20, 37, 0.82);
   color: #eef5ff;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.2);
 }
 
 h3 {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
+  font-size: 16px;
 }
 
 .status-list {
   margin: 0;
   display: grid;
-  gap: 12px;
+  gap: 8px;
 }
 
 .row {
   display: grid;
-  gap: 4px;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
 }
 
 dt {
-  font-size: 12px;
+  font-size: 11px;
   color: #8ec5ff;
+  line-height: 1.5;
 }
 
 dd {
   margin: 0;
   font-weight: 700;
   line-height: 1.5;
+  font-size: 13px;
+  word-break: break-word;
 }
 
 .notice {
-  margin-top: 14px;
-  border-radius: 18px;
-  padding: 14px 16px;
+  margin-top: 10px;
+  border-radius: 14px;
+  padding: 10px 12px;
   font-weight: 700;
+  font-size: 13px;
 }
 
 .notice.success {

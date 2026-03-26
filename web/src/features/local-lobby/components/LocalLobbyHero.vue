@@ -1,112 +1,76 @@
-<script setup lang="ts">
-defineProps<{
-  player1Name: string;
-  player2Name: string;
-  player1Character: string;
-  player2Character: string;
-}>();
-</script>
-
 <template>
   <header class="hero-card">
-    <p class="eyebrow">LOCAL MATCH</p>
+    <p class="eyebrow">SHACHO SHOGI LOCAL</p>
     <h1>ローカルロビー</h1>
     <p class="description">
-      同じ端末で遊ぶ 2 人の対戦準備をします。プレイヤー名を決めて、対局を開始してください。
+      同じ端末で遊ぶ 2 人の対戦準備をします。プレイヤー名とキャラクターを決めてゲームを開始してください。
     </p>
-
-    <div class="summary-row">
-      <div class="summary-chip">
-        <span class="chip-label">対戦形式</span>
-        <strong>1台でローカル対戦</strong>
-      </div>
-      <div class="summary-chip">
-        <span class="chip-label">プレイ人数</span>
-        <strong>2人</strong>
-      </div>
-      <div class="summary-chip">
-        <span class="chip-label">対戦カード</span>
-        <strong>{{ player1Name || "Player 1" }} VS {{ player2Name || "Player 2" }}</strong>
-      </div>
-      <div class="summary-chip">
-        <span class="chip-label">キャラクター</span>
-        <strong>{{ player1Character || "未設定" }} / {{ player2Character || "未設定" }}</strong>
-      </div>
-    </div>
   </header>
 </template>
 
 <style scoped>
 .hero-card {
-  padding: 32px;
-  border-radius: 28px;
-  border: 1px solid rgba(255, 221, 166, 0.16);
-  background: rgba(56, 34, 22, 0.72);
-  backdrop-filter: blur(10px);
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 6px 0 0;
 }
 
 .eyebrow {
   margin: 0;
-  letter-spacing: 0.28em;
   font-size: 12px;
-  color: #f2cb86;
+  font-weight: 900;
+  letter-spacing: 0.24em;
+  color: #fff0a8;
+  text-shadow:
+    0 1px 0 rgba(72, 42, 0, 0.45),
+    0 0 14px rgba(255, 232, 143, 0.36),
+    0 6px 18px rgba(0, 0, 0, 0.34);
 }
 
 h1 {
-  margin: 10px 0 0;
-  font-size: clamp(32px, 4vw, 48px);
-  line-height: 1.05;
-  color: #fff8ee;
+  margin: 0;
+  font-size: clamp(34px, 4.2vw, 56px);
+  line-height: 1.02;
+  font-weight: 900;
+  color: #fff9e2;
+  text-shadow:
+    0 1px 0 rgba(84, 52, 0, 0.42),
+    0 3px 0 rgba(84, 52, 0, 0.22),
+    0 8px 24px rgba(0, 0, 0, 0.34),
+    0 0 18px rgba(255, 247, 210, 0.16);
 }
 
 .description {
-  margin: 14px 0 0;
-  color: rgba(255, 245, 230, 0.84);
-  font-size: 15px;
-}
-
-.summary-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 22px;
-}
-
-.summary-chip {
-  min-width: 150px;
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 221, 166, 0.12);
-}
-
-.chip-label {
-  display: block;
-  font-size: 11px;
-  color: rgba(255, 232, 201, 0.68);
-  margin-bottom: 4px;
+  margin: 0;
+  max-width: 760px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #fffdf6;
+  background: rgba(24, 38, 74, 0.18);
+  border: 1px solid rgba(255, 247, 221, 0.18);
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.28),
+    0 4px 14px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(6px);
 }
 
 @media (max-width: 640px) {
   .hero-card {
-    padding: 18px;
-    border-radius: 20px;
+    gap: 6px;
+    padding-top: 2px;
   }
 
   h1 {
-    font-size: 28px;
+    font-size: 34px;
   }
 
-  .summary-row {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .summary-chip {
-    width: 100%;
+  .description {
+    font-size: 13px;
+    border-radius: 18px;
   }
 }
 </style>
