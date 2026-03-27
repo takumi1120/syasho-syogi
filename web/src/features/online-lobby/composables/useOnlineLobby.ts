@@ -3,6 +3,16 @@ import { useRoute, useRouter } from "vue-router";
 import { roomService, type Room } from "../../../services/roomService";
 import { userService, type User } from "../../../services/userServices";
 
+export const ONLINE_CHARACTER_OPTIONS = [
+  { label: "未選択", value: "" },
+  { label: "ティムクック", value: "ティムクック" },
+  { label: "サムアルトマン", value: "サムアルトマン" },
+  { label: "Kプラチナム代表", value: "kプラチナム代表" },
+  { label: "スティーブ・ジョブズ", value: "スティーブ・ジョブズ" },
+  { label: "ビル・ゲイツ", value: "ビル・ゲイツ" },
+  { label: "イーロン・マスク", value: "イーロン・マスク" },
+] as const;
+
 function readStringQuery(route: ReturnType<typeof useRoute>, keys: string[]): string {
   for (const key of keys) {
     const value = route.query[key];
@@ -35,6 +45,16 @@ export function useOnlineLobby() {
   const users = ref<User[]>([]);
   const selectedLobbyUserId = ref("");
 
+  const initialCharacter =
+    readStringQuery(route, [
+      "character",
+      "selectedCharacter",
+      "playerCharacter",
+      "p1Character",
+    ]) || localStorage.getItem("onlineCharacter")?.trim() || "";
+
+  const selectedCharacter = ref(initialCharacter);
+
   const userId = computed(() => {
     const fromQuery = readNumberQuery(route, ["userId", "playerId", "selectedUserId", "p1Id"]);
     if (fromQuery) return fromQuery;
@@ -50,26 +70,21 @@ export function useOnlineLobby() {
     return localStorage.getItem("onlineUserName")?.trim() || "ゲスト";
   });
 
-  const selectedCharacter = computed(() => {
-    const fromQuery = readStringQuery(route, [
-      "character",
-      "selectedCharacter",
-      "playerCharacter",
-      "p1Character",
-    ]);
-    if (fromQuery) return fromQuery;
-
-    return localStorage.getItem("onlineCharacter")?.trim() || "";
-  });
-
   watch(
-    [userId, userName, selectedCharacter],
-    ([id, name, character]) => {
+    [userId, userName],
+    ([id, name]) => {
       if (id) localStorage.setItem("onlineUserId", String(id));
       if (name) localStorage.setItem("onlineUserName", name);
-      if (character) localStorage.setItem("onlineCharacter", character);
     },
-    { immediate: true }
+    { immediate: true },
+  );
+
+  watch(
+    selectedCharacter,
+    (character) => {
+      localStorage.setItem("onlineCharacter", character.trim());
+    },
+    { immediate: true },
   );
 
   watch(
@@ -77,7 +92,7 @@ export function useOnlineLobby() {
     (id) => {
       selectedLobbyUserId.value = id ? String(id) : "";
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   const isHost = computed(() => room.value?.hostUserId === userId.value);
@@ -128,7 +143,13 @@ export function useOnlineLobby() {
   const canCreateRoom = computed(() => !!userId.value && !loading.value);
   const canJoinRoom = computed(() => !!userId.value && roomCodeInput.value.trim().length >= 4 && !loading.value);
   const canToggleReady = computed(() => {
-    return !!room.value && isMember.value && room.value.status !== "PLAYING" && room.value.status !== "CLOSED" && !loading.value;
+    return (
+      !!room.value &&
+      isMember.value &&
+      room.value.status !== "PLAYING" &&
+      room.value.status !== "CLOSED" &&
+      !loading.value
+    );
   });
   const canStartGame = computed(() => {
     return (
@@ -145,6 +166,10 @@ export function useOnlineLobby() {
 
   const canChangeLobbyUser = computed(() => {
     return !loading.value && !loadingUsers.value && !isMember.value;
+  });
+
+  const canChangeCharacter = computed(() => {
+    return !loading.value && !isMember.value;
   });
 
   function setMessage(text = "") {
@@ -189,6 +214,10 @@ export function useOnlineLobby() {
 
   function updateSelectedLobbyUserId(value: string) {
     selectedLobbyUserId.value = value;
+  }
+
+  function updateSelectedCharacter(value: string) {
+    selectedCharacter.value = value;
   }
 
   async function applySelectedLobbyUser() {
@@ -386,7 +415,7 @@ export function useOnlineLobby() {
       setMessage(
         updated.hostReady || updated.guestReady
           ? "準備状態を更新しました"
-          : "準備を解除しました"
+          : "準備を解除しました",
       );
     } catch (error) {
       const text =
@@ -486,9 +515,13 @@ export function useOnlineLobby() {
     canToggleReady,
     canStartGame,
     canChangeLobbyUser,
+    canChangeCharacter,
+
+    characterOptions: ONLINE_CHARACTER_OPTIONS,
 
     fetchUsersList,
     updateSelectedLobbyUserId,
+    updateSelectedCharacter,
     applySelectedLobbyUser,
 
     copyRoomCode,

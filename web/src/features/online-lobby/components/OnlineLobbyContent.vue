@@ -29,8 +29,12 @@ const {
   canToggleReady,
   canStartGame,
   canChangeLobbyUser,
+  canChangeCharacter,
+
+  characterOptions,
 
   updateSelectedLobbyUserId,
+  updateSelectedCharacter,
   applySelectedLobbyUser,
 
   copyRoomCode,
@@ -52,6 +56,11 @@ async function handleLobbyUserChange(event: Event) {
   if (!value) return;
   await applySelectedLobbyUser();
 }
+
+function handleCharacterChange(event: Event) {
+  const value = (event.target as HTMLSelectElement).value;
+  updateSelectedCharacter(value);
+}
 </script>
 
 <template>
@@ -63,7 +72,7 @@ async function handleLobbyUserChange(event: Event) {
         <section class="user-area">
           <div class="user-head">
             <p class="mini-label">LOBBY USER</p>
-            <h2>ユーザー選択</h2>
+            <h2>ユーザー設定</h2>
           </div>
 
           <div class="user-grid">
@@ -86,19 +95,37 @@ async function handleLobbyUserChange(event: Event) {
               </select>
             </label>
 
+            <label class="user-card user-select-card">
+              <span class="card-label">キャラクター</span>
+              <select
+                class="character-select"
+                :value="selectedCharacter"
+                :disabled="!canChangeCharacter"
+                @change="handleCharacterChange"
+              >
+                <option
+                  v-for="option in characterOptions"
+                  :key="option.value || 'empty'"
+                  :value="option.value"
+                >
+                  {{ option.label }}
+                </option>
+              </select>
+            </label>
+
             <div class="user-card">
-              <span class="card-label">現在</span>
+              <span class="card-label">現在のユーザー</span>
               <strong class="card-value">{{ userName || "未選択" }}</strong>
             </div>
 
             <div class="user-card">
-              <span class="card-label">キャラクター</span>
+              <span class="card-label">現在のキャラ</span>
               <strong class="card-value">{{ selectedCharacter || "未選択" }}</strong>
             </div>
           </div>
 
           <p v-if="isMember" class="switch-hint">
-            部屋参加中はユーザー変更できません。先に退出してください。
+            部屋参加中はユーザー変更・キャラ変更できません。先に退出してください。
           </p>
         </section>
 
@@ -161,7 +188,7 @@ async function handleLobbyUserChange(event: Event) {
   gap: 14px;
   min-height: 0;
   align-self: start;
-  margin-top: -30Spx;
+  margin-top: -30px;
 }
 
 .user-area {
@@ -198,7 +225,7 @@ h2 {
 
 .user-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(96px, 0.8fr) minmax(110px, 0.9fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   align-items: stretch;
 }
@@ -240,7 +267,8 @@ h2 {
   text-overflow: ellipsis;
 }
 
-.user-select {
+.user-select,
+.character-select {
   width: 100%;
   min-width: 0;
   height: 38px;
@@ -254,7 +282,8 @@ h2 {
   outline: none;
 }
 
-.user-select:disabled {
+.user-select:disabled,
+.character-select:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -275,10 +304,6 @@ h2 {
   .user-area {
     margin-top: -8px;
   }
-
-  .user-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 640px) {
@@ -288,6 +313,10 @@ h2 {
 
   h2 {
     font-size: 18px;
+  }
+
+  .user-grid {
+    grid-template-columns: 1fr;
   }
 
   .user-card {

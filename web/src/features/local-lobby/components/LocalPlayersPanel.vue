@@ -245,23 +245,51 @@ h2 {
   min-height: 40px;
   padding: 0 12px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 247, 221, 0.22);
-  background: rgba(255, 255, 255, 0.18);
-  color: #fffdf5;
+  border: 1px solid rgba(255, 247, 221, 0.30);
+  background: rgba(38, 52, 84, 0.78);
+  color: #fff7dc;
   font-size: 14px;
   font-weight: 700;
   outline: none;
   box-sizing: border-box;
   backdrop-filter: blur(6px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 4px 12px rgba(0, 0, 0, 0.10);
 }
 
 .text-input::placeholder {
-  color: rgba(255, 248, 232, 0.72);
+  color: rgba(255, 240, 204, 0.70);
 }
 
 .select-input {
   appearance: none;
   cursor: pointer;
+  background:
+    linear-gradient(180deg, rgba(54, 72, 110, 0.92) 0%, rgba(35, 49, 80, 0.92) 100%);
+  color: #fff4c8;
+  text-shadow:
+    0 1px 0 rgba(72, 42, 0, 0.28),
+    0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.select-input:focus,
+.text-input:focus {
+  border-color: rgba(255, 224, 128, 0.72);
+  box-shadow:
+    0 0 0 2px rgba(255, 224, 128, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.select-input option {
+  color: #2f220a;
+  background: #fff4d6;
+}
+
+.select-input:disabled,
+.text-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .field-error {
