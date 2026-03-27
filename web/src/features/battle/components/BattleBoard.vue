@@ -77,12 +77,12 @@ const promotedPieceOffsetMap: Record<string, { x: number; y: number }> = {
   "1-2": { x: 0, y: 0 },
 
   "2-0": { x: 0, y: 0 },
-  "2-1": { x: 0, y: 0 },
+  "2-1": { x: 0, y: -3 },
   "2-2": { x: 0, y: 0 },
 
   "3-0": { x: 0, y: 0 },
-  "3-1": { x: 0, y: 0 },
-  "3-2": { x: 0, y: 0 },
+  "3-1": { x: 0, y: -6 },
+  "3-2": { x: 0, y: -5 },
 };
 
 function cellOffsetStyle(row: number, col: number) {
@@ -100,10 +100,14 @@ function pieceOffsetStyle(row: number, col: number, cell: SyahoShogiCell) {
   const promotedOffset = promotedPieceOffsetMap[key] ?? normalOffset;
   const offset = cell?.type === "MIKURU" ? promotedOffset : normalOffset;
 
+  
   return {
     transform: `translate(${offset.x}px, ${offset.y}px)`,
   };
 }
+
+
+ 
 
 function isSelected(row: number, col: number) {
   return props.selectedSquare?.row === row && props.selectedSquare?.col === col;
@@ -282,13 +286,13 @@ function pieceImageSrc(cell: SyahoShogiCell) {
 
 /* 成り駒だけサイズ変更 */
 .piece-token.promoted-1 {
-  width: 90%;
-  height: 90%;
+  width: 80%;
+  height: 80%;
 }
 
 .piece-token.promoted-2 {
-  width: 90%;
-  height: 90%;
+  width: 80%;
+  height: 80%;
 }
 
 .owner-badge {
