@@ -188,7 +188,7 @@ function pieceImageSrc(cell: SyahoShogiCell) {
 <style scoped>
 .board-overlay {
   position: relative;
-  width: 360px;
+  width: 400px;
   height: 500px;
   background: url("/battle/board.png") center / 100% 100% no-repeat;
 }

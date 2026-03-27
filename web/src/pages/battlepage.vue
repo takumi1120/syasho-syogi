@@ -144,8 +144,8 @@ const {
 }
 
 .nameplate-left {
-  top: 3.3%;
-  left: 3.5%;
+  top: 4%;
+  left: 5%;
   width: 25.8%;
   height: 10.5%;
 }
@@ -159,8 +159,8 @@ const {
 }
 
 .nameplate-right {
-  top: 3.3%;
-  right: 3.5%;
+  top: 4.3%;
+  right: 7%;
   width: 25.8%;
   height: 10.5%;
 }
@@ -224,8 +224,8 @@ const {
 
 .board-area {
   position: absolute;
-  top: 10%;
-  left: 50%;
+  top: 7%;
+  left: 45%;
   transform: translateX(-50%);
   width: 44.2%;
   aspect-ratio: 3 / 4;
