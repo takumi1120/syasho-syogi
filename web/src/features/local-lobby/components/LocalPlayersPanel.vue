@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   player1Name: string;
   player2Name: string;
   player1Character: string;
@@ -7,6 +7,10 @@ defineProps<{
   enableNameValidation: boolean;
   trimmedPlayer1Name: string;
   trimmedPlayer2Name: string;
+  characterOptions: ReadonlyArray<{
+    label: string;
+    value: string;
+  }>;
 }>();
 
 const emit = defineEmits<{
@@ -54,15 +58,20 @@ const emit = defineEmits<{
         </p>
 
         <label class="field-label" for="p1-character">キャラクター</label>
-        <input
+        <select
           id="p1-character"
-          class="text-input"
-          type="text"
-          maxlength="30"
-          placeholder="未入力でもOK"
+          class="select-input"
           :value="player1Character"
-          @input="emit('update:player1Character', ($event.target as HTMLInputElement).value)"
-        />
+          @change="emit('update:player1Character', ($event.target as HTMLSelectElement).value)"
+        >
+          <option
+            v-for="option in props.characterOptions"
+            :key="`p1-${option.value || 'empty'}`"
+            :value="option.value"
+          >
+            {{ option.label }}
+          </option>
+        </select>
       </article>
 
       <article class="player-card">
@@ -87,15 +96,20 @@ const emit = defineEmits<{
         </p>
 
         <label class="field-label" for="p2-character">キャラクター</label>
-        <input
+        <select
           id="p2-character"
-          class="text-input"
-          type="text"
-          maxlength="30"
-          placeholder="未入力でもOK"
+          class="select-input"
           :value="player2Character"
-          @input="emit('update:player2Character', ($event.target as HTMLInputElement).value)"
-        />
+          @change="emit('update:player2Character', ($event.target as HTMLSelectElement).value)"
+        >
+          <option
+            v-for="option in props.characterOptions"
+            :key="`p2-${option.value || 'empty'}`"
+            :value="option.value"
+          >
+            {{ option.label }}
+          </option>
+        </select>
       </article>
     </div>
   </section>
@@ -218,62 +232,49 @@ h2 {
   margin-top: 2px;
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.08em;
-  color: #ffd96a;
+  color: #fff0b8;
   text-shadow:
-    0 1px 0 rgba(90, 56, 0, 0.42),
-    0 2px 8px rgba(0, 0, 0, 0.14);
+    0 1px 0 rgba(84, 52, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
-.text-input {
+.text-input,
+.select-input {
   width: 100%;
   min-width: 0;
-  height: 42px;
+  min-height: 40px;
   padding: 0 12px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 244, 214, 0.16);
-  background: rgba(22, 34, 64, 0.28);
-  color: #fff4cf;
+  border: 1px solid rgba(255, 247, 221, 0.22);
+  background: rgba(255, 255, 255, 0.18);
+  color: #fffdf5;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 700;
   outline: none;
   box-sizing: border-box;
-  text-shadow: none;
+  backdrop-filter: blur(6px);
 }
 
 .text-input::placeholder {
-  color: rgba(255, 232, 166, 0.78);
+  color: rgba(255, 248, 232, 0.72);
 }
 
-.text-input:focus {
-  border-color: rgba(255, 238, 196, 0.28);
-  background: rgba(22, 34, 64, 0.34);
+.select-input {
+  appearance: none;
+  cursor: pointer;
 }
 
 .field-error {
   margin: -2px 0 0;
-  color: #ffe0c4;
-  font-size: 12px;
-  line-height: 1.5;
-  text-shadow:
-    0 1px 0 rgba(92, 28, 38, 0.22),
-    0 2px 8px rgba(0, 0, 0, 0.14);
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffd1da;
+  text-shadow: 0 1px 0 rgba(88, 16, 36, 0.32);
 }
 
-@media (max-width: 980px) {
+@media (max-width: 820px) {
   .players-grid {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 640px) {
-  .panel-head {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .swap-button {
-    width: 100%;
   }
 }
 </style>

@@ -17,6 +17,8 @@ const {
   trimmedPlayer2Character,
   canStart,
 
+  characterOptions,
+
   swapPlayers,
   clearInputs,
   startLocalBattle,
@@ -53,6 +55,7 @@ function updatePlayer2Character(value: string) {
           :enable-name-validation="enableNameValidation"
           :trimmed-player1-name="trimmedPlayer1Name"
           :trimmed-player2-name="trimmedPlayer2Name"
+          :character-options="characterOptions"
           @update:player1-name="updatePlayer1Name"
           @update:player2-name="updatePlayer2Name"
           @update:player1-character="updatePlayer1Character"

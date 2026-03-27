@@ -17,6 +17,16 @@ const CHARACTER_IMAGE_MAP: Record<string, string> = {
   "イーロン・マスク": "/characters/elon.png",
 };
 
+export const LOCAL_CHARACTER_OPTIONS = [
+  { label: "未選択", value: "" },
+  { label: "ティムクック", value: "ティムクック" },
+  { label: "サムアルトマン", value: "サムアルトマン" },
+  { label: "Kプラチナム代表", value: "kプラチナム代表" },
+  { label: "スティーブ・ジョブズ", value: "スティーブ・ジョブズ" },
+  { label: "ビル・ゲイツ", value: "ビル・ゲイツ" },
+  { label: "イーロン・マスク", value: "イーロン・マスク" },
+] as const;
+
 function readStorage(key: string, fallback = "") {
   return localStorage.getItem(key) ?? fallback;
 }
@@ -118,6 +128,8 @@ export function useLocalLobby() {
     trimmedPlayer1Character,
     trimmedPlayer2Character,
     canStart,
+
+    characterOptions: LOCAL_CHARACTER_OPTIONS,
 
     swapPlayers,
     clearInputs,
