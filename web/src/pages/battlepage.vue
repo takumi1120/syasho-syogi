@@ -37,7 +37,13 @@ const {
           <div class="hero-left">
             <p class="eyebrow">LOCAL BATTLE</p>
             <h1>社長将棋</h1>
-            <p class="sub">手番: {{ currentTurnName }}</p>
+            <p class="sub">
+              {{ player1Name }} vs {{ player2Name }}
+            </p>
+            <p class="meta">
+              <span>ローカル対戦</span>
+              <span>現在手番: {{ currentTurnName }}</span>
+            </p>
           </div>
 
           <div class="hero-players">
@@ -59,11 +65,11 @@ const {
           </div>
 
           <div class="hero-actions">
-            <button class="ghost-button" type="button" @click="backToLobby">
-              戻る
-            </button>
             <button class="ghost-button" type="button" @click="resetBattle">
               リセット
+            </button>
+            <button class="ghost-button" type="button" @click="backToLobby">
+              戻る
             </button>
           </div>
         </div>
@@ -143,6 +149,16 @@ h1 {
   margin: 4px 0 0;
   color: #bcd4ef;
   font-size: 11px;
+  line-height: 1.3;
+}
+
+.meta {
+  margin: 4px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: #8ec5ff;
+  font-size: 10px;
   line-height: 1.3;
 }
 
@@ -247,6 +263,11 @@ h1 {
 
   .hero-players {
     grid-template-columns: 1fr;
+  }
+
+  .sub,
+  .meta {
+    font-size: 11px;
   }
 }
 </style>

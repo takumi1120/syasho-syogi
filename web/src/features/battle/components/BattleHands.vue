@@ -4,6 +4,7 @@ import type { SyahoShogiHandPieceType } from "../../../lib/syahosyogi";
 type BattleHandPieceView = {
   pieceType: SyahoShogiHandPieceType;
   label: string;
+  imageSrc: string;
   count: number;
   active: boolean;
   disabled: boolean;
@@ -39,7 +40,12 @@ const emit = defineEmits<{
         type="button"
         @click="emit('select', piece.pieceType)"
       >
-        <span class="label">{{ piece.label }}</span>
+        <img
+          class="hand-image"
+          :src="piece.imageSrc"
+          :alt="piece.label"
+          draggable="false"
+        />
         <strong class="count">×{{ piece.count }}</strong>
       </button>
     </div>
@@ -74,7 +80,7 @@ h3 {
 .hand-chip {
   min-width: 0;
   display: grid;
-  gap: 4px;
+  gap: 6px;
   justify-items: center;
   align-items: center;
   border-radius: 16px;
@@ -97,10 +103,13 @@ h3 {
   cursor: not-allowed;
 }
 
-.label {
-  font-size: 11px;
-  line-height: 1.2;
-  word-break: break-word;
+.hand-image {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.24));
 }
 
 .count {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getPieceLabel } from "../utils/battleLabels";
+import { getPieceImageSrc } from "../utils/pieceImages";
 import type {
   SyahoShogiBoard,
   SyahoShogiCell,
@@ -30,6 +31,10 @@ function isLegalTarget(row: number, col: number) {
 
 function pieceLabel(cell: SyahoShogiCell) {
   return cell ? getPieceLabel(cell) : "";
+}
+
+function pieceImageSrc(cell: SyahoShogiCell) {
+  return cell ? getPieceImageSrc(cell) : "";
 }
 </script>
 
@@ -64,9 +69,14 @@ function pieceLabel(cell: SyahoShogiCell) {
                 <span class="owner-badge">
                   {{ cell.owner === 1 ? "先" : "後" }}
                 </span>
-                <span class="piece-text">
-                  {{ pieceLabel(cell) }}
-                </span>
+
+                <img
+                  class="piece-image"
+                  :class="{ reverse: cell.owner === 2 }"
+                  :src="pieceImageSrc(cell)"
+                  :alt="pieceLabel(cell)"
+                  draggable="false"
+                />
               </div>
             </template>
           </button>
@@ -97,17 +107,19 @@ function pieceLabel(cell: SyahoShogiCell) {
   aspect-ratio: 3 / 4;
   --board-pad-x: 9%;
   --board-pad-y: 8%;
+  overflow: visible;
 }
 
 .board-image {
   position: absolute;
-  inset: 0;
+  inset: -34px -70px;
   border-radius: 22px;
   background-image: url("/battle/board.png");
   background-repeat: no-repeat;
   background-position: center;
-  background-size: contain;
+  background-size: 100% 100%;
   filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.28));
+  pointer-events: none;
 }
 
 .board-grid {
@@ -164,33 +176,35 @@ function pieceLabel(cell: SyahoShogiCell) {
 
 .piece-token {
   position: relative;
-  width: 82%;
-  height: 82%;
+  width: 86%;
+  height: 86%;
   border-radius: 14px;
   display: grid;
   place-items: center;
-  padding: 8px 5px;
-  text-align: center;
-  color: #f7fbff;
+  padding: 6px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.03)),
-    rgba(16, 29, 51, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.02)
+    ),
+    rgba(16, 29, 51, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow:
-    0 8px 14px rgba(0, 0, 0, 0.24),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    0 8px 14px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .cell.own .piece-token {
   box-shadow:
-    0 8px 14px rgba(0, 0, 0, 0.24),
-    inset 0 0 0 2px rgba(118, 225, 178, 0.3);
+    0 8px 14px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 2px rgba(118, 225, 178, 0.22);
 }
 
 .cell.enemy .piece-token {
   box-shadow:
-    0 8px 14px rgba(0, 0, 0, 0.24),
-    inset 0 0 0 2px rgba(255, 137, 137, 0.24);
+    0 8px 14px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 2px rgba(255, 137, 137, 0.18);
 }
 
 .owner-badge {
@@ -204,44 +218,25 @@ function pieceLabel(cell: SyahoShogiCell) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(8, 14, 28, 0.72);
+  background: rgba(8, 14, 28, 0.78);
   border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f7fbff;
   font-size: 10px;
   font-weight: 800;
   line-height: 1;
+  z-index: 2;
 }
 
-.piece-text {
-  font-size: 13px;
-  font-weight: 900;
-  line-height: 1.15;
-  word-break: break-word;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+.piece-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.28));
 }
 
-@media (max-width: 980px) {
-  .board-card {
-    height: auto;
-  }
-
-  .board-stage {
-    width: min(100%, 320px);
-  }
-}
-
-@media (max-width: 640px) {
-  .board-card {
-    padding: 8px;
-  }
-
-  .board-stage {
-    width: min(100%, 82vw);
-    --board-pad-x: 9.5%;
-    --board-pad-y: 8.5%;
-  }
-
-  .piece-text {
-    font-size: 12px;
-  }
+.piece-image.reverse {
+  transform: rotate(180deg);
 }
 </style>

@@ -11,10 +11,12 @@ import {
   type SyahoShogiSquare,
 } from "../../../lib/syahosyogi";
 import { getHandLabel, getPieceLabel } from "../utils/battleLabels";
+import { getHandPieceImageSrc } from "../utils/pieceImages";
 
 type BattleHandPieceView = {
   pieceType: SyahoShogiHandPieceType;
   label: string;
+  imageSrc: string;
   count: number;
   active: boolean;
   disabled: boolean;
@@ -43,11 +45,19 @@ export function useLocalBattle() {
   const player2Name = computed(() => readStringQuery(route.query, "p2Name", "Player 2"));
   const player1Character = computed(() => readStringQuery(route.query, "p1Character", ""));
   const player2Character = computed(() => readStringQuery(route.query, "p2Character", ""));
+  const player1CharacterImage = computed(() =>
+    readStringQuery(route.query, "p1CharacterImage", ""),
+  );
+  const player2CharacterImage = computed(() =>
+    readStringQuery(route.query, "p2CharacterImage", ""),
+  );
 
   const state = ref(
     createInitialSyahoShogiState({
       player1BossCharacter: player1Character.value || null,
       player2BossCharacter: player2Character.value || null,
+      player1BossImage: player1CharacterImage.value || null,
+      player2BossImage: player2CharacterImage.value || null,
     }),
   );
 
@@ -111,6 +121,7 @@ export function useLocalBattle() {
       return {
         pieceType,
         label: getHandLabel(pieceType),
+        imageSrc: getHandPieceImageSrc(pieceType),
         count,
         active: selectedHandPiece.value === pieceType,
         disabled: count <= 0 || state.value.status === "FINISHED",
@@ -243,6 +254,8 @@ export function useLocalBattle() {
     state.value = createInitialSyahoShogiState({
       player1BossCharacter: player1Character.value || null,
       player2BossCharacter: player2Character.value || null,
+      player1BossImage: player1CharacterImage.value || null,
+      player2BossImage: player2CharacterImage.value || null,
     });
 
     clearNotice();

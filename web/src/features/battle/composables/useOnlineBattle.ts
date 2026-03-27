@@ -12,11 +12,13 @@ import {
   type SyahoShogiState,
 } from "../../../lib/syahosyogi";
 import { getHandLabel, getPieceLabel } from "../utils/battleLabels";
+import { getHandPieceImageSrc } from "../utils/pieceImages";
 import { gameService, type Game } from "../../../services/gameService";
 
 type BattleHandPieceView = {
   pieceType: SyahoShogiHandPieceType;
   label: string;
+  imageSrc: string;
   count: number;
   active: boolean;
   disabled: boolean;
@@ -155,6 +157,7 @@ export function useOnlineBattle() {
       return {
         pieceType,
         label: getHandLabel(pieceType),
+        imageSrc: getHandPieceImageSrc(pieceType),
         count,
         active: selectedHandPiece.value === pieceType,
         disabled: count <= 0 || !canInteract.value,
