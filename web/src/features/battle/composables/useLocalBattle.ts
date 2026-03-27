@@ -24,6 +24,15 @@ type BattleHandPieceView = {
 
 const HAND_PIECE_TYPES: SyahoShogiHandPieceType[] = ["SON", "MIKITANI", "MIZOGUCHI"];
 
+const CHARACTER_IMAGE_MAP: Record<string, string> = {
+  "ティムクック": "/characters/thim.png",
+  "サムアルトマン": "/characters/sum.png",
+  "Kプラチナム代表": "/characters/kceo.png",
+  "スティーブ・ジョブズ": "/characters/jobs.png",
+  "ビル・ゲイツ": "/characters/bil.png",
+  "イーロン・マスク": "/characters/elon.png",
+};
+
 function readStringQuery(
   query: Record<string, unknown>,
   key: string,
@@ -35,6 +44,20 @@ function readStringQuery(
 
 function getActionPieceLabel(pieceType: SyahoShogiPieceType | SyahoShogiHandPieceType) {
   return getPieceLabel({ type: pieceType });
+}
+
+function resolveBossImage(characterName: string, explicitImage: string): string | null {
+  const trimmedExplicitImage = explicitImage.trim();
+  if (trimmedExplicitImage) {
+    return trimmedExplicitImage;
+  }
+
+  const trimmedCharacterName = characterName.trim();
+  if (!trimmedCharacterName) {
+    return null;
+  }
+
+  return CHARACTER_IMAGE_MAP[trimmedCharacterName] ?? null;
 }
 
 export function useLocalBattle() {
@@ -56,8 +79,14 @@ export function useLocalBattle() {
     createInitialSyahoShogiState({
       player1BossCharacter: player1Character.value || null,
       player2BossCharacter: player2Character.value || null,
-      player1BossImage: player1CharacterImage.value || null,
-      player2BossImage: player2CharacterImage.value || null,
+      player1BossImage: resolveBossImage(
+        player1Character.value,
+        player1CharacterImage.value,
+      ),
+      player2BossImage: resolveBossImage(
+        player2Character.value,
+        player2CharacterImage.value,
+      ),
     }),
   );
 
@@ -254,8 +283,14 @@ export function useLocalBattle() {
     state.value = createInitialSyahoShogiState({
       player1BossCharacter: player1Character.value || null,
       player2BossCharacter: player2Character.value || null,
-      player1BossImage: player1CharacterImage.value || null,
-      player2BossImage: player2CharacterImage.value || null,
+      player1BossImage: resolveBossImage(
+        player1Character.value,
+        player1CharacterImage.value,
+      ),
+      player2BossImage: resolveBossImage(
+        player2Character.value,
+        player2CharacterImage.value,
+      ),
     });
 
     clearNotice();

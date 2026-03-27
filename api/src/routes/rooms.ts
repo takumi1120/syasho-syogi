@@ -4,6 +4,21 @@ import { createInitialSyahoShogiState } from "../lib/syahosyogi";
 
 const router = Router();
 
+const CHARACTER_IMAGE_MAP: Record<string, string> = {
+    "ティムクック": "/characters/thim.png",
+    "サムアルトマン": "/characters/sum.png",
+    "Kプラチナム代表": "/characters/kceo.png",
+    "スティーブ・ジョブズ": "/characters/jobs.png",
+    "ビル・ゲイツ": "/characters/bil.png",
+    "イーロン・マスク": "/characters/elon.png",
+};
+
+function resolveBossImage(characterName: string | null | undefined): string | null {
+    const trimmed = characterName?.trim();
+    if (!trimmed) return null;
+    return CHARACTER_IMAGE_MAP[trimmed] ?? null;
+}
+
 function isPositiveInt(value: unknown): value is number {
     return typeof value === "number" && Number.isInteger(value) && value > 0;
 }
@@ -321,9 +336,14 @@ router.post("/:roomCode/start", async (req, res) => {
         const player1Character = hostFirst ? room.hostCharacter : room.guestCharacter;
         const player2Character = hostFirst ? room.guestCharacter : room.hostCharacter;
 
+        const player1BossImage = resolveBossImage(player1Character);
+        const player2BossImage = resolveBossImage(player2Character);
+
         const initialBoardState = createInitialSyahoShogiState({
             player1BossCharacter: player1Character ?? null,
             player2BossCharacter: player2Character ?? null,
+            player1BossImage,
+            player2BossImage,
         });
 
         const result = await db.$transaction(async (tx) => {

@@ -8,8 +8,23 @@ const STORAGE_KEYS = {
   p2Character: "localP2Character",
 } as const;
 
+const CHARACTER_IMAGE_MAP: Record<string, string> = {
+  "ティムクック": "/characters/thim.png",
+  "サムアルトマン": "/characters/sum.png",
+  "Kプラチナム代表": "/characters/kceo.png",
+  "スティーブ・ジョブズ": "/characters/jobs.png",
+  "ビル・ゲイツ": "/characters/bil.png",
+  "イーロン・マスク": "/characters/elon.png",
+};
+
 function readStorage(key: string, fallback = "") {
   return localStorage.getItem(key) ?? fallback;
+}
+
+function resolveCharacterImage(characterName: string): string {
+  const trimmed = characterName.trim();
+  if (!trimmed) return "";
+  return CHARACTER_IMAGE_MAP[trimmed] ?? "";
 }
 
 export function useLocalLobby() {
@@ -74,6 +89,9 @@ export function useLocalLobby() {
 
     if (!canStart.value) return;
 
+    const p1CharacterImage = resolveCharacterImage(trimmedPlayer1Character.value);
+    const p2CharacterImage = resolveCharacterImage(trimmedPlayer2Character.value);
+
     router.push({
       path: "/battle",
       query: {
@@ -82,6 +100,8 @@ export function useLocalLobby() {
         p2Name: trimmedPlayer2Name.value,
         p1Character: trimmedPlayer1Character.value,
         p2Character: trimmedPlayer2Character.value,
+        ...(p1CharacterImage ? { p1CharacterImage } : {}),
+        ...(p2CharacterImage ? { p2CharacterImage } : {}),
       },
     });
   }
