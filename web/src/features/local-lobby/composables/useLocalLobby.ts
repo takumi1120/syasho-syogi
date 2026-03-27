@@ -21,7 +21,7 @@ export const LOCAL_CHARACTER_OPTIONS = [
   { label: "未選択", value: "" },
   { label: "ティムクック", value: "ティムクック" },
   { label: "サムアルトマン", value: "サムアルトマン" },
-  { label: "Kプラチナム代表", value: "kプラチナム代表" },
+  { label: "Kプラチナム代表", value: "Kプラチナム代表" },
   { label: "スティーブ・ジョブズ", value: "スティーブ・ジョブズ" },
   { label: "ビル・ゲイツ", value: "ビル・ゲイツ" },
   { label: "イーロン・マスク", value: "イーロン・マスク" },

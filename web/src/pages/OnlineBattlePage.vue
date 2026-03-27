@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import BattleLayout from "../features/battle/components/BattleLayout.vue";
 import BattleBoard from "../features/battle/components/BattleBoard.vue";
 import BattleHands from "../features/battle/components/BattleHands.vue";
 import BattleStatusPanel from "../features/battle/components/BattleStatusPanel.vue";
@@ -35,52 +34,36 @@ const {
 
 <template>
   <section class="battle-page">
-    <BattleLayout>
-      <template #header>
-        <div class="hero-card">
-          <div class="hero-left">
-            <p class="eyebrow">ONLINE BATTLE</p>
-            <h1>社長将棋</h1>
-            <p class="sub">
-              {{ roomCode ? `ROOM: ${roomCode}` : "オンライン対戦" }}
-            </p>
-            <p class="meta">
-              <span v-if="gameId">GAME: {{ gameId }}</span>
-              <span>{{ loading ? "同期中..." : isMyTurn ? "あなたの手番" : "相手の手番" }}</span>
-              <span>現在手番: {{ currentTurnName }}</span>
-            </p>
-          </div>
+    <div class="battle-scene">
+      <div class="nameplate nameplate-left" :class="{ active: currentPlayer === 1 }">
+        <p class="player-side">PLAYER 1 / 先手</p>
+        <p class="player-name">{{ player1Name }}</p>
+        <p class="player-character">{{ player1Character || "未設定" }}</p>
+      </div>
 
-          <div class="hero-players">
-            <div class="hero-player" :class="{ active: currentPlayer === 1 }">
-              <span class="hero-player-position">先手</span>
-              <strong class="hero-player-name">{{ player1Name }}</strong>
-              <span class="hero-player-character">
-                {{ player1Character || "未設定" }}
-              </span>
-            </div>
+      <div class="nameplate nameplate-center">
+        <p class="center-mode">ONLINE BATTLE</p>
+        <p class="center-main">
+          {{ resultLabel || (isMyTurn ? "あなたの手番" : `${currentTurnName} の手番`) }}
+        </p>
+        <p class="center-sub">
+          {{
+            resultLabel
+              ? (winReasonLabel || "対局終了")
+              : roomCode
+                ? `ROOM: ${roomCode}${gameId ? ` / GAME: ${gameId}` : ""}`
+                : (loading ? "同期中..." : "オンライン対戦")
+          }}
+        </p>
+      </div>
 
-            <div class="hero-player" :class="{ active: currentPlayer === 2 }">
-              <span class="hero-player-position">後手</span>
-              <strong class="hero-player-name">{{ player2Name }}</strong>
-              <span class="hero-player-character">
-                {{ player2Character || "未設定" }}
-              </span>
-            </div>
-          </div>
+      <div class="nameplate nameplate-right" :class="{ active: currentPlayer === 2 }">
+        <p class="player-side">PLAYER 2 / 後手</p>
+        <p class="player-name">{{ player2Name }}</p>
+        <p class="player-character">{{ player2Character || "未設定" }}</p>
+      </div>
 
-          <div class="hero-actions">
-            <button class="ghost-button" type="button" @click="fetchGame">
-              更新
-            </button>
-            <button class="ghost-button" type="button" @click="backToLobby">
-              戻る
-            </button>
-          </div>
-        </div>
-      </template>
-
-      <div class="main-stack">
+      <div class="board-area">
         <BattleBoard
           :board="boardRows"
           :selected-square="selectedSquare"
@@ -90,7 +73,15 @@ const {
         />
       </div>
 
-      <template #sidebar>
+      <div class="side-panel side-left">
+        <BattleHands
+          title="現在の持ち駒"
+          :pieces="handPieces"
+          @select="handleHandClick"
+        />
+      </div>
+
+      <div class="side-panel side-right">
         <BattleStatusPanel
           :turn-label="currentTurnName"
           :result-label="resultLabel"
@@ -99,180 +90,316 @@ const {
           :message="message"
           :error-message="errorMessage"
         />
+      </div>
 
-        <BattleHands
-          title="現在の持ち駒"
-          :pieces="handPieces"
-          @select="handleHandClick"
-        />
-      </template>
-    </BattleLayout>
+      <div class="action-bar">
+        <button class="scene-button" type="button" @click="fetchGame">
+          更新
+        </button>
+        <button class="scene-button" type="button" @click="backToLobby">
+          戻る
+        </button>
+      </div>
+    </div>
   </section>
 </template>
 
 <style scoped>
 .battle-page {
   min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  box-sizing: border-box;
   background:
-    radial-gradient(circle at top, rgba(128, 196, 255, 0.18), transparent 32%),
-    linear-gradient(180deg, #16233d 0%, #0d162a 58%, #07101d 100%);
-  color: #eef5ff;
+    radial-gradient(circle at center, rgba(79, 93, 255, 0.2), transparent 38%),
+    linear-gradient(180deg, #1a1443 0%, #0b0f2b 100%);
+  color: #ffffff;
   overflow: hidden;
 }
 
-.hero-card {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  border: 1px solid rgba(160, 205, 255, 0.16);
-  background: rgba(12, 20, 37, 0.82);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-  border-radius: 18px;
+.battle-scene {
+  position: relative;
+  width: min(calc(100vw - 24px), calc((100dvh - 24px) * 4 / 3));
+  height: min(calc(100dvh - 24px), calc((100vw - 24px) * 3 / 4));
+  max-width: 1365px;
+  max-height: 1024px;
+  border-radius: 28px;
+  overflow: hidden;
+  background:
+    url("/battle/backgrounds/rainbow-battle-bg.png") center / 100% 100% no-repeat;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
 }
 
-.hero-left {
-  min-width: 0;
+.battle-scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, transparent 42%, rgba(0, 0, 0, 0.08) 100%);
+  pointer-events: none;
 }
 
-.eyebrow {
-  margin: 0 0 2px;
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  color: #8ec5ff;
+.nameplate {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  padding: 0 14px;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
 }
 
-h1 {
+.nameplate-left {
+  top: 3.3%;
+  left: 3.5%;
+  width: 25.8%;
+  height: 10.5%;
+}
+
+.nameplate-center {
+  top: 7.5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26%;
+  height: 9.8%;
+}
+
+.nameplate-right {
+  top: 3.3%;
+  right: 3.5%;
+  width: 25.8%;
+  height: 10.5%;
+}
+
+.nameplate.active .player-name {
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.45));
+}
+
+.player-side {
   margin: 0;
-  font-size: 20px;
+  font-size: clamp(10px, 0.95vw, 13px);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.player-name {
+  margin: 3px 0 0;
+  font-size: clamp(18px, 1.7vw, 30px);
+  font-weight: 900;
+  line-height: 1.1;
+  word-break: break-word;
+}
+
+.player-character {
+  margin: 3px 0 0;
+  font-size: clamp(11px, 0.95vw, 15px);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nameplate-left .player-side {
+  color: #d6f6ff;
+}
+
+.nameplate-right .player-side {
+  color: #ffd8ec;
+}
+
+.center-mode {
+  margin: 0;
+  font-size: clamp(10px, 0.95vw, 13px);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: #fff4a8;
+}
+
+.center-main {
+  margin: 4px 0 0;
+  font-size: clamp(18px, 1.5vw, 28px);
+  font-weight: 900;
   line-height: 1.1;
 }
 
-.sub {
-  margin: 4px 0 0;
-  color: #bcd4ef;
-  font-size: 11px;
-  line-height: 1.3;
+.center-sub {
+  margin: 3px 0 0;
+  font-size: clamp(11px, 0.95vw, 14px);
+  color: #eef2ff;
 }
 
-.meta {
-  margin: 4px 0 0;
+.board-area {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 430px;
+  aspect-ratio: 3 / 4;
+  z-index: 2;
+}
+
+.side-panel {
+  position: absolute;
+  z-index: 4;
+  width: 22.5%;
+}
+
+.side-left {
+  left: 2.8%;
+  bottom: 7.2%;
+}
+
+.side-right {
+  right: 2.8%;
+  bottom: 7.2%;
+}
+
+.action-bar {
+  position: absolute;
+  left: 50%;
+  bottom: 2.4%;
+  transform: translateX(-50%);
+  z-index: 5;
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  color: #8ec5ff;
-  font-size: 10px;
-  line-height: 1.3;
+  gap: 12px;
 }
 
-.hero-players {
-  width: 100%;
-  max-width: 520px;
-  justify-self: center;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.hero-player {
-  min-width: 0;
-  padding: 8px 10px;
-  border-radius: 14px;
-  border: 1px solid rgba(160, 205, 255, 0.16);
-  background: rgba(18, 30, 53, 0.9);
-  display: grid;
-  gap: 2px;
-  text-align: center;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-
-.hero-player.active {
-  outline: 2px solid #8ec5ff;
-}
-
-.hero-player-position {
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  color: #8ec5ff;
-}
-
-.hero-player-name {
-  font-size: 14px;
-  line-height: 1.2;
-  word-break: break-word;
-}
-
-.hero-player-character {
-  color: #bcd4ef;
-  font-size: 11px;
-  line-height: 1.3;
-  word-break: break-word;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.ghost-button {
-  padding: 7px 12px;
+.scene-button {
+  border: none;
   border-radius: 999px;
-  border: 1px solid rgba(160, 205, 255, 0.22);
-  font-weight: 800;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 900;
+  color: #ffffff;
   cursor: pointer;
-  background: rgba(24, 36, 60, 0.95);
-  color: #eef5ff;
-  font-size: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08)),
+    rgba(43, 36, 93, 0.66);
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 10px 20px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
 }
 
-.main-stack {
-  min-height: 0;
-  display: grid;
+.scene-button:hover {
+  transform: translateY(-1px);
 }
 
-@media (max-width: 980px) {
+:deep(.panel) {
+  background:
+    linear-gradient(180deg, rgba(48, 34, 113, 0.56), rgba(17, 18, 48, 0.48));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(10px);
+}
+
+:deep(.panel h3) {
+  color: #fff5b8;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+:deep(.panel dt),
+:deep(.panel .hint),
+:deep(.panel .character),
+:deep(.panel .row dd) {
+  color: #f2f6ff;
+}
+
+:deep(.hand-chip) {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+:deep(.hand-chip.active) {
+  background: rgba(112, 97, 255, 0.34);
+  outline: 2px solid rgba(255, 255, 255, 0.75);
+}
+
+@media (max-width: 900px) {
+  .board-area {
+    width: 46%;
+  }
+
+  .side-panel {
+    width: 24%;
+  }
+}
+
+@media (max-width: 760px) {
   .battle-page {
-    overflow: auto;
+    padding: 8px;
   }
 
-  .hero-card {
-    grid-template-columns: 1fr;
-    align-items: stretch;
+  .battle-scene {
+    width: min(calc(100vw - 16px), calc((100dvh - 16px) * 4 / 3));
+    height: min(calc(100dvh - 16px), calc((100vw - 16px) * 3 / 4));
+    border-radius: 18px;
   }
 
-  .hero-players {
-    max-width: none;
+  .nameplate-left,
+  .nameplate-right {
+    width: 29%;
+    height: 11%;
   }
 
-  .hero-actions {
-    justify-content: flex-start;
+  .nameplate-center {
+    width: 31%;
+  }
+
+  .board-area {
+    top: 29.4%;
+    width: 47%;
+  }
+
+  .side-panel {
+    width: 26%;
+    bottom: 5.6%;
+  }
+
+  .action-bar {
+    bottom: 1.6%;
+    gap: 8px;
+  }
+
+  .scene-button {
+    padding: 8px 14px;
+    font-size: 12px;
   }
 }
 
-@media (max-width: 640px) {
-  .battle-page {
-    overflow: auto;
+@media (max-width: 560px) {
+  .board-area {
+    width: 48.5%;
   }
 
-  .hero-card {
-    padding: 12px;
+  .side-panel {
+    width: 29%;
   }
 
-  h1 {
-    font-size: 18px;
+  .player-character,
+  .center-sub {
+    display: none;
   }
 
-  .hero-players {
+  :deep(.panel) {
+    padding: 10px 12px;
+  }
+
+  :deep(.hand-list) {
     grid-template-columns: 1fr;
   }
 
-  .sub,
-  .meta {
-    font-size: 11px;
+  :deep(.hand-image) {
+    width: 42px;
+    height: 42px;
+  }
+
+  :deep(.count) {
+    font-size: 12px;
   }
 }
 </style>

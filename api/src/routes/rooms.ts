@@ -15,6 +15,7 @@ const CHARACTER_IMAGE_MAP: Record<string, string> = {
 
 function resolveBossImage(characterName: string | null | undefined): string | null {
     const trimmed = characterName?.trim();
+    console.log(trimmed, characterName)
     if (!trimmed) return null;
     return CHARACTER_IMAGE_MAP[trimmed] ?? null;
 }
@@ -338,7 +339,7 @@ router.post("/:roomCode/start", async (req, res) => {
 
         const player1BossImage = resolveBossImage(player1Character);
         const player2BossImage = resolveBossImage(player2Character);
-
+        console.log(player1Character, player2Character, player1BossImage, player2BossImage)
         const initialBoardState = createInitialSyahoShogiState({
             player1BossCharacter: player1Character ?? null,
             player2BossCharacter: player2Character ?? null,
