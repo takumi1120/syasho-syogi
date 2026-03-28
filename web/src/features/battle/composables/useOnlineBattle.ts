@@ -8,6 +8,7 @@ import {
   type SyahoShogiAction,
   type SyahoShogiHandPieceType,
   type SyahoShogiPieceType,
+  type SyahoShogiPlayer,
   type SyahoShogiSquare,
   type SyahoShogiState,
 } from "../../../lib/syahosyogi";
@@ -151,18 +152,31 @@ export function useOnlineBattle() {
     return state.value.hands[currentPlayer.value];
   });
 
-  const handPieces = computed<BattleHandPieceView[]>(() => {
+  function buildHandPieces(player: SyahoShogiPlayer): BattleHandPieceView[] {
+    const hands = state.value.hands[player];
+    const canSelectThisHand = canInteract.value && myPlayer.value === player;
+
     return HAND_PIECE_TYPES.map((pieceType) => {
-      const count = currentPlayerHands.value[pieceType] ?? 0;
+      const count = hands[pieceType] ?? 0;
+
       return {
         pieceType,
         label: getHandLabel(pieceType),
         imageSrc: getHandPieceImageSrc(pieceType),
         count,
-        active: selectedHandPiece.value === pieceType,
-        disabled: count <= 0 || !canInteract.value,
+        active: canSelectThisHand && selectedHandPiece.value === pieceType,
+        disabled: count <= 0 || !canSelectThisHand,
       };
     });
+  }
+
+  const player1HandPieces = computed<BattleHandPieceView[]>(() => buildHandPieces(1));
+  const player2HandPieces = computed<BattleHandPieceView[]>(() => buildHandPieces(2));
+
+  const handPieces = computed<BattleHandPieceView[]>(() => {
+    return currentPlayer.value === 1
+      ? player1HandPieces.value
+      : player2HandPieces.value;
   });
 
   const legalTargets = computed<SyahoShogiSquare[]>(() => {
@@ -388,6 +402,8 @@ export function useOnlineBattle() {
     winReasonLabel,
     lastActionLabel,
     handPieces,
+    player1HandPieces,
+    player2HandPieces,
     legalTargets,
     selectedSquare,
     selectedHandPiece,

@@ -10,65 +10,86 @@ type BattleHandPieceView = {
   disabled: boolean;
 };
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     title?: string;
     pieces?: BattleHandPieceView[];
+    selectable?: boolean;
+    showHint?: boolean;
   }>(),
   {
     title: "持ち駒",
     pieces: () => [],
+    selectable: true,
+    showHint: false,
   },
 );
 
 const emit = defineEmits<{
   (e: "select", pieceType: SyahoShogiHandPieceType): void;
 }>();
+
+function handlePieceClick(piece: BattleHandPieceView) {
+  if (!props.selectable || piece.disabled) return;
+  emit("select", piece.pieceType);
+}
 </script>
 
 <template>
-  <section class="panel">
-    <h3>{{ title }}</h3>
+  <section class="hands-root panel">
+    <h3 class="hand-title">{{ title }}</h3>
 
     <div class="hand-list">
-      <button
+      <component
+        :is="selectable ? 'button' : 'div'"
         v-for="piece in pieces"
         :key="piece.pieceType"
         class="hand-chip"
-        :class="{ active: piece.active }"
-        :disabled="piece.disabled"
-        type="button"
-        @click="emit('select', piece.pieceType)"
+        :class="{
+          active: selectable && piece.active,
+          disabled: piece.count <= 0,
+          readonly: !selectable,
+        }"
+        v-bind="selectable ? { type: 'button', disabled: piece.disabled } : {}"
+        @click="handlePieceClick(piece)"
       >
         <img
           class="hand-image"
+          :class="{ active: selectable && piece.active }"
           :src="piece.imageSrc"
           :alt="piece.label"
           draggable="false"
         />
-        <strong class="count">×{{ piece.count }}</strong>
-      </button>
+        <strong
+          class="count"
+          :class="{ active: selectable && piece.active }"
+        >
+          ×{{ piece.count }}
+        </strong>
+      </component>
     </div>
 
-    <p class="hint">
+    <p v-if="showHint" class="hint">
       持ち駒を選んでから空きマスを押します
     </p>
   </section>
 </template>
 
 <style scoped>
-.panel {
+.hands-root {
+  color: #eef5ff;
   padding: 14px 16px;
   border-radius: 20px;
   border: 1px solid rgba(160, 205, 255, 0.16);
   background: rgba(12, 20, 37, 0.82);
-  color: #eef5ff;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.2);
 }
 
-h3 {
+.hand-title {
   margin: 0 0 10px;
   font-size: 16px;
+  line-height: 1.2;
+  text-align: center;
 }
 
 .hand-list {
@@ -84,37 +105,69 @@ h3 {
   justify-items: center;
   align-items: center;
   border-radius: 16px;
-  border: 1px solid rgba(160, 205, 255, 0.22);
-  background: rgba(24, 36, 60, 0.95);
+  border: none;
+  background: transparent;
+  box-shadow: none;
   color: #eef5ff;
-  padding: 10px 6px;
+  padding: 6px 4px;
   cursor: pointer;
   font-weight: 700;
   text-align: center;
+  transition:
+    transform 0.16s ease,
+    filter 0.16s ease,
+    opacity 0.16s ease;
 }
 
-.hand-chip.active {
-  outline: 2px solid #8ec5ff;
-  background: rgba(45, 86, 145, 0.9);
+.hand-chip:hover {
+  transform: translateY(-1px);
 }
 
+.hand-chip.readonly {
+  cursor: default;
+}
+
+.hand-chip.disabled,
 .hand-chip:disabled {
-  opacity: 0.45;
+  opacity: 0.38;
   cursor: not-allowed;
 }
 
 .hand-image {
-  width: 54px;
-  height: 54px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
   user-select: none;
   pointer-events: none;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.24));
+  transition:
+    transform 0.16s ease,
+    filter 0.16s ease;
+}
+
+.hand-image.active {
+  transform: scale(1.06);
+  filter:
+    drop-shadow(0 0 8px rgba(255, 239, 150, 0.9))
+    drop-shadow(0 0 18px rgba(147, 216, 255, 0.75))
+    drop-shadow(0 8px 14px rgba(0, 0, 0, 0.28));
 }
 
 .count {
   font-size: 14px;
   line-height: 1;
+  transition:
+    color 0.16s ease,
+    text-shadow 0.16s ease,
+    transform 0.16s ease;
+}
+
+.count.active {
+  color: #fff6b8;
+  text-shadow:
+    0 0 8px rgba(255, 240, 150, 0.95),
+    0 0 16px rgba(147, 216, 255, 0.6);
+  transform: scale(1.06);
 }
 
 .hint {
@@ -122,5 +175,20 @@ h3 {
   color: #bcd4ef;
   line-height: 1.45;
   font-size: 12px;
+}
+
+@media (max-width: 560px) {
+  .hand-list {
+    grid-template-columns: 1fr;
+  }
+
+  .hand-image {
+    width: 42px;
+    height: 42px;
+  }
+
+  .count {
+    font-size: 12px;
+  }
 }
 </style>

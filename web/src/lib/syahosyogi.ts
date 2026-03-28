@@ -436,8 +436,7 @@ function applyActionUnsafe(
         if (
             next.status !== "FINISHED" &&
             originalType === "BOSS" &&
-            action.to.row === getGoalRow(player) &&
-            !isSquareAttacked(next, action.to, getOpponent(player))
+            action.to.row === getGoalRow(player)
         ) {
             next.status = "FINISHED";
             next.winner = player;

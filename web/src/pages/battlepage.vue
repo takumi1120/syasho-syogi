@@ -18,7 +18,8 @@ const {
   resultLabel,
   winReasonLabel,
   lastActionLabel,
-  handPieces,
+  player1HandPieces,
+  player2HandPieces,
   message,
   errorMessage,
   handleHandClick,
@@ -63,15 +64,27 @@ const {
         />
       </div>
 
-      <div class="side-panel side-left">
+      <div class="hand-panel hand-panel-left">
         <BattleHands
-          title="現在の持ち駒"
-          :pieces="handPieces"
+          title="先手の持ち駒"
+          :pieces="player1HandPieces"
+          :selectable="currentPlayer === 1"
+          :show-hint="false"
           @select="handleHandClick"
         />
       </div>
 
-      <div class="side-panel side-right">
+      <div class="hand-panel hand-panel-right">
+        <BattleHands
+          title="後手の持ち駒"
+          :pieces="player2HandPieces"
+          :selectable="currentPlayer === 2"
+          :show-hint="false"
+          @select="handleHandClick"
+        />
+      </div>
+
+      <div class="status-panel">
         <BattleStatusPanel
           :turn-label="currentTurnName"
           :result-label="resultLabel"
@@ -232,20 +245,30 @@ const {
   z-index: 2;
 }
 
-.side-panel {
+.hand-panel {
   position: absolute;
   z-index: 4;
   width: 22.5%;
 }
 
-.side-left {
+.hand-panel-left {
+  top: 60%;
   left: 2.8%;
-  bottom: 7.2%;
 }
 
-.side-right {
-  right: 2.8%;
-  bottom: 7.2%;
+.hand-panel-right {
+  top: 22%;
+  right: 1.5%;
+}
+
+.status-panel {
+  position: absolute;
+  left: 87.2%;
+  bottom: 8.8%;
+  transform: translateX(-50%);
+  z-index: 4;
+  width: 20%;
+  max-width: 420px;
 }
 
 .action-bar {
@@ -300,13 +323,14 @@ const {
 }
 
 :deep(.hand-chip) {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 :deep(.hand-chip.active) {
-  background: rgba(112, 97, 255, 0.34);
-  outline: 2px solid rgba(255, 255, 255, 0.75);
+  background: transparent;
+  outline: none;
 }
 
 @media (max-width: 900px) {
@@ -314,8 +338,12 @@ const {
     width: 46%;
   }
 
-  .side-panel {
+  .hand-panel {
     width: 24%;
+  }
+
+  .status-panel {
+    width: 33%;
   }
 }
 
@@ -340,14 +368,19 @@ const {
     width: 31%;
   }
 
+  .hand-panel {
+    top: 18%;
+    width: 26%;
+  }
+
   .board-area {
     top: 10%;
     width: 47%;
   }
 
-  .side-panel {
-    width: 26%;
-    bottom: 5.6%;
+  .status-panel {
+    width: 36%;
+    bottom: 7.2%;
   }
 
   .action-bar {
@@ -367,8 +400,12 @@ const {
     width: 48.5%;
   }
 
-  .side-panel {
+  .hand-panel {
     width: 29%;
+  }
+
+  .status-panel {
+    width: 39%;
   }
 
   .player-character,
@@ -378,19 +415,6 @@ const {
 
   :deep(.panel) {
     padding: 10px 12px;
-  }
-
-  :deep(.hand-list) {
-    grid-template-columns: 1fr;
-  }
-
-  :deep(.hand-image) {
-    width: 42px;
-    height: 42px;
-  }
-
-  :deep(.count) {
-    font-size: 12px;
   }
 }
 </style>

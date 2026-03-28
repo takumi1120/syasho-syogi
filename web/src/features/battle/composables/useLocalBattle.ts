@@ -8,6 +8,7 @@ import {
   type SyahoShogiAction,
   type SyahoShogiHandPieceType,
   type SyahoShogiPieceType,
+  type SyahoShogiPlayer,
   type SyahoShogiSquare,
 } from "../../../lib/syahosyogi";
 import { getHandLabel, getPieceLabel } from "../utils/battleLabels";
@@ -24,15 +25,6 @@ type BattleHandPieceView = {
 
 const HAND_PIECE_TYPES: SyahoShogiHandPieceType[] = ["SON", "MIKITANI", "MIZOGUCHI"];
 
-const CHARACTER_IMAGE_MAP: Record<string, string> = {
-  "ティムクック": "/characters/thim.png",
-  "サムアルトマン": "/characters/sum.png",
-  "Kプラチナム代表": "/characters/kceo.png",
-  "スティーブ・ジョブズ": "/characters/jobs.png",
-  "ビル・ゲイツ": "/characters/bil.png",
-  "イーロン・マスク": "/characters/elon.png",
-};
-
 function readStringQuery(
   query: Record<string, unknown>,
   key: string,
@@ -44,20 +36,6 @@ function readStringQuery(
 
 function getActionPieceLabel(pieceType: SyahoShogiPieceType | SyahoShogiHandPieceType) {
   return getPieceLabel({ type: pieceType });
-}
-
-function resolveBossImage(characterName: string, explicitImage: string): string | null {
-  const trimmedExplicitImage = explicitImage.trim();
-  if (trimmedExplicitImage) {
-    return trimmedExplicitImage;
-  }
-
-  const trimmedCharacterName = characterName.trim();
-  if (!trimmedCharacterName) {
-    return null;
-  }
-
-  return CHARACTER_IMAGE_MAP[trimmedCharacterName] ?? null;
 }
 
 export function useLocalBattle() {
@@ -79,14 +57,8 @@ export function useLocalBattle() {
     createInitialSyahoShogiState({
       player1BossCharacter: player1Character.value || null,
       player2BossCharacter: player2Character.value || null,
-      player1BossImage: resolveBossImage(
-        player1Character.value,
-        player1CharacterImage.value,
-      ),
-      player2BossImage: resolveBossImage(
-        player2Character.value,
-        player2CharacterImage.value,
-      ),
+      player1BossImage: player1CharacterImage.value || null,
+      player2BossImage: player2CharacterImage.value || null,
     }),
   );
 
@@ -144,18 +116,32 @@ export function useLocalBattle() {
     return state.value.hands[currentPlayer.value];
   });
 
-  const handPieces = computed<BattleHandPieceView[]>(() => {
+  function buildHandPieces(player: SyahoShogiPlayer): BattleHandPieceView[] {
+    const hands = state.value.hands[player];
+    const isTurnPlayer = currentPlayer.value === player;
+    const canSelectThisHand = isTurnPlayer && state.value.status !== "FINISHED";
+
     return HAND_PIECE_TYPES.map((pieceType) => {
-      const count = currentPlayerHands.value[pieceType] ?? 0;
+      const count = hands[pieceType] ?? 0;
+
       return {
         pieceType,
         label: getHandLabel(pieceType),
         imageSrc: getHandPieceImageSrc(pieceType),
         count,
-        active: selectedHandPiece.value === pieceType,
-        disabled: count <= 0 || state.value.status === "FINISHED",
+        active: isTurnPlayer && selectedHandPiece.value === pieceType,
+        disabled: count <= 0 || !canSelectThisHand,
       };
     });
+  }
+
+  const player1HandPieces = computed<BattleHandPieceView[]>(() => buildHandPieces(1));
+  const player2HandPieces = computed<BattleHandPieceView[]>(() => buildHandPieces(2));
+
+  const handPieces = computed<BattleHandPieceView[]>(() => {
+    return currentPlayer.value === 1
+      ? player1HandPieces.value
+      : player2HandPieces.value;
   });
 
   const legalTargets = computed<SyahoShogiSquare[]>(() => {
@@ -283,14 +269,8 @@ export function useLocalBattle() {
     state.value = createInitialSyahoShogiState({
       player1BossCharacter: player1Character.value || null,
       player2BossCharacter: player2Character.value || null,
-      player1BossImage: resolveBossImage(
-        player1Character.value,
-        player1CharacterImage.value,
-      ),
-      player2BossImage: resolveBossImage(
-        player2Character.value,
-        player2CharacterImage.value,
-      ),
+      player1BossImage: player1CharacterImage.value || null,
+      player2BossImage: player2CharacterImage.value || null,
     });
 
     clearNotice();
@@ -316,6 +296,8 @@ export function useLocalBattle() {
     winReasonLabel,
     lastActionLabel,
     handPieces,
+    player1HandPieces,
+    player2HandPieces,
     legalTargets,
     selectedSquare,
     selectedHandPiece,

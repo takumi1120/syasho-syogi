@@ -65,7 +65,6 @@ const squarePieceOffsetMap: Record<string, { x: number; y: number }> = {
 
 /**
  * 成り駒(MIKURU)専用の位置調整
- * ここを変えると成り駒だけ位置を変えられる
  */
 const promotedPieceOffsetMap: Record<string, { x: number; y: number }> = {
   "0-0": { x: 0, y: 0 },
@@ -85,6 +84,47 @@ const promotedPieceOffsetMap: Record<string, { x: number; y: number }> = {
   "3-2": { x: 0, y: -5 },
 };
 
+/**
+ * ボス(BOSS)専用の位置調整
+ * 先手用 / 後手用 を分ける
+ * x: 左右, y: 上下
+ */
+const bossPieceOffsetMapPlayer1: Record<string, { x: number; y: number }> = {
+  "0-0": { x: 0, y: -9 },
+  "0-1": { x: 0, y: -9 },
+  "0-2": { x: 0, y: -9 },
+
+  "1-0": { x: 0, y: -9 },
+  "1-1": { x: 0, y: -9 },
+  "1-2": { x: 0, y: -9 },
+
+  "2-0": { x: 0, y: -9 },
+  "2-1": { x: 0, y: -9 },
+  "2-2": { x: 0, y: -9 },
+
+  "3-0": { x: 0, y: -9 },
+  "3-1": { x: 0, y: -9 },
+  "3-2": { x: 0, y: -9 },
+};
+
+const bossPieceOffsetMapPlayer2: Record<string, { x: number; y: number }> = {
+  "0-0": { x: 0, y: -12 },
+  "0-1": { x: 0, y: -12 },
+  "0-2": { x: 0, y: -12 },
+
+  "1-0": { x: 0, y: -12 },
+  "1-1": { x: 0, y: -12 },
+  "1-2": { x: 0, y: -12 },
+
+  "2-0": { x: 0, y: -12 },
+  "2-1": { x: 0, y: -12 },
+  "2-2": { x: 0, y: -12 },
+
+  "3-0": { x: 0, y: -12 },
+  "3-1": { x: 0, y: -12 },
+  "3-2": { x: 0, y: -12 },
+};
+
 function cellOffsetStyle(row: number, col: number) {
   const offset = squareCellOffsetMap[`${row}-${col}`] ?? { x: 0, y: 0 };
 
@@ -98,16 +138,24 @@ function pieceOffsetStyle(row: number, col: number, cell: SyahoShogiCell) {
 
   const normalOffset = squarePieceOffsetMap[key] ?? { x: 0, y: 0 };
   const promotedOffset = promotedPieceOffsetMap[key] ?? normalOffset;
-  const offset = cell?.type === "MIKURU" ? promotedOffset : normalOffset;
 
-  
+  const bossOffsetPlayer1 = bossPieceOffsetMapPlayer1[key] ?? normalOffset;
+  const bossOffsetPlayer2 = bossPieceOffsetMapPlayer2[key] ?? normalOffset;
+
+  const bossOffset =
+    cell?.owner === 1 ? bossOffsetPlayer1 : bossOffsetPlayer2;
+
+  const offset =
+    cell?.type === "MIKURU"
+      ? promotedOffset
+      : cell?.type === "BOSS"
+        ? bossOffset
+        : normalOffset;
+
   return {
     transform: `translate(${offset.x}px, ${offset.y}px)`,
   };
 }
-
-
- 
 
 function isSelected(row: number, col: number) {
   return props.selectedSquare?.row === row && props.selectedSquare?.col === col;
@@ -273,7 +321,7 @@ function pieceImageSrc(cell: SyahoShogiCell) {
   padding: 0;
 }
 
-/* 選択character(BOSS)だけサイズ変更 */
+/* ボスだけサイズ変更 */
 .piece-token.boss-owner-1 {
   width: 115%;
   height: 115%;
