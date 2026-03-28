@@ -13,6 +13,8 @@ import {
 } from "../../../lib/syahosyogi";
 import { getHandLabel, getPieceLabel } from "../utils/battleLabels";
 import { getHandPieceImageSrc } from "../utils/pieceImages";
+import { playMoveSe } from "../utils/battleSe";
+
 
 type BattleHandPieceView = {
   pieceType: SyahoShogiHandPieceType;
@@ -175,7 +177,6 @@ export function useLocalBattle() {
     selectedSquare.value = null;
     selectedHandPiece.value = null;
   }
-
   function submitLocalAction(action: SyahoShogiAction) {
     clearNotice();
 
@@ -188,13 +189,16 @@ export function useLocalBattle() {
 
     state.value = result.state;
 
+    if (action.kind === "DROP" || action.kind === "MOVE") {
+      playMoveSe();
+    }
+
     if (result.state.status === "FINISHED") {
       message.value = `${winnerName.value} の勝ちです`;
     }
 
     return true;
   }
-
   function handleHandClick(pieceType: SyahoShogiHandPieceType) {
     if (state.value.status === "FINISHED") return;
     if ((currentPlayerHands.value[pieceType] ?? 0) <= 0) return;

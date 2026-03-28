@@ -6,6 +6,7 @@ import { userService, type User } from "../services/userServices";
 import {
   playModeSelectBgm,
   unlockModeSelectBgm,
+  stopModeSelectBgm,
 } from "../features/audio/modeSelectBgm";
 
 const router = useRouter();
@@ -22,6 +23,8 @@ const selectedOnlineUserId = ref("");
 const currentStats = ref<ResultStats | null>(null);
 const loadingStats = ref(false);
 const statsErrorMessage = ref("");
+
+const isMusicPlaying = ref(true);
 
 function syncCurrentUserFromStorage() {
   const rawId = Number(localStorage.getItem("onlineUserId"));
@@ -137,23 +140,45 @@ function formatWinRate(rate: number) {
   return `${rate.toFixed(1)}%`;
 }
 
+async function handleFirstPointerDown() {
+  if (isMusicPlaying.value) return;
+  unlockModeSelectBgm();
+  isMusicPlaying.value = true;
+}
+
+async function handleToggleMusic() {
+  if (isMusicPlaying.value) {
+    stopModeSelectBgm(false);
+    isMusicPlaying.value = false;
+    return;
+  }
+
+  await playModeSelectBgm();
+  isMusicPlaying.value = true;
+}
+
 onMounted(async () => {
   syncCurrentUserFromStorage();
   await fetchUsers();
   await fetchCurrentUserStats();
 
-  void playModeSelectBgm();
+  await playModeSelectBgm();
+  isMusicPlaying.value = true;
 });
 </script>
 
 <template>
-  <div class="mode-select-page" @pointerdown.once="unlockModeSelectBgm">
+  <div class="mode-select-page" @pointerdown.once="handleFirstPointerDown">
     <button class="btn local" @click="goLocal">
       ローカルマッチ
     </button>
 
     <button class="btn online" @click="goOnline">
       オンラインマッチ
+    </button>
+
+    <button class="music-toggle-button" @click="handleToggleMusic">
+      {{ isMusicPlaying ? "音楽停止" : "音楽再生" }}
     </button>
 
     <section class="online-user-box">
@@ -285,6 +310,40 @@ onMounted(async () => {
 .online {
   right: 17%;
   top: 70%;
+}
+
+.music-toggle-button {
+  position: absolute;
+  left: 95%;
+  top: 92%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 900;
+  font-size: 13px;
+  color: #4f4a87;
+  background: linear-gradient(
+    135deg,
+    rgba(248, 236, 255, 0.94) 0%,
+    rgba(236, 245, 255, 0.96) 50%,
+    rgba(226, 239, 255, 0.94) 100%
+  );
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  z-index: 2;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.music-toggle-button:hover {
+  filter: brightness(1.03);
+}
+
+.music-toggle-button:active {
+  transform: translateX(-50%) scale(0.97);
 }
 
 .online-user-box {
@@ -488,6 +547,13 @@ onMounted(async () => {
     right: 14%;
     top: 72%;
   }
+
+  .music-toggle-button {
+    top: 80%;
+    width: 154px;
+    height: 40px;
+    font-size: 12px;
+  }
 }
 
 @media (max-width: 560px) {
@@ -503,6 +569,13 @@ onMounted(async () => {
   .online {
     right: 10%;
     top: 70%;
+  }
+
+  .music-toggle-button {
+    top: 78%;
+    width: 146px;
+    height: 36px;
+    font-size: 12px;
   }
 
   .change-user-select,

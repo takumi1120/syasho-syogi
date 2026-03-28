@@ -15,6 +15,7 @@ import {
 import { getHandLabel, getPieceLabel } from "../utils/battleLabels";
 import { getHandPieceImageSrc } from "../utils/pieceImages";
 import { gameService, type Game } from "../../../services/gameService";
+import { playMoveSe } from "../utils/battleSe";
 
 type BattleHandPieceView = {
   pieceType: SyahoShogiHandPieceType;
@@ -246,7 +247,6 @@ export function useOnlineBattle() {
       loading.value = false;
     }
   }
-
   async function submitOnlineAction(action: SyahoShogiAction) {
     clearNotice();
 
@@ -274,6 +274,10 @@ export function useOnlineBattle() {
 
       syncFromGame(nextGame);
 
+      if (action.kind === "DROP" || action.kind === "MOVE") {
+        playMoveSe();
+      }
+
       if (state.value.status !== "FINISHED") {
         message.value = "手を送信しました";
       }
@@ -284,7 +288,6 @@ export function useOnlineBattle() {
       return false;
     }
   }
-
   function handleHandClick(pieceType: SyahoShogiHandPieceType) {
     if (!canInteract.value) return;
     if ((currentPlayerHands.value[pieceType] ?? 0) <= 0) return;
