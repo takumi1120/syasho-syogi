@@ -34,6 +34,19 @@ const BGM_SRC = "/bgm/battle-bgm.mp3";
 let bgm: HTMLAudioElement | null = null;
 const bgmStarted = ref(false);
 
+const isMusicPlaying = ref(true);
+
+async function handleToggleMusic() {
+  if (isMusicPlaying.value) {
+    stopBgm(false);
+    isMusicPlaying.value = false;
+    return;
+  }
+
+  await playBgm();
+  isMusicPlaying.value = true;
+}
+
 function ensureBgm() {
   if (!bgm) {
     bgm = new Audio(BGM_SRC);
@@ -92,6 +105,7 @@ onBeforeUnmount(() => {
         <p class="player-side">PLAYER 1 / 先手</p>
         <p class="player-name">{{ player1Name }}</p>
         <p class="player-character">{{ player1Character || "未設定" }}</p>
+        
       </div>
 
       <div class="nameplate nameplate-center">
@@ -158,6 +172,9 @@ onBeforeUnmount(() => {
         <button class="scene-button" type="button" @click="handleBackToLobby">
           戻る
         </button>
+        <button class="music-toggle-button" type="button" @click="handleToggleMusic">
+  {{ isMusicPlaying ? "音楽停止" : "音楽再生" }}
+</button>
       </div>
     </div>
   </section>
@@ -356,6 +373,42 @@ onBeforeUnmount(() => {
 
 .scene-button:hover {
   transform: translateY(-1px);
+}
+
+.music-toggle-button {
+  position: absolute;
+  right: 170px;
+  bottom: 0px;
+  z-index: 10;
+  min-width: 108px;
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 900;
+  font-size: 13px;
+  color: #4f4a87;
+  background: linear-gradient(
+    135deg,
+    rgba(248, 236, 255, 0.94) 0%,
+    rgba(236, 245, 255, 0.96) 50%,
+    rgba(226, 239, 255, 0.94) 100%
+  );
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
+}
+
+.music-toggle-button:hover {
+  filter: brightness(1.03);
+}
+
+.music-toggle-button:active {
+  transform: scale(0.97);
 }
 
 :deep(.panel) {

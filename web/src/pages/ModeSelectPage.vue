@@ -272,7 +272,7 @@ onMounted(async () => {
   width: 100%;
   min-height: 100vh;
   overflow: hidden;
-  background: url("../assets/background/modeselect.png") center / cover no-repeat;
+  background: url("../assets/background/mode_select_particles_up_sweep_soft.gif") center / cover no-repeat;
 }
 
 .btn {

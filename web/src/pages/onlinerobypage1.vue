@@ -2,6 +2,7 @@
 import { RouterLink } from "vue-router";
 import LobbyShell from "../components/lobby/LobbyShell.vue";
 import OnlineLobbyContent from "../features/online-lobby/components/OnlineLobbyContent.vue";
+import GlobalMusicButton from "../components/GlobalMusicButton.vue";
 </script>
 
 <template>
@@ -15,6 +16,9 @@ import OnlineLobbyContent from "../features/online-lobby/components/OnlineLobbyC
     <RouterLink class="back-link" to="/">
       mode選択へ
     </RouterLink>
+     <div class="page-root">
+    <GlobalMusicButton />
+    </div>
   </section>
 </template>
 

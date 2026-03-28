@@ -8,6 +8,7 @@ import {
   stopModeSelectBgm,
   unlockModeSelectBgm,
 } from "../features/audio/modeSelectBgm";
+import GlobalMusicButton from "../components/GlobalMusicButton.vue";
 
 function isBattleDestination(to: { name?: unknown; path?: string }) {
   const nameText = String(to.name ?? "").toLowerCase();
@@ -39,6 +40,9 @@ onBeforeRouteLeave((to) => {
       mode選択へ
     </RouterLink>
   </section>
+  <div class="page-root">
+    <GlobalMusicButton />
+    </div>
 </template>
 
 <style scoped>

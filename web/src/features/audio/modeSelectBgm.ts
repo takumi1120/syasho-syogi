@@ -14,6 +14,10 @@ function ensureModeSelectBgm() {
     return modeSelectBgm;
 }
 
+export function isModeSelectBgmPlaying() {
+    return !!modeSelectBgm && !modeSelectBgm.paused;
+}
+
 export async function playModeSelectBgm() {
     try {
         const audio = ensureModeSelectBgm();
@@ -26,7 +30,7 @@ export async function playModeSelectBgm() {
 }
 
 export function unlockModeSelectBgm() {
-    if (modeSelectBgmStarted) return;
+    if (modeSelectBgmStarted && isModeSelectBgmPlaying()) return;
     void playModeSelectBgm();
 }
 
@@ -40,6 +44,16 @@ export function stopModeSelectBgm(reset = false) {
     }
 
     modeSelectBgmStarted = false;
+}
+
+export async function toggleModeSelectBgm() {
+    if (isModeSelectBgmPlaying()) {
+        stopModeSelectBgm(false);
+        return false;
+    }
+
+    await playModeSelectBgm();
+    return isModeSelectBgmPlaying();
 }
 
 export function setModeSelectBgmVolume(volume: number) {
