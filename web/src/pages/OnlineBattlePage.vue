@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import BattleBoard from "../features/battle/components/BattleBoard.vue";
 import BattleHands from "../features/battle/components/BattleHands.vue";
 import BattleStatusPanel from "../features/battle/components/BattleStatusPanel.vue";
@@ -31,10 +32,65 @@ const {
   handleCellClick,
   backToLobby,
 } = useOnlineBattle();
+
+// ===== BGM =====
+const BGM_SRC = "/bgm/battle-bgm.mp3";
+let bgm: HTMLAudioElement | null = null;
+const bgmStarted = ref(false);
+
+function ensureBgm() {
+  if (!bgm) {
+    bgm = new Audio(BGM_SRC);
+    bgm.loop = true;
+    bgm.volume = 0.35;
+    bgm.preload = "auto";
+  }
+  return bgm;
+}
+
+async function playBgm() {
+  try {
+    const audio = ensureBgm();
+    await audio.play();
+    bgmStarted.value = true;
+    console.log("online battle bgm started:", BGM_SRC);
+  } catch (error) {
+    console.log("online battle bgm blocked or failed:", error);
+  }
+}
+
+function unlockAndPlayBgm() {
+  if (bgmStarted.value) return;
+  void playBgm();
+}
+
+function stopBgm(reset = false) {
+  if (!bgm) return;
+  bgm.pause();
+
+  if (reset) {
+    bgm.currentTime = 0;
+  }
+}
+
+function handleBackToLobby() {
+  stopBgm(true);
+  backToLobby();
+}
+
+onMounted(() => {
+  void playBgm();
+});
+
+onBeforeUnmount(() => {
+  stopBgm(true);
+  bgm = null;
+  bgmStarted.value = false;
+});
 </script>
 
 <template>
-  <section class="battle-page">
+  <section class="battle-page" @pointerdown.once="unlockAndPlayBgm">
     <div class="battle-scene">
       <div class="nameplate nameplate-left" :class="{ active: currentPlayer === 1 }">
         <p class="player-side">PLAYER 1 / 先手</p>
@@ -109,7 +165,7 @@ const {
         <button class="scene-button" type="button" @click="fetchGame">
           更新
         </button>
-        <button class="scene-button" type="button" @click="backToLobby">
+        <button class="scene-button" type="button" @click="handleBackToLobby">
           戻る
         </button>
       </div>

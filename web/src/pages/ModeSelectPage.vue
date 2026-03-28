@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import { resultService, type ResultStats } from "../services/resultService";
 import { userService, type User } from "../services/userServices";
 
 const router = useRouter();
@@ -13,6 +14,53 @@ const currentOnlineUserId = ref<number | null>(null);
 const currentOnlineUserName = ref("");
 
 const selectedOnlineUserId = ref("");
+
+const currentStats = ref<ResultStats | null>(null);
+const loadingStats = ref(false);
+const statsErrorMessage = ref("");
+
+// --------------------
+// BGM
+// public/bgm/mode-select-bgm.mp3 に置く
+// --------------------
+const BGM_SRC = "/bgm/mode-select-bgm.mp3";
+
+let bgm: HTMLAudioElement | null = null;
+const bgmStarted = ref(false);
+
+function ensureBgm() {
+  if (!bgm) {
+    bgm = new Audio(BGM_SRC);
+    bgm.loop = true;
+    bgm.volume = 0.35;
+    bgm.preload = "auto";
+  }
+  return bgm;
+}
+
+async function playBgm() {
+  try {
+    const audio = ensureBgm();
+    await audio.play();
+    bgmStarted.value = true;
+  } catch (error) {
+    console.log("BGMの自動再生がブロックされました", error);
+  }
+}
+
+function unlockAndPlayBgm() {
+  if (bgmStarted.value) return;
+  void playBgm();
+}
+
+function stopBgm(reset = false) {
+  if (!bgm) return;
+  bgm.pause();
+
+  if (reset) {
+    bgm.currentTime = 0;
+  }
+}
 
 function syncCurrentUserFromStorage() {
   const rawId = Number(localStorage.getItem("onlineUserId"));
@@ -30,6 +78,8 @@ function saveOnlineUser(user: User) {
 
   localStorage.setItem("onlineUserId", String(user.id));
   localStorage.setItem("onlineUserName", user.name);
+
+  void fetchCurrentUserStats();
 }
 
 async function fetchUsers() {
@@ -65,6 +115,27 @@ async function fetchUsers() {
   }
 }
 
+async function fetchCurrentUserStats() {
+  if (!currentOnlineUserId.value) {
+    currentStats.value = null;
+    statsErrorMessage.value = "";
+    return;
+  }
+
+  loadingStats.value = true;
+  statsErrorMessage.value = "";
+
+  try {
+    currentStats.value = await resultService.getUserStats(currentOnlineUserId.value);
+  } catch (error) {
+    currentStats.value = null;
+    statsErrorMessage.value =
+      error instanceof Error ? error.message : "戦績の取得に失敗しました";
+  } finally {
+    loadingStats.value = false;
+  }
+}
+
 function handleUserChange(event: Event) {
   const value = (event.target as HTMLSelectElement).value;
   selectedOnlineUserId.value = value;
@@ -79,15 +150,18 @@ function handleUserChange(event: Event) {
 }
 
 function goLocal() {
+  stopBgm(true);
   router.push({ name: "local-lobby" });
 }
 
 function goOnline() {
   if (!currentOnlineUserId.value) {
+    stopBgm(true);
     router.push({ name: "online-user-entry" });
     return;
   }
 
+  stopBgm(true);
   router.push({
     name: "online-lobby",
     query: {
@@ -98,17 +172,35 @@ function goOnline() {
 }
 
 function goUserRegister() {
+  stopBgm(true);
   router.push({ name: "online-user-entry" });
 }
 
-onMounted(() => {
+function formatWinRate(rate: number) {
+  return `${rate.toFixed(1)}%`;
+}
+
+onMounted(async () => {
   syncCurrentUserFromStorage();
-  fetchUsers();
+  await fetchUsers();
+  await fetchCurrentUserStats();
+
+  // 画面表示時に再生を試す
+  void playBgm();
+});
+
+onBeforeUnmount(() => {
+  stopBgm(true);
+  bgm = null;
+  bgmStarted.value = false;
 });
 </script>
 
 <template>
-  <div class="mode-select-page">
+  <div
+    class="mode-select-page"
+    @pointerdown="unlockAndPlayBgm"
+  >
     <button class="btn local" @click="goLocal">
       ローカルマッチ
     </button>
@@ -118,43 +210,81 @@ onMounted(() => {
     </button>
 
     <section class="online-user-box">
-      <p class="online-user-label">オンライン用ユーザー</p>
-
-      <div class="online-user-actions">
-        <select
-          class="change-user-select"
-          :value="selectedOnlineUserId"
-          :disabled="loadingUsers || users.length === 0"
-          @change="handleUserChange"
+      <select
+        class="change-user-select"
+        :value="selectedOnlineUserId"
+        :disabled="loadingUsers || users.length === 0"
+        @change="handleUserChange"
+      >
+        <option value="">
+          {{
+            loadingUsers
+              ? "ユーザー読込中..."
+              : users.length === 0
+                ? "登録済みユーザーなし"
+                : "ユーザーを選択"
+          }}
+        </option>
+        <option
+          v-for="user in users"
+          :key="user.id"
+          :value="String(user.id)"
         >
-          <option value="">
-            {{
-              loadingUsers
-                ? "ユーザー読込中..."
-                : users.length === 0
-                  ? "登録済みユーザーなし"
-                  : "ユーザーを選択"
-            }}
-          </option>
-          <option
-            v-for="user in users"
-            :key="user.id"
-            :value="String(user.id)"
-          >
-            {{ user.name }} (ID: {{ user.id }})
-          </option>
-        </select>
+          {{ user.name }}
+        </option>
+      </select>
 
-        <button class="register-user-button" @click="goUserRegister">
-          ユーザー登録
-        </button>
+      <div class="record-strip">
+        <p class="record-heading">RESULT</p>
+
+        <p v-if="loadingStats" class="record-empty">
+          戦績を読み込み中...
+        </p>
+
+        <template v-else-if="currentOnlineUserId && currentStats">
+          <div class="record-grid">
+            <div class="record-chip chip-win">
+              <span class="record-chip-label">勝</span>
+              <strong class="record-chip-value">{{ currentStats.totalWins }}</strong>
+            </div>
+
+            <div class="record-chip chip-lose">
+              <span class="record-chip-label">敗</span>
+              <strong class="record-chip-value">{{ currentStats.totalLoses }}</strong>
+            </div>
+
+            <div class="record-chip chip-rate">
+              <span class="record-chip-label">勝率</span>
+              <strong class="record-chip-value">{{ formatWinRate(currentStats.winRate) }}</strong>
+            </div>
+
+            <div class="record-chip chip-rank">
+              <span class="record-chip-label">順位</span>
+              <strong class="record-chip-value">
+                {{ currentStats.rank !== null ? `${currentStats.rank}位` : "-" }}
+              </strong>
+            </div>
+          </div>
+        </template>
+
+        <p v-else class="record-empty">
+          戦績なし
+        </p>
       </div>
+
+      <button class="register-user-button" @click="goUserRegister">
+        ユーザー登録
+      </button>
 
       <p v-if="loadingUsers" class="helper-text">
         ユーザー一覧を読み込み中...
       </p>
       <p v-else class="helper-text">
-        上記ボタンでユーザー登録
+        ユーザー変更はこの画面でできます
+      </p>
+
+      <p v-if="statsErrorMessage" class="error-text">
+        {{ statsErrorMessage }}
       </p>
 
       <p v-if="errorMessage" class="error-text">
@@ -212,119 +342,188 @@ onMounted(() => {
 
 .online-user-box {
   position: absolute;
-  right: 6%;
-  top: 28%;
-  width: min(26vw, 290px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  color: #ffffff;
-  text-align: center;
+  right: 4%;
+  top: 35%;
+  transform: translateY(-50%);
+  width: min(28vw, 280px);
+  padding: 0;
   background: transparent;
   border: none;
-  padding: 0;
-  transform: none;
-}
-
-.online-user-label {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  color: #a91778;
-  text-shadow:
-    0 2px 8px rgba(78, 29, 138, 0.45),
-    0 0 16px rgba(255, 255, 255, 0.65);
-}
-
-.online-user-actions {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+  border-radius: 0;
+  backdrop-filter: none;
+  color: #b98f1c;
+  text-align: center;
+  box-shadow: none;
 }
 
 .change-user-select {
-  width: 100%;
-  height: 48px;
-  padding: 0 18px;
-  border: 2px solid rgba(255, 255, 255, 0.72);
+  width: 208px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
   border-radius: 999px;
   background: linear-gradient(
-    135deg,
-    rgba(91, 170, 255, 0.95) 0%,
-    rgba(126, 209, 255, 0.95) 55%,
-    rgba(180, 235, 255, 0.95) 100%
+    180deg,
+    rgba(248, 252, 255, 0.92) 0%,
+    rgba(228, 242, 255, 0.88) 100%
   );
-  color: #10396c;
-  font-size: 14px;
-  font-weight: 900;
-  text-align: center;
+  color: #31507b;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 800;
   outline: none;
+  text-align: center;
   box-shadow:
-    0 10px 24px rgba(76, 127, 255, 0.22),
-    inset 0 2px 8px rgba(255, 255, 255, 0.5);
+    0 8px 18px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .change-user-select:disabled {
-  opacity: 0.65;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-.register-user-button {
-  width: 100%;
-  height: 48px;
-  border: 2px solid rgba(255, 255, 255, 0.72);
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 900;
-  color: #7b245d;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 197, 236, 0.96) 0%,
-    rgba(255, 224, 244, 0.96) 45%,
-    rgba(255, 246, 186, 0.96) 100%
-  );
-  box-shadow:
-    0 10px 24px rgba(255, 132, 207, 0.24),
-    inset 0 2px 8px rgba(255, 255, 255, 0.55);
-  transition: transform 0.18s ease, filter 0.18s ease;
+.change-user-select option {
+  color: #31507b;
+  background: #f7fbff;
 }
 
-.register-user-button:hover {
-  transform: translateY(-2px) scale(1.02);
-  filter: brightness(1.04);
+.record-strip {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 12px 12px 10px;
+  border-radius: 20px;
+  background: linear-gradient(
+    180deg,
+    rgb(24, 125, 202) 0%,
+    rgba(255, 255, 255, 0.09) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 10px 18px rgba(0, 0, 0, 0.14);
+  backdrop-filter: blur(6px);
+}
+
+.record-heading {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  color: #d8f1ff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.record-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.record-chip {
+  padding: 10px 8px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 8px 14px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.chip-win {
+  background: linear-gradient(135deg, rgba(143, 226, 255, 0.9), rgba(130, 187, 255, 0.82));
+}
+
+.chip-lose {
+  background: linear-gradient(135deg, rgba(255, 185, 226, 0.88), rgba(255, 153, 190, 0.8));
+}
+
+.chip-rate {
+  background: linear-gradient(135deg, rgba(184, 255, 220, 0.88), rgba(138, 234, 201, 0.8));
+}
+
+.chip-rank {
+  background: linear-gradient(135deg, rgba(255, 234, 163, 0.92), rgba(255, 198, 136, 0.84));
+}
+
+.record-chip-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+}
+
+.record-chip-value {
+  display: block;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.1;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.record-empty {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ecf7ff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.register-user-button {
+  width: 208px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 900;
+  font-size: 13px;
+  color: #4f4a87;
+  background: linear-gradient(
+    135deg,
+    rgba(248, 236, 255, 0.94) 0%,
+    rgba(236, 245, 255, 0.96) 50%,
+    rgba(226, 239, 255, 0.94) 100%
+  );
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.register-user-button:hover,
+.change-user-select:hover {
+  filter: brightness(1.03);
 }
 
 .helper-text {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 800;
-  color: #0c0c0c;
-  text-shadow:
-    0 2px 10px rgba(64, 44, 138, 0.45),
-    0 0 10px rgba(255, 255, 255, 0.4);
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: #eef7ff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .error-text {
-  margin: 0;
+  margin: 8px 0 0;
   font-size: 12px;
-  font-weight: 900;
-  color: #ff3e7f;
-  background: rgba(255, 255, 255, 0.85);
-  padding: 6px 12px;
-  border-radius: 999px;
-  box-shadow: 0 6px 18px rgba(255, 62, 127, 0.18);
+  font-weight: 700;
+  color: #ffd1d1;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 900px) {
   .online-user-box {
-    right: 3.5%;
-    top: 26%;
-    width: min(29vw, 270px);
+    right: 3%;
+    width: min(32vw, 248px);
+  }
+
+  .change-user-select,
+  .register-user-button {
+    width: 196px;
+  }
+
+  .record-chip-value {
+    font-size: 16px;
   }
 }
 
@@ -348,7 +547,7 @@ onMounted(() => {
     top: auto;
     bottom: 5%;
     transform: translateX(50%);
-    width: min(88vw, 300px);
+    width: min(90vw, 290px);
   }
 }
 
@@ -367,15 +566,24 @@ onMounted(() => {
     top: 70%;
   }
 
-  .online-user-box {
-    width: min(90vw, 290px);
-    bottom: 4%;
+  .record-grid {
+    gap: 6px;
+  }
+
+  .record-chip {
+    padding: 9px 6px;
+    border-radius: 14px;
+  }
+
+  .record-chip-value {
+    font-size: 15px;
   }
 
   .change-user-select,
   .register-user-button {
-    height: 44px;
-    font-size: 13px;
+    width: 188px;
+    height: 36px;
+    font-size: 12px;
   }
 }
 </style>

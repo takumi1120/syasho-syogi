@@ -7,7 +7,7 @@ import { config } from "./lib/config";
 import roomsRouter from "./routes/rooms";
 import gamesRouter from "./routes/games";
 import usersRouter from "./routes/users";
-
+import resultsRouter from "./routes/results";
 
 
 
@@ -16,7 +16,7 @@ const port = Number(process.env.PORT ?? 3000);
 
 app.use(express.json());
 app.use(cors({ origin: config.corsOrigin }));
-
+app.use("/results", resultsRouter);
 app.use((req, _res, next) => {
     logInfo("request", { method: req.method, path: req.path });
     next();
