@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { resultService, type ResultStats } from "../services/resultService";
 import { userService, type User } from "../services/userServices";
+import {
+  playModeSelectBgm,
+  unlockModeSelectBgm,
+} from "../features/audio/modeSelectBgm";
 
 const router = useRouter();
 
@@ -18,49 +22,6 @@ const selectedOnlineUserId = ref("");
 const currentStats = ref<ResultStats | null>(null);
 const loadingStats = ref(false);
 const statsErrorMessage = ref("");
-
-// --------------------
-// BGM
-// public/bgm/mode-select-bgm.mp3 に置く
-// --------------------
-const BGM_SRC = "/bgm/mode-select-bgm.mp3";
-
-let bgm: HTMLAudioElement | null = null;
-const bgmStarted = ref(false);
-
-function ensureBgm() {
-  if (!bgm) {
-    bgm = new Audio(BGM_SRC);
-    bgm.loop = true;
-    bgm.volume = 0.35;
-    bgm.preload = "auto";
-  }
-  return bgm;
-}
-
-async function playBgm() {
-  try {
-    const audio = ensureBgm();
-    await audio.play();
-    bgmStarted.value = true;
-  } catch (error) {
-    console.log("BGMの自動再生がブロックされました", error);
-  }
-}
-
-function unlockAndPlayBgm() {
-  if (bgmStarted.value) return;
-  void playBgm();
-}
-
-function stopBgm(reset = false) {
-  if (!bgm) return;
-  bgm.pause();
-
-  if (reset) {
-    bgm.currentTime = 0;
-  }
-}
 
 function syncCurrentUserFromStorage() {
   const rawId = Number(localStorage.getItem("onlineUserId"));
@@ -150,18 +111,15 @@ function handleUserChange(event: Event) {
 }
 
 function goLocal() {
-  stopBgm(true);
   router.push({ name: "local-lobby" });
 }
 
 function goOnline() {
   if (!currentOnlineUserId.value) {
-    stopBgm(true);
     router.push({ name: "online-user-entry" });
     return;
   }
 
-  stopBgm(true);
   router.push({
     name: "online-lobby",
     query: {
@@ -172,7 +130,6 @@ function goOnline() {
 }
 
 function goUserRegister() {
-  stopBgm(true);
   router.push({ name: "online-user-entry" });
 }
 
@@ -185,22 +142,12 @@ onMounted(async () => {
   await fetchUsers();
   await fetchCurrentUserStats();
 
-  // 画面表示時に再生を試す
-  void playBgm();
-});
-
-onBeforeUnmount(() => {
-  stopBgm(true);
-  bgm = null;
-  bgmStarted.value = false;
+  void playModeSelectBgm();
 });
 </script>
 
 <template>
-  <div
-    class="mode-select-page"
-    @pointerdown="unlockAndPlayBgm"
-  >
+  <div class="mode-select-page" @pointerdown.once="unlockModeSelectBgm">
     <button class="btn local" @click="goLocal">
       ローカルマッチ
     </button>
@@ -541,14 +488,6 @@ onBeforeUnmount(() => {
     right: 14%;
     top: 72%;
   }
-
-  .online-user-box {
-    right: 50%;
-    top: auto;
-    bottom: 5%;
-    transform: translateX(50%);
-    width: min(90vw, 290px);
-  }
 }
 
 @media (max-width: 560px) {
@@ -564,19 +503,6 @@ onBeforeUnmount(() => {
   .online {
     right: 10%;
     top: 70%;
-  }
-
-  .record-grid {
-    gap: 6px;
-  }
-
-  .record-chip {
-    padding: 9px 6px;
-    border-radius: 14px;
-  }
-
-  .record-chip-value {
-    font-size: 15px;
   }
 
   .change-user-select,

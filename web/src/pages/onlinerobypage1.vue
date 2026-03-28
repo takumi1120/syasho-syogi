@@ -1,34 +1,11 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
-import { onBeforeRouteLeave, RouterLink } from "vue-router";
+import { RouterLink } from "vue-router";
 import LobbyShell from "../components/lobby/LobbyShell.vue";
 import OnlineLobbyContent from "../features/online-lobby/components/OnlineLobbyContent.vue";
-import {
-  playModeSelectBgm,
-  stopModeSelectBgm,
-  unlockModeSelectBgm,
-} from "../features/audio/modeSelectBgm";
-
-function isBattleDestination(to: { name?: unknown; path?: string }) {
-  const nameText = String(to.name ?? "").toLowerCase();
-  const pathText = String(to.path ?? "").toLowerCase();
-
-  return nameText.includes("battle") || pathText.includes("battle");
-}
-
-onMounted(() => {
-  void playModeSelectBgm();
-});
-
-onBeforeRouteLeave((to) => {
-  if (isBattleDestination(to)) {
-    stopModeSelectBgm(true);
-  }
-});
 </script>
 
 <template>
-  <section class="lobby-page" @pointerdown.once="unlockModeSelectBgm">
+  <section class="lobby-page">
     <div class="page-overlay"></div>
 
     <LobbyShell>
