@@ -1,4 +1,20 @@
 <script setup lang="ts">
+import { computed } from "vue";
+
+defineProps<{
+  player1Name: string;
+  player2Name: string;
+  player1Character: string;
+  player2Character: string;
+  enableNameValidation: boolean;
+  trimmedPlayer1Name: string;
+  trimmedPlayer2Name: string;
+  characterOptions: ReadonlyArray<{
+    label: string;
+    value: string;
+  }>;
+}>();
+
 const props = defineProps<{
   player1Name: string;
   player2Name: string;
@@ -20,6 +36,9 @@ const emit = defineEmits<{
   (e: "update:player2Character", value: string): void;
   (e: "swap"): void;
 }>();
+
+const trimmedPlayer1Character = computed(() => props.player1Character.trim());
+const trimmedPlayer2Character = computed(() => props.player2Character.trim());
 </script>
 
 <template>
@@ -60,18 +79,25 @@ const emit = defineEmits<{
         <label class="field-label" for="p1-character">キャラクター</label>
         <select
           id="p1-character"
-          class="select-input"
+          class="text-input select-input"
           :value="player1Character"
           @change="emit('update:player1Character', ($event.target as HTMLSelectElement).value)"
         >
           <option
-            v-for="option in props.characterOptions"
+            v-for="option in characterOptions"
             :key="`p1-${option.value || 'empty'}`"
             :value="option.value"
           >
             {{ option.label }}
           </option>
         </select>
+
+        <p
+          v-if="enableNameValidation && trimmedPlayer1Character.length === 0"
+          class="field-error"
+        >
+          プレイヤー1のキャラクターを選択してください
+        </p>
       </article>
 
       <article class="player-card">
@@ -98,18 +124,25 @@ const emit = defineEmits<{
         <label class="field-label" for="p2-character">キャラクター</label>
         <select
           id="p2-character"
-          class="select-input"
+          class="text-input select-input"
           :value="player2Character"
           @change="emit('update:player2Character', ($event.target as HTMLSelectElement).value)"
         >
           <option
-            v-for="option in props.characterOptions"
+            v-for="option in characterOptions"
             :key="`p2-${option.value || 'empty'}`"
             :value="option.value"
           >
             {{ option.label }}
           </option>
         </select>
+
+        <p
+          v-if="enableNameValidation && trimmedPlayer2Character.length === 0"
+          class="field-error"
+        >
+          プレイヤー2のキャラクターを選択してください
+        </p>
       </article>
     </div>
   </section>
@@ -232,77 +265,74 @@ h2 {
   margin-top: 2px;
   font-size: 11px;
   font-weight: 800;
-  color: #fff0b8;
+  letter-spacing: 0.08em;
+  color: #ffd96a;
   text-shadow:
-    0 1px 0 rgba(84, 52, 0, 0.3),
-    0 2px 8px rgba(0, 0, 0, 0.12);
+    0 1px 0 rgba(90, 56, 0, 0.42),
+    0 2px 8px rgba(0, 0, 0, 0.14);
 }
 
-.text-input,
-.select-input {
+.text-input {
   width: 100%;
   min-width: 0;
-  min-height: 40px;
+  height: 42px;
   padding: 0 12px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 247, 221, 0.30);
-  background: rgba(38, 52, 84, 0.78);
-  color: #fff7dc;
+  border: 1px solid rgba(255, 244, 214, 0.16);
+  background: rgba(22, 34, 64, 0.28);
+  color: #fff4cf;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
   outline: none;
   box-sizing: border-box;
-  backdrop-filter: blur(6px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 4px 12px rgba(0, 0, 0, 0.10);
+  text-shadow: none;
 }
 
 .text-input::placeholder {
-  color: rgba(255, 240, 204, 0.70);
+  color: rgba(255, 232, 166, 0.78);
+}
+
+.text-input:focus {
+  border-color: rgba(255, 238, 196, 0.28);
+  background: rgba(22, 34, 64, 0.34);
 }
 
 .select-input {
   appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   cursor: pointer;
-  background:
-    linear-gradient(180deg, rgba(54, 72, 110, 0.92) 0%, rgba(35, 49, 80, 0.92) 100%);
-  color: #fff4c8;
-  text-shadow:
-    0 1px 0 rgba(72, 42, 0, 0.28),
-    0 2px 6px rgba(0, 0, 0, 0.12);
-}
-
-.select-input:focus,
-.text-input:focus {
-  border-color: rgba(255, 224, 128, 0.72);
-  box-shadow:
-    0 0 0 2px rgba(255, 224, 128, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .select-input option {
-  color: #2f220a;
-  background: #fff4d6;
-}
-
-.select-input:disabled,
-.text-input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  color: #10233f;
+  background: #f5f8ff;
 }
 
 .field-error {
   margin: -2px 0 0;
-  font-size: 11px;
-  font-weight: 700;
-  color: #ffd1da;
-  text-shadow: 0 1px 0 rgba(88, 16, 36, 0.32);
+  color: #ffe0c4;
+  font-size: 12px;
+  line-height: 1.5;
+  text-shadow:
+    0 1px 0 rgba(92, 28, 38, 0.22),
+    0 2px 8px rgba(0, 0, 0, 0.14);
 }
 
-@media (max-width: 820px) {
+@media (max-width: 980px) {
   .players-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .panel-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .swap-button {
+    width: 100%;
   }
 }
 </style>

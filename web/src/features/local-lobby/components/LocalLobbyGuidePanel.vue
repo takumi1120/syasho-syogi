@@ -46,7 +46,7 @@ defineEmits<{
       </button>
     </div>
 
-    <p class="hint">2人分の名前が入ると開始できます。</p>
+    <p class="hint">2人分の名前とキャラクターを選択すると開始できます。</p>
   </section>
 </template>
 

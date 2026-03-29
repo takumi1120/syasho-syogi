@@ -71,7 +71,12 @@ export function useLocalLobby() {
   const trimmedPlayer2Character = computed(() => player2Character.value.trim());
 
   const canStart = computed(() => {
-    return trimmedPlayer1Name.value.length > 0 && trimmedPlayer2Name.value.length > 0;
+    return (
+      trimmedPlayer1Name.value.length > 0 &&
+      trimmedPlayer2Name.value.length > 0 &&
+      trimmedPlayer1Character.value.length > 0 &&
+      trimmedPlayer2Character.value.length > 0
+    );
   });
 
   function swapPlayers() {

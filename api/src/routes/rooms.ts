@@ -15,7 +15,6 @@ const CHARACTER_IMAGE_MAP: Record<string, string> = {
 
 function resolveBossImage(characterName: string | null | undefined): string | null {
     const trimmed = characterName?.trim();
-    console.log(trimmed, characterName);
     if (!trimmed) return null;
     return CHARACTER_IMAGE_MAP[trimmed] ?? null;
 }
@@ -28,8 +27,8 @@ function isBoolean(value: unknown): value is boolean {
     return typeof value === "boolean";
 }
 
-function isOptionalString(value: unknown): value is string | undefined {
-    return value === undefined || typeof value === "string";
+function isNonEmptyString(value: unknown): value is string {
+    return typeof value === "string" && value.trim().length > 0;
 }
 
 function createRoomCode(length = 6): string {
@@ -57,7 +56,7 @@ async function generateUniqueRoomCode(): Promise<string> {
 /**
  * POST /rooms
  * 部屋作成
- * body: { hostUserId: number, hostCharacter?: string }
+ * body: { hostUserId: number, hostCharacter: string }
  */
 router.post("/", async (req, res) => {
     try {
@@ -70,8 +69,8 @@ router.post("/", async (req, res) => {
             return res.status(400).json({ message: "hostUserId must be a positive integer" });
         }
 
-        if (!isOptionalString(hostCharacter)) {
-            return res.status(400).json({ message: "hostCharacter must be a string" });
+        if (!isNonEmptyString(hostCharacter)) {
+            return res.status(400).json({ message: "hostCharacter is required" });
         }
 
         const hostUser = await db.user.findUnique({
@@ -89,7 +88,7 @@ router.post("/", async (req, res) => {
             data: {
                 roomCode,
                 hostUserId,
-                hostCharacter: hostCharacter?.trim() ? hostCharacter.trim() : null,
+                hostCharacter: hostCharacter.trim(),
                 status: "OPEN",
             },
             include: {
@@ -141,7 +140,7 @@ router.get("/:roomCode", async (req, res) => {
 /**
  * POST /rooms/:roomCode/join
  * 部屋参加
- * body: { guestUserId: number, guestCharacter?: string }
+ * body: { guestUserId: number, guestCharacter: string }
  */
 router.post("/:roomCode/join", async (req, res) => {
     try {
@@ -159,8 +158,8 @@ router.post("/:roomCode/join", async (req, res) => {
             return res.status(400).json({ message: "guestUserId must be a positive integer" });
         }
 
-        if (!isOptionalString(guestCharacter)) {
-            return res.status(400).json({ message: "guestCharacter must be a string" });
+        if (!isNonEmptyString(guestCharacter)) {
+            return res.status(400).json({ message: "guestCharacter is required" });
         }
 
         const room = await db.room.findUnique({
@@ -200,7 +199,7 @@ router.post("/:roomCode/join", async (req, res) => {
             where: { roomCode },
             data: {
                 guestUserId,
-                guestCharacter: guestCharacter?.trim() ? guestCharacter.trim() : null,
+                guestCharacter: guestCharacter.trim(),
                 guestReady: false,
                 status: "MATCHED",
             },
@@ -321,6 +320,10 @@ router.post("/:roomCode/start", async (req, res) => {
             return res.status(400).json({ message: "both players must be ready" });
         }
 
+        if (!room.hostCharacter?.trim() || !room.guestCharacter?.trim()) {
+            return res.status(400).json({ message: "both players must select a character" });
+        }
+
         if (room.gameId && room.game) {
             return res.json({
                 message: "game already exists",
@@ -339,7 +342,6 @@ router.post("/:roomCode/start", async (req, res) => {
 
         const player1BossImage = resolveBossImage(player1Character);
         const player2BossImage = resolveBossImage(player2Character);
-        console.log(player1Character, player2Character, player1BossImage, player2BossImage);
 
         const initialBoardState = createInitialSyahoShogiState({
             player1BossCharacter: player1Character ?? null,
@@ -388,6 +390,7 @@ router.post("/:roomCode/start", async (req, res) => {
         return res.status(500).json({ message: "failed to start game" });
     }
 });
+
 router.post("/:roomCode/leave", async (req, res) => {
     try {
         const roomCode = req.params.roomCode?.trim().toUpperCase();
@@ -493,4 +496,5 @@ router.post("/:roomCode/leave", async (req, res) => {
         return res.status(500).json({ message: "failed to leave room" });
     }
 });
+
 export default router;
