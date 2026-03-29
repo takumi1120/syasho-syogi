@@ -1,20 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-defineProps<{
-  player1Name: string;
-  player2Name: string;
-  player1Character: string;
-  player2Character: string;
-  enableNameValidation: boolean;
-  trimmedPlayer1Name: string;
-  trimmedPlayer2Name: string;
-  characterOptions: ReadonlyArray<{
-    label: string;
-    value: string;
-  }>;
-}>();
-
 const props = defineProps<{
   player1Name: string;
   player2Name: string;

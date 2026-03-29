@@ -247,7 +247,7 @@ onBeforeUnmount(() => {
   border-radius: 28px;
   overflow: hidden;
   background:
-    url("/battle/backgrounds/rainbow-battle-bg.png") center / 100% 100% no-repeat;
+    url("/battle/backgrounds/rainbow_battle_bg_animated_stronger_hq.gif") center / 100% 100% no-repeat;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
 }
 
