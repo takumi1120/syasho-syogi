@@ -15,7 +15,7 @@ const CHARACTER_IMAGE_MAP: Record<string, string> = {
 
 function resolveBossImage(characterName: string | null | undefined): string | null {
     const trimmed = characterName?.trim();
-    console.log(trimmed, characterName)
+    console.log(trimmed, characterName);
     if (!trimmed) return null;
     return CHARACTER_IMAGE_MAP[trimmed] ?? null;
 }
@@ -339,7 +339,8 @@ router.post("/:roomCode/start", async (req, res) => {
 
         const player1BossImage = resolveBossImage(player1Character);
         const player2BossImage = resolveBossImage(player2Character);
-        console.log(player1Character, player2Character, player1BossImage, player2BossImage)
+        console.log(player1Character, player2Character, player1BossImage, player2BossImage);
+
         const initialBoardState = createInitialSyahoShogiState({
             player1BossCharacter: player1Character ?? null,
             player2BossCharacter: player2Character ?? null,
@@ -387,12 +388,6 @@ router.post("/:roomCode/start", async (req, res) => {
         return res.status(500).json({ message: "failed to start game" });
     }
 });
-
-/**
- * POST /rooms/:roomCode/leave
- * 部屋離脱
- * body: { userId: number }
- */
 router.post("/:roomCode/leave", async (req, res) => {
     try {
         const roomCode = req.params.roomCode?.trim().toUpperCase();
@@ -419,7 +414,44 @@ router.post("/:roomCode/leave", async (req, res) => {
             return res.status(404).json({ message: "room not found" });
         }
 
-        if (room.hostUserId === userId) {
+        const isHost = room.hostUserId === userId;
+        const isGuest = room.guestUserId === userId;
+
+        if (!isHost && !isGuest) {
+            return res.status(403).json({ message: "user does not belong to this room" });
+        }
+
+        const playingGameId = room.gameId;
+
+        if (room.status === "PLAYING" && playingGameId != null) {
+            const result = await db.$transaction(async (tx) => {
+                await tx.game.update({
+                    where: { id: playingGameId },
+                    data: {
+                        status: "ABORTED",
+                        endedAt: new Date(),
+                    },
+                });
+
+                const updatedRoom = await tx.room.update({
+                    where: { roomCode },
+                    data: {
+                        status: "CLOSED",
+                    },
+                    include: {
+                        hostUser: { select: { id: true, name: true } },
+                        guestUser: { select: { id: true, name: true } },
+                        game: true,
+                    },
+                });
+
+                return updatedRoom;
+            });
+
+            return res.json(result);
+        }
+
+        if (isHost) {
             const updatedRoom = await db.room.update({
                 where: { roomCode },
                 data: {
@@ -435,7 +467,7 @@ router.post("/:roomCode/leave", async (req, res) => {
             return res.json(updatedRoom);
         }
 
-        if (room.guestUserId === userId) {
+        if (isGuest) {
             const updatedRoom = await db.room.update({
                 where: { roomCode },
                 data: {
@@ -461,5 +493,4 @@ router.post("/:roomCode/leave", async (req, res) => {
         return res.status(500).json({ message: "failed to leave room" });
     }
 });
-
 export default router;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import BattleBoard from "../features/battle/components/BattleBoard.vue";
 import BattleHands from "../features/battle/components/BattleHands.vue";
 import BattleStatusPanel from "../features/battle/components/BattleStatusPanel.vue";
@@ -32,6 +32,24 @@ const {
   handleCellClick,
   backToLobby,
 } = useOnlineBattle();
+
+const showExitNotice = computed(() => resultLabel.value === "対局中断");
+
+const exitNoticeTitle = computed(() => "対戦相手が退出しました");
+
+const exitNoticeText = computed(() => {
+  if (message.value.trim()) return message.value;
+  return "相手の退出により対局は中断されました";
+});
+
+const exitNoticeSubText = computed(() => {
+  if (roomCode.value) {
+    return gameId.value
+      ? `ROOM: ${roomCode.value} / GAME: ${gameId.value}`
+      : `ROOM: ${roomCode.value}`;
+  }
+  return "オンライン対戦";
+});
 
 // ===== BGM =====
 const BGM_SRC = "/bgm/battle-bgm.mp3";
@@ -86,9 +104,9 @@ function stopBgm(reset = false) {
   }
 }
 
-function handleBackToLobby() {
+async function handleBackToLobby() {
   stopBgm(true);
-  backToLobby();
+  await backToLobby();
 }
 
 onMounted(() => {
@@ -105,6 +123,23 @@ onBeforeUnmount(() => {
 <template>
   <section class="battle-page" @pointerdown.once="unlockAndPlayBgm">
     <div class="battle-scene">
+      <transition name="exit-notice">
+        <div v-if="showExitNotice" class="exit-notice-overlay">
+          <div class="exit-notice-card">
+            <p class="exit-notice-badge">ONLINE BATTLE</p>
+            <h2 class="exit-notice-title">{{ exitNoticeTitle }}</h2>
+            <p class="exit-notice-text">{{ exitNoticeText }}</p>
+            <p class="exit-notice-subtext">{{ exitNoticeSubText }}</p>
+
+            <div class="exit-notice-actions">
+              <button class="exit-notice-button" type="button" @click="handleBackToLobby">
+                ロビーへ戻る
+              </button>
+            </div>
+          </div>
+        </div>
+      </transition>
+
       <div class="nameplate nameplate-left" :class="{ active: currentPlayer === 1 }">
         <p class="player-side">PLAYER 1 / 先手</p>
         <p class="player-name">{{ player1Name }}</p>
@@ -182,8 +217,8 @@ onBeforeUnmount(() => {
           戻る
         </button>
         <button class="music-toggle-button" type="button" @click="handleToggleMusic">
-  {{ isMusicPlaying ? "音楽停止" : "音楽再生" }}
-</button>
+          {{ isMusicPlaying ? "音楽停止" : "音楽再生" }}
+        </button>
       </div>
     </div>
   </section>
@@ -223,6 +258,124 @@ onBeforeUnmount(() => {
   background:
     radial-gradient(circle at center, transparent 42%, rgba(0, 0, 0, 0.08) 100%);
   pointer-events: none;
+}
+
+.exit-notice-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(7, 10, 30, 0.48);
+  backdrop-filter: blur(6px);
+}
+
+.exit-notice-card {
+  width: min(92%, 620px);
+  padding: 34px 28px 28px;
+  border-radius: 30px;
+  text-align: center;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08)),
+    linear-gradient(180deg, rgba(101, 58, 182, 0.92), rgba(38, 29, 101, 0.94));
+  border: 2px solid rgba(255, 255, 255, 0.34);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+
+.exit-notice-badge {
+  margin: 0;
+  font-size: clamp(12px, 1vw, 15px);
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  color: #fff3a6;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.exit-notice-title {
+  margin: 12px 0 0;
+  font-size: clamp(30px, 3vw, 52px);
+  line-height: 1.08;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow:
+    0 4px 18px rgba(0, 0, 0, 0.35),
+    0 0 24px rgba(255, 255, 255, 0.16);
+}
+
+.exit-notice-text {
+  margin: 16px 0 0;
+  font-size: clamp(16px, 1.35vw, 22px);
+  line-height: 1.7;
+  font-weight: 800;
+  color: #f7f4ff;
+}
+
+.exit-notice-subtext {
+  margin: 12px 0 0;
+  font-size: clamp(12px, 1vw, 15px);
+  line-height: 1.5;
+  color: rgba(239, 242, 255, 0.9);
+}
+
+.exit-notice-actions {
+  margin-top: 22px;
+  display: flex;
+  justify-content: center;
+}
+
+.exit-notice-button {
+  min-width: 220px;
+  height: 52px;
+  padding: 0 22px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 900;
+  color: #4d2b8a;
+  background:
+    linear-gradient(180deg, #fff8d5 0%, #ffe9a2 100%);
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  transition:
+    transform 0.18s ease,
+    filter 0.18s ease;
+}
+
+.exit-notice-button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+}
+
+.exit-notice-button:active {
+  transform: scale(0.98);
+}
+
+.exit-notice-enter-active,
+.exit-notice-leave-active {
+  transition: opacity 0.22s ease;
+}
+
+.exit-notice-enter-active .exit-notice-card,
+.exit-notice-leave-active .exit-notice-card {
+  transition:
+    transform 0.22s ease,
+    opacity 0.22s ease;
+}
+
+.exit-notice-enter-from,
+.exit-notice-leave-to {
+  opacity: 0;
+}
+
+.exit-notice-enter-from .exit-notice-card,
+.exit-notice-leave-to .exit-notice-card {
+  opacity: 0;
+  transform: scale(0.94) translateY(10px);
 }
 
 .nameplate {
@@ -417,7 +570,7 @@ onBeforeUnmount(() => {
 
 .music-toggle-button {
   position: absolute;
-   right: 170px;
+  right: 170px;
   bottom: 0px;
   z-index: 10;
   min-width: 108px;
@@ -462,6 +615,10 @@ onBeforeUnmount(() => {
 
   .status-panel {
     width: 33%;
+  }
+
+  .exit-notice-card {
+    width: min(92%, 560px);
   }
 }
 
@@ -510,6 +667,17 @@ onBeforeUnmount(() => {
     padding: 8px 14px;
     font-size: 12px;
   }
+
+  .exit-notice-card {
+    padding: 28px 20px 22px;
+    width: min(94%, 500px);
+  }
+
+  .exit-notice-button {
+    min-width: 180px;
+    height: 46px;
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 560px) {
@@ -532,6 +700,22 @@ onBeforeUnmount(() => {
 
   :deep(.panel) {
     padding: 10px 12px;
+  }
+
+  .exit-notice-overlay {
+    padding: 16px;
+  }
+
+  .exit-notice-title {
+    font-size: clamp(24px, 7vw, 34px);
+  }
+
+  .exit-notice-text {
+    font-size: 15px;
+  }
+
+  .exit-notice-subtext {
+    font-size: 11px;
   }
 }
 </style>

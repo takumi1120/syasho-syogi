@@ -5,6 +5,7 @@ import {
   restoreSyahoShogiState,
   getLegalMovesFrom,
   getLegalDropsForPiece,
+  isPlayerInCheck,
   type SyahoShogiAction,
   type SyahoShogiHandPieceType,
   type SyahoShogiPieceType,
@@ -15,7 +16,8 @@ import {
 import { getHandLabel, getPieceLabel } from "../utils/battleLabels";
 import { getHandPieceImageSrc } from "../utils/pieceImages";
 import { gameService, type Game } from "../../../services/gameService";
-import { playMoveSe } from "../utils/battleSe";
+import { roomService } from "../../../services/roomService";
+import { playMoveSe, playCheckSe } from "../utils/battleSe";
 
 type BattleHandPieceView = {
   pieceType: SyahoShogiHandPieceType;
@@ -64,6 +66,8 @@ export function useOnlineBattle() {
   const game = ref<Game | null>(null);
   const loading = ref(false);
   const pollingId = ref<number | null>(null);
+  const leaving = ref(false);
+  let hasSyncedOnce = false;
 
   const state = ref<SyahoShogiState>(createInitialSyahoShogiState());
 
@@ -127,6 +131,12 @@ export function useOnlineBattle() {
     if (state.value.winReason === "CAPTURE_BOSS") return "社長を取って勝利";
     if (state.value.winReason === "TRY") return "トライ成功";
     return null;
+  });
+
+  const checkLabel = computed(() => {
+    if (game.value?.status === "ABORTED") return null;
+    if (state.value.status !== "PLAYING") return null;
+    return isPlayerInCheck(state.value, state.value.currentPlayer) ? "王手" : null;
   });
 
   const lastActionLabel = computed(() => {
@@ -213,6 +223,19 @@ export function useOnlineBattle() {
     selectedHandPiece.value = null;
   }
 
+  function playSyncedActionSe(prevMoveNumber: number, nextState: SyahoShogiState) {
+    if (!hasSyncedOnce) return;
+    if (nextState.moveNumber === prevMoveNumber) return;
+
+    playMoveSe();
+
+    if (nextState.status !== "FINISHED" && isPlayerInCheck(nextState, nextState.currentPlayer)) {
+      window.setTimeout(() => {
+        playCheckSe();
+      }, 120);
+    }
+  }
+
   function syncFromGame(nextGame: Game) {
     const prevMoveNumber = state.value.moveNumber;
 
@@ -223,11 +246,71 @@ export function useOnlineBattle() {
       clearSelection();
     }
 
+    playSyncedActionSe(prevMoveNumber, state.value);
+
     if (nextGame.status === "ABORTED") {
       message.value = "対局は中断されました";
+      stopPolling();
     } else if (state.value.status === "FINISHED" && winnerName.value) {
       message.value = `${winnerName.value} の勝ちです`;
+      stopPolling();
     }
+
+    hasSyncedOnce = true;
+  }
+
+  function canLeaveBattle() {
+    return (
+      !leaving.value &&
+      !!roomCode.value &&
+      !!userId.value &&
+      game.value?.status === "PLAYING"
+    );
+  }
+
+  async function leaveBattle() {
+    if (!canLeaveBattle()) return;
+
+    leaving.value = true;
+
+    try {
+      await roomService.leaveRoom({
+        roomCode: roomCode.value,
+        userId: userId.value!,
+      });
+    } catch {
+      // 離脱通知失敗でも画面遷移は止めない
+    }
+  }
+
+  function leaveBattleKeepalive() {
+    if (!canLeaveBattle()) return;
+
+    leaving.value = true;
+
+    const apiBaseUrl =
+      typeof import.meta.env.VITE_API_BASE_URL === "string" &&
+        import.meta.env.VITE_API_BASE_URL.trim() !== ""
+        ? import.meta.env.VITE_API_BASE_URL.replace(/\/$/, "")
+        : "http://localhost:3000";
+
+    void fetch(
+      `${apiBaseUrl}/rooms/${roomCode.value.trim().toUpperCase()}/leave`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userId.value,
+        }),
+        keepalive: true,
+      },
+    ).catch(() => { });
+  }
+
+  function handlePageHide() {
+    leaveBattleKeepalive();
   }
 
   async function fetchGame() {
@@ -247,6 +330,7 @@ export function useOnlineBattle() {
       loading.value = false;
     }
   }
+
   async function submitOnlineAction(action: SyahoShogiAction) {
     clearNotice();
 
@@ -274,10 +358,6 @@ export function useOnlineBattle() {
 
       syncFromGame(nextGame);
 
-      if (action.kind === "DROP" || action.kind === "MOVE") {
-        playMoveSe();
-      }
-
       if (state.value.status !== "FINISHED") {
         message.value = "手を送信しました";
       }
@@ -288,6 +368,7 @@ export function useOnlineBattle() {
       return false;
     }
   }
+
   function handleHandClick(pieceType: SyahoShogiHandPieceType) {
     if (!canInteract.value) return;
     if ((currentPlayerHands.value[pieceType] ?? 0) <= 0) return;
@@ -361,7 +442,7 @@ export function useOnlineBattle() {
   function startPolling() {
     stopPolling();
     pollingId.value = window.setInterval(() => {
-      fetchGame();
+      void fetchGame();
     }, 2500);
   }
 
@@ -372,17 +453,21 @@ export function useOnlineBattle() {
     }
   }
 
-  function backToLobby() {
+  async function backToLobby() {
+    await leaveBattle();
     router.back();
   }
 
   onMounted(async () => {
+    window.addEventListener("pagehide", handlePageHide);
     await fetchGame();
     startPolling();
   });
 
   onBeforeUnmount(() => {
+    window.removeEventListener("pagehide", handlePageHide);
     stopPolling();
+    void leaveBattle();
   });
 
   return {
@@ -403,6 +488,7 @@ export function useOnlineBattle() {
     winnerName,
     resultLabel,
     winReasonLabel,
+    checkLabel,
     lastActionLabel,
     handPieces,
     player1HandPieces,

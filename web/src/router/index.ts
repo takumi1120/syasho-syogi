@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LocalLobbyPage from "../pages/localrobypage.vue";
 import ModeSelectPage from "../pages/ModeSelectPage.vue";
-import OnlineBattlePage from "../pages/OnlineBattlePage.vue";
 import OnlineLobbyPage from "../pages/onlinerobypage.vue";
 import OnlineUserEntryPage from "../pages/OnlineUserEntryPage.vue";
 

@@ -16,6 +16,7 @@ const {
   selectedSquare,
   currentPlayer,
   currentTurnName,
+  checkLabel,
   resultLabel,
   winReasonLabel,
   lastActionLabel,
@@ -105,7 +106,6 @@ onBeforeUnmount(() => {
         <p class="player-side">PLAYER 1 / 先手</p>
         <p class="player-name">{{ player1Name }}</p>
         <p class="player-character">{{ player1Character || "未設定" }}</p>
-        
       </div>
 
       <div class="nameplate nameplate-center">
@@ -157,6 +157,7 @@ onBeforeUnmount(() => {
       <div class="status-panel">
         <BattleStatusPanel
           :turn-label="currentTurnName"
+          :check-label="checkLabel"
           :result-label="resultLabel"
           :win-reason-label="winReasonLabel"
           :last-action-label="lastActionLabel"
@@ -173,8 +174,8 @@ onBeforeUnmount(() => {
           戻る
         </button>
         <button class="music-toggle-button" type="button" @click="handleToggleMusic">
-  {{ isMusicPlaying ? "音楽停止" : "音楽再生" }}
-</button>
+          {{ isMusicPlaying ? "音楽停止" : "音楽再生" }}
+        </button>
       </div>
     </div>
   </section>
@@ -354,7 +355,8 @@ onBeforeUnmount(() => {
   gap: 12px;
 }
 
-.scene-button {
+.scene-button,
+.music-toggle-button {
   border: none;
   border-radius: 999px;
   padding: 10px 18px;
@@ -371,44 +373,9 @@ onBeforeUnmount(() => {
     inset 0 1px 0 rgba(255, 255, 255, 0.32);
 }
 
-.scene-button:hover {
-  transform: translateY(-1px);
-}
-
-.music-toggle-button {
-  position: absolute;
-  right: 170px;
-  bottom: 0px;
-  z-index: 10;
-  min-width: 108px;
-  height: 40px;
-  padding: 0 16px;
-  border: 1px solid rgba(255, 255, 255, 0.62);
-  border-radius: 999px;
-  cursor: pointer;
-  font-weight: 900;
-  font-size: 13px;
-  color: #4f4a87;
-  background: linear-gradient(
-    135deg,
-    rgba(248, 236, 255, 0.94) 0%,
-    rgba(236, 245, 255, 0.96) 50%,
-    rgba(226, 239, 255, 0.94) 100%
-  );
-  box-shadow:
-    0 8px 18px rgba(0, 0, 0, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95);
-  transition:
-    transform 0.2s ease,
-    filter 0.2s ease;
-}
-
+.scene-button:hover,
 .music-toggle-button:hover {
-  filter: brightness(1.03);
-}
-
-.music-toggle-button:active {
-  transform: scale(0.97);
+  transform: translateY(-1px);
 }
 
 :deep(.panel) {
@@ -497,7 +464,8 @@ onBeforeUnmount(() => {
     gap: 8px;
   }
 
-  .scene-button {
+  .scene-button,
+  .music-toggle-button {
     padding: 8px 14px;
     font-size: 12px;
   }

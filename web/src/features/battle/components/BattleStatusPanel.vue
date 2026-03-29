@@ -4,6 +4,7 @@ withDefaults(
     turnLabel: string;
     resultLabel?: string | null;
     winReasonLabel?: string | null;
+    checkLabel?: string | null;
     lastActionLabel?: string | null;
     message?: string | null;
     errorMessage?: string | null;
@@ -11,6 +12,7 @@ withDefaults(
   {
     resultLabel: null,
     winReasonLabel: null,
+    checkLabel: null,
     lastActionLabel: null,
     message: null,
     errorMessage: null,
@@ -43,6 +45,10 @@ withDefaults(
         <dd>{{ lastActionLabel }}</dd>
       </div>
     </dl>
+
+    <div v-if="checkLabel" class="notice check">
+      {{ checkLabel }}
+    </div>
 
     <div v-if="message" class="notice success">
       {{ message }}
@@ -110,6 +116,12 @@ dd {
   font-weight: 700;
   font-size: 12px;
   line-height: 1.4;
+}
+
+.notice.check {
+  background: rgba(255, 199, 79, 0.18);
+  border: 1px solid rgba(255, 199, 79, 0.34);
+  color: #ffe8a3;
 }
 
 .notice.success {

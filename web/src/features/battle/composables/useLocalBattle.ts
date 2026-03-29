@@ -5,6 +5,7 @@ import {
   applySyahoShogiAction,
   getLegalMovesFrom,
   getLegalDropsForPiece,
+  isPlayerInCheck,
   type SyahoShogiAction,
   type SyahoShogiHandPieceType,
   type SyahoShogiPieceType,
@@ -13,8 +14,7 @@ import {
 } from "../../../lib/syahosyogi";
 import { getHandLabel, getPieceLabel } from "../utils/battleLabels";
 import { getHandPieceImageSrc } from "../utils/pieceImages";
-import { playMoveSe } from "../utils/battleSe";
-
+import { playMoveSe, playCheckSe } from "../utils/battleSe";
 
 type BattleHandPieceView = {
   pieceType: SyahoShogiHandPieceType;
@@ -92,6 +92,11 @@ export function useLocalBattle() {
     if (state.value.winReason === "CAPTURE_BOSS") return "社長を取って勝利";
     if (state.value.winReason === "TRY") return "トライ成功";
     return null;
+  });
+
+  const checkLabel = computed(() => {
+    if (state.value.status !== "PLAYING") return null;
+    return isPlayerInCheck(state.value, state.value.currentPlayer) ? "王手" : null;
   });
 
   const lastActionLabel = computed(() => {
@@ -177,6 +182,17 @@ export function useLocalBattle() {
     selectedSquare.value = null;
     selectedHandPiece.value = null;
   }
+
+  function playActionSe(nextState: typeof state.value) {
+    playMoveSe();
+
+    if (nextState.status !== "FINISHED" && isPlayerInCheck(nextState, nextState.currentPlayer)) {
+      window.setTimeout(() => {
+        playCheckSe();
+      }, 120);
+    }
+  }
+
   function submitLocalAction(action: SyahoShogiAction) {
     clearNotice();
 
@@ -190,7 +206,7 @@ export function useLocalBattle() {
     state.value = result.state;
 
     if (action.kind === "DROP" || action.kind === "MOVE") {
-      playMoveSe();
+      playActionSe(result.state);
     }
 
     if (result.state.status === "FINISHED") {
@@ -298,6 +314,7 @@ export function useLocalBattle() {
     winnerName,
     resultLabel,
     winReasonLabel,
+    checkLabel,
     lastActionLabel,
     handPieces,
     player1HandPieces,
