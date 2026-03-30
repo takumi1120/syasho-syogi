@@ -42,7 +42,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 8080
-      CORS_ORIGIN: http://54.206.33.45
+      CORS_ORIGIN: http://3.26.160.21
       SYACHO_DATABASE_URL: postgresql://syachosyogi:syachosyogi@db:5432/syachosyogi?schema=public
       GOBBLET_DATABASE_URL: postgresql://gob:gob1234@gobdb:5432/gob?schema=public
     ports:
