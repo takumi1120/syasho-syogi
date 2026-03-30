@@ -51,7 +51,7 @@ services:
       - gob_db_data:/var/lib/postgresql/data
 
   gobapi:
-    build: ./apps/api
+    build: ./apps/Gobblet-gobblers/api
     container_name: gob_api
     restart: always
     depends_on:
@@ -65,7 +65,7 @@ services:
 
   gobweb:
     build:
-      context: ./apps/web
+      context: ./apps/Gobblet-gobblers/web
       args:
         VITE_API_URL: http://54.206.33.45:3001
     container_name: gob_web
