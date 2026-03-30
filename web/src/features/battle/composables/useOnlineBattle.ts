@@ -289,9 +289,9 @@ export function useOnlineBattle() {
     leaving.value = true;
 
     const apiBaseUrl =
-      typeof import.meta.env.VITE_API_BASE_URL === "string" &&
-        import.meta.env.VITE_API_BASE_URL.trim() !== ""
-        ? import.meta.env.VITE_API_BASE_URL.replace(/\/$/, "")
+      typeof import.meta.env.VITE_API_URL === "string" &&
+        import.meta.env.VITE_API_URL.trim() !== ""
+        ? import.meta.env.VITE_API_URL.replace(/\/$/, "")
         : "http://localhost:3000";
 
     void fetch(
