@@ -1,0 +1,44 @@
+import express from "express";
+import type { Request, Response } from "express";
+import cors from "cors";
+import { logInfo, logError } from "./lib/logger";
+import { config } from "./lib/config";
+import roomsRouter from "./routes/rooms";
+import gamesRouter from "./routes/games";
+import usersRouter from "./routes/users";
+import resultsRouter from "./routes/results";
+
+export function createSyachoApp() {
+    const app = express();
+
+    app.use(express.json());
+    app.use(cors({ origin: config.corsOrigin }));
+    app.use("/results", resultsRouter);
+    app.use((req, _res, next) => {
+        logInfo("request", { scope: "syacho", method: req.method, path: req.path });
+        next();
+    });
+
+    app.get("/", (_req, res) => {
+        res.send("root ok");
+    });
+    app.use("/users", usersRouter);
+    app.get("/health", (_req, res) => {
+        res.json({ status: "ok" });
+    });
+
+    app.get("/stats-direct", (_req, res) => {
+        res.json({ ok: true });
+    });
+
+    app.use("/rooms", roomsRouter);
+    app.use("/games", gamesRouter);
+    app.use((err: unknown, _req: Request, res: Response, _next: unknown) => {
+        logError("unexpected error", { scope: "syacho", err: String(err) });
+        res.status(500).json({
+            error: { code: "INTERNAL_SERVER_ERROR", message: "unexpected error" },
+        });
+    });
+
+    return app;
+}

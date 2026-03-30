@@ -1,4 +1,4 @@
-import { apiClient } from "./apiClient";
+import { apiClient, resolveApiBaseUrl } from "./apiClient";
 
 export type RoomStatus = "OPEN" | "MATCHED" | "PLAYING" | "CLOSED";
 
@@ -107,3 +107,5 @@ export const roomService = {
         });
     },
 };
+
+export { resolveApiBaseUrl };

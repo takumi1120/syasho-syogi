@@ -16,7 +16,7 @@ import {
 import { getHandLabel, getPieceLabel } from "../utils/battleLabels";
 import { getHandPieceImageSrc } from "../utils/pieceImages";
 import { gameService, type Game } from "../../../services/gameService";
-import { roomService } from "../../../services/roomService";
+import { resolveApiBaseUrl, roomService } from "../../../services/roomService";
 import { playMoveSe, playCheckSe } from "../utils/battleSe";
 
 type BattleHandPieceView = {
@@ -288,11 +288,7 @@ export function useOnlineBattle() {
 
     leaving.value = true;
 
-    const apiBaseUrl =
-      typeof import.meta.env.VITE_API_URL === "string" &&
-        import.meta.env.VITE_API_URL.trim() !== ""
-        ? import.meta.env.VITE_API_URL.replace(/\/$/, "")
-        : "http://localhost:3000";
+    const apiBaseUrl = resolveApiBaseUrl();
 
     void fetch(
       `${apiBaseUrl}/rooms/${roomCode.value.trim().toUpperCase()}/leave`,

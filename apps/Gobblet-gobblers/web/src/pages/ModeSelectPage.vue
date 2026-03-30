@@ -2,6 +2,7 @@
 import { useRouter } from "vue-router";
 
 const router = useRouter();
+const modeStageBackgroundUrl = `${import.meta.env.BASE_URL}backgrounds/mode-bg.jpg`;
 
 function goLocal() {
   router.push("/start");
@@ -19,7 +20,7 @@ function goOnline() {
   </div>
 
   <div class="mode-page">
-    <div class="mode-stage">
+    <div class="mode-stage" :style="{ backgroundImage: `url(${modeStageBackgroundUrl})` }">
       <button
         class="board-button board-left"
         type="button"
@@ -111,7 +112,9 @@ function goOnline() {
   position: relative;
   width: min(1520px, 100vw);
   aspect-ratio: 16 / 9;
-  background: url("/backgrounds/mode-bg.jpg") center center / contain no-repeat;
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 /* 透明クリック領域 */

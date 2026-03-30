@@ -1,18 +1,27 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 
-console.log("DATABASE_URL =", process.env.DATABASE_URL);
+const syachoDatabaseUrl = process.env.SYACHO_DATABASE_URL ?? process.env.DATABASE_URL;
+
+console.log("SYACHO_DATABASE_URL =", syachoDatabaseUrl);
 
 const globalForPrisma = globalThis as typeof globalThis & {
-    prisma?: PrismaClient;
+    syachoPrisma?: PrismaClient;
 };
 
 export const db =
-    globalForPrisma.prisma ??
+    globalForPrisma.syachoPrisma ??
     new PrismaClient({
         log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
+        datasources: syachoDatabaseUrl
+            ? {
+                db: {
+                    url: syachoDatabaseUrl,
+                },
+            }
+            : undefined,
     });
 
 if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.prisma = db;
+    globalForPrisma.syachoPrisma = db;
 }

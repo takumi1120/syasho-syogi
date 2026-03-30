@@ -1,5 +1,11 @@
-const API_BASE_URL =
-    import.meta.env.VITE_API_URL?.replace(/\/$/, "") || "http://localhost:3000";
+export function resolveApiBaseUrl() {
+    const configured = import.meta.env.VITE_API_URL?.trim();
+    if (configured) return configured.replace(/\/$/, "");
+
+    return import.meta.env.DEV ? "http://localhost:3000" : "/api";
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 type RequestOptions = {
     method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";

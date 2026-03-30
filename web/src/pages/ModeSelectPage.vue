@@ -132,6 +132,10 @@ function goOnline() {
   });
 }
 
+function goGobblet() {
+  window.location.assign("/gobblet/");
+}
+
 function goUserRegister() {
   router.push({ name: "online-user-entry" });
 }
@@ -175,6 +179,10 @@ onMounted(async () => {
 
     <button class="btn online" @click="goOnline">
       オンラインマッチ
+    </button>
+
+    <button class="btn gobblet" @click="goGobblet">
+      Gobblet
     </button>
 
     <button class="music-toggle-button" @click="handleToggleMusic">
@@ -310,6 +318,20 @@ onMounted(async () => {
 .online {
   right: 17%;
   top: 70%;
+}
+
+.gobblet {
+  left: 50%;
+  top: 80%;
+  transform: translateX(-50%);
+}
+
+.gobblet:hover {
+  transform: translateX(-50%) translateY(-6px) scale(1.05);
+}
+
+.gobblet:active {
+  transform: translateX(-50%) scale(0.95);
 }
 
 .music-toggle-button {
@@ -548,6 +570,10 @@ onMounted(async () => {
     top: 72%;
   }
 
+  .gobblet {
+    top: 80%;
+  }
+
   .music-toggle-button {
     top: 80%;
     width: 154px;
@@ -569,6 +595,10 @@ onMounted(async () => {
   .online {
     right: 10%;
     top: 70%;
+  }
+
+  .gobblet {
+    top: 78%;
   }
 
   .music-toggle-button {
@@ -596,7 +626,8 @@ onMounted(async () => {
   }
 
   .local,
-  .online {
+  .online,
+  .gobblet {
     left: 50%;
     right: auto;
     transform: translateX(-50%);
@@ -608,6 +639,10 @@ onMounted(async () => {
 
   .online {
     top: 69%;
+  }
+
+  .gobblet {
+    top: 77%;
   }
 
   .btn:hover {

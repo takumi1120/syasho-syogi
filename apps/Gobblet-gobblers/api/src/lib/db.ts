@@ -1,18 +1,27 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 
-console.log("DATABASE_URL =", process.env.DATABASE_URL);
+const gobbletDatabaseUrl = process.env.GOBBLET_DATABASE_URL ?? process.env.DATABASE_URL;
+
+console.log("GOBBLET_DATABASE_URL =", gobbletDatabaseUrl);
 
 const globalForPrisma = globalThis as typeof globalThis & {
-    prisma?: PrismaClient;
+    gobbletPrisma?: PrismaClient;
 };
 
 export const db =
-    globalForPrisma.prisma ??
+    globalForPrisma.gobbletPrisma ??
     new PrismaClient({
         log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
+        datasources: gobbletDatabaseUrl
+            ? {
+                db: {
+                    url: gobbletDatabaseUrl,
+                },
+            }
+            : undefined,
     });
 
 if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.prisma = db;
+    globalForPrisma.gobbletPrisma = db;
 }

@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import { api } from "../lib/api";
 
 const router = useRouter();
+const lobbyBackgroundUrl = `${import.meta.env.BASE_URL}backgrounds/mode-bg2.jpg`;
 
 type User = {
   id: number;
@@ -170,7 +171,7 @@ async function joinRoom() {
 </script>
 
 <template>
-  <div class="online-lobby">
+  <div class="online-lobby" :style="{ backgroundImage: `url(${lobbyBackgroundUrl})` }">
     <div class="lobby-card">
       <h1>オンライン対戦</h1>
       <p class="sub">部屋を作るか、ルームIDで参加してください</p>
@@ -272,13 +273,12 @@ async function joinRoom() {
 .online-lobby {
   min-height: 100vh;
   padding: 24px;
-  background:
-    radial-gradient(circle at top, rgba(118, 74, 34, 0.16), transparent 42%),
-    linear-gradient(180deg, rgba(36, 22, 13, 0.34) 0%, rgba(27, 16, 8, 0.46) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: url("/backgrounds/mode-bg2.jpg") center center / contain no-repeat;
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 .lobby-card {

@@ -5,7 +5,7 @@ import OnlineLobbyPage from "../pages/onlinerobypage.vue";
 import OnlineUserEntryPage from "../pages/OnlineUserEntryPage.vue";
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
             path: "/",

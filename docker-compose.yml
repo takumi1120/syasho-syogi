@@ -12,31 +12,6 @@ services:
     volumes:
       - syachosyogi_db_data:/var/lib/postgresql/data
 
-  api:
-    build: ./api
-    container_name: syachosyogi_api
-    restart: always
-    depends_on:
-      - db
-    environment:
-      DATABASE_URL: postgresql://syachosyogi:syachosyogi@db:5432/syachosyogi?schema=public
-      CORS_ORIGIN: http://54.206.33.45
-      PORT: 3000
-    ports:
-      - "3000:3000"
-
-  web:
-    build:
-      context: ./web
-      args:
-        VITE_API_URL: http://54.206.33.45:3000
-    container_name: syachosyogi_web
-    restart: always
-    depends_on:
-      - api
-    ports:
-      - "80:80"
-
   gobdb:
     image: postgres:16
     container_name: gob_db
@@ -50,30 +25,28 @@ services:
     volumes:
       - gob_db_data:/var/lib/postgresql/data
 
-  gobapi:
-    build: ./apps/Gobblet-gobblers/api
-    container_name: gob_api
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SYACHO_VITE_API_URL: /api
+        SYACHO_VITE_BASE_PATH: /
+        GOBBLET_VITE_API_URL: /gobblet/api
+        GOBBLET_VITE_BASE_PATH: /gobblet/
+    container_name: syachosyogi_app
     restart: always
     depends_on:
+      - db
       - gobdb
     environment:
-      DATABASE_URL: postgresql://gob:gob1234@gobdb:5432/gob?schema=public
-      CORS_ORIGIN: http://54.206.33.45:8080
-      PORT: 3000
+      NODE_ENV: production
+      PORT: 8080
+      CORS_ORIGIN: http://54.206.33.45
+      SYACHO_DATABASE_URL: postgresql://syachosyogi:syachosyogi@db:5432/syachosyogi?schema=public
+      GOBBLET_DATABASE_URL: postgresql://gob:gob1234@gobdb:5432/gob?schema=public
     ports:
-      - "3001:3000"
-
-  gobweb:
-    build:
-      context: ./apps/Gobblet-gobblers/web
-      args:
-        VITE_API_URL: http://54.206.33.45:3001
-    container_name: gob_web
-    restart: always
-    depends_on:
-      - gobapi
-    ports:
-      - "8080:80"
+      - "80:8080"
 
 volumes:
   syachosyogi_db_data:
