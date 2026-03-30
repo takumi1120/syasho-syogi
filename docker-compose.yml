@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: syachosyogi_db
+    restart: always
+    environment:
+      POSTGRES_USER: syachosyogi
+      POSTGRES_PASSWORD: syachosyogi
+      POSTGRES_DB: syachosyogi
+    ports:
+      - "5432:5432"
+    volumes:
+      - syachosyogi_db_data:/var/lib/postgresql/data
+
+  api:
+    build: ./api
+    container_name: syachosyogi_api
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://syachosyogi:syachosyogi@db:5432/syachosyogi?schema=public
+      CORS_ORIGIN: http://54.206.33.45
+      PORT: 3000
+
+  web:
+    build:
+      context: ./web
+      args:
+        VITE_API_URL: http://54.206.33.45:3000
+    container_name: syachosyogi_web
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+volumes:
+  syachosyogi_db_data:
