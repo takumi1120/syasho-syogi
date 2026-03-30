@@ -20,7 +20,7 @@ services:
       - db
     environment:
       DATABASE_URL: postgresql://syachosyogi:syachosyogi@db:5432/syachosyogi?schema=public
-      CORS_ORIGIN: http://3.27.108.112
+      CORS_ORIGIN: http://32.236.43.194
       PORT: 3000
     ports:
       - "3000:3000"
@@ -29,7 +29,7 @@ services:
     build:
       context: ./web
       args:
-        VITE_API_URL: http://3.27.108.112:3000
+        VITE_API_URL: http://32.236.43.194:3000
     container_name: syachosyogi_web
     restart: always
     depends_on:
@@ -58,7 +58,7 @@ services:
       - gobdb
     environment:
       DATABASE_URL: postgresql://gob:gob1234@gobdb:5432/gob?schema=public
-      CORS_ORIGIN: http://3.27.108.112:8080
+      CORS_ORIGIN: http://32.236.43.194:8080
       PORT: 3000
     ports:
       - "3001:3000"
@@ -67,7 +67,7 @@ services:
     build:
       context: ./apps/Gobblet-gobblers/web
       args:
-        VITE_API_URL: http://3.27.108.112:3001
+        VITE_API_URL: http://32.236.43.194:3001
     container_name: gob_web
     restart: always
     depends_on:
