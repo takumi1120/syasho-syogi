@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:16
@@ -18,14 +16,14 @@ services:
     build: ./api
     container_name: syachosyogi_api
     restart: always
-    ports:
-      - "3000:3000"
     depends_on:
       - db
     environment:
       DATABASE_URL: postgresql://syachosyogi:syachosyogi@db:5432/syachosyogi?schema=public
       CORS_ORIGIN: http://54.206.33.45
       PORT: 3000
+    ports:
+      - "3000:3000"
 
   web:
     build:
@@ -34,10 +32,49 @@ services:
         VITE_API_URL: http://54.206.33.45:3000
     container_name: syachosyogi_web
     restart: always
-    ports:
-      - "80:80"
     depends_on:
       - api
+    ports:
+      - "80:80"
+
+  gobdb:
+    image: postgres:16
+    container_name: gob_db
+    restart: always
+    environment:
+      POSTGRES_USER: gob
+      POSTGRES_PASSWORD: gob1234
+      POSTGRES_DB: gob
+    ports:
+      - "5433:5432"
+    volumes:
+      - gob_db_data:/var/lib/postgresql/data
+
+  gobapi:
+    build: ./apps/api
+    container_name: gob_api
+    restart: always
+    depends_on:
+      - gobdb
+    environment:
+      DATABASE_URL: postgresql://gob:gob1234@gobdb:5432/gob?schema=public
+      CORS_ORIGIN: http://54.206.33.45:8080
+      PORT: 3000
+    ports:
+      - "3001:3000"
+
+  gobweb:
+    build:
+      context: ./apps/web
+      args:
+        VITE_API_URL: http://54.206.33.45:3001
+    container_name: gob_web
+    restart: always
+    depends_on:
+      - gobapi
+    ports:
+      - "8080:80"
 
 volumes:
   syachosyogi_db_data:
+  gob_db_data:
