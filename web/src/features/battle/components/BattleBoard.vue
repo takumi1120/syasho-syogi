@@ -215,9 +215,9 @@ function pieceImageSrc(cell: SyahoShogiCell) {
               }"
               :style="pieceOffsetStyle(rowIndex, colIndex, cell)"
             >
-              <span class="owner-badge">
-                {{ cell.owner === 1 ? "先" : "後" }}
-              </span>
+              <!-- <span class="owner-badge">
+                {{ cell.owner === 1 ? "P1" : "P2" }}
+              </span> -->
 
               <img
                 class="piece-image"
