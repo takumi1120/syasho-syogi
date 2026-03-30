@@ -26,12 +26,18 @@ jobs:
       - name: Deploy to EC2
         shell: bash
         run: |
-          ssh -i ~/.ssh/id_ed25519 "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" << EOF
+          ssh -i ~/.ssh/id_ed25519 "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" << 'EOF'
             set -e
+
             cd "${{ secrets.APP_DIR }}"
+
             git fetch origin
             git reset --hard origin/main
-            docker compose down --remove-orphans
-            docker compose up -d --build
-            docker compose exec -T api npx prisma migrate deploy
+
+            sudo systemctl start docker
+            sudo systemctl is-active docker
+
+            sudo docker compose down --remove-orphans
+            sudo docker compose up -d --build
+            sudo docker compose exec -T api npx prisma migrate deploy
           EOF
