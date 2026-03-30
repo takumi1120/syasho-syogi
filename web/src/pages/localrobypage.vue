@@ -124,5 +124,26 @@ onBeforeRouteLeave((to) => {
     font-size: 11px;
     padding: 0 10px;
   }
+  
+}
+@media (max-width: 430px) {
+  .lobby-page {
+    min-height: 100svh;
+    padding: 10px 8px 68px;
+    overflow: auto;
+  }
+
+  :deep(.lobby-shell) {
+    height: auto;
+    gap: 10px;
+  }
+
+  .back-link {
+    right: 8px;
+    bottom: 8px;
+    min-height: 30px;
+    padding: 0 10px;
+    font-size: 10px;
+  }
 }
 </style>  

@@ -327,5 +327,51 @@ h2 {
     min-height: auto;
     white-space: normal;
   }
+  
+}
+@media (max-width: 430px) {
+  .online-lobby-content {
+    gap: 10px;
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .left-column,
+  .right-column {
+    gap: 12px;
+  }
+
+  .left-column {
+    margin-top: 0;
+  }
+
+  .user-area {
+    margin-top: 0;
+    gap: 6px;
+  }
+
+  h2 {
+    font-size: 16px;
+  }
+
+  .user-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .user-card {
+    padding: 8px 9px;
+    border-radius: 14px;
+  }
+
+  .card-value {
+    min-height: auto;
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: normal;
+  }
 }
 </style>

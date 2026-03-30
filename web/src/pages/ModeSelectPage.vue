@@ -584,5 +584,50 @@ onMounted(async () => {
     height: 36px;
     font-size: 12px;
   }
+ 
+}
+ @media (max-width: 430px) {
+  .btn {
+    width: min(78vw, 280px);
+    font-size: 17px;
+    letter-spacing: 1px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .local,
+  .online {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+
+  .local {
+    top: 61%;
+  }
+
+  .online {
+    top: 69%;
+  }
+
+  .btn:hover {
+    transform: translateX(-50%) translateY(-4px) scale(1.02);
+  }
+
+  .btn:active {
+    transform: translateX(-50%) scale(0.98);
+  }
+
+  .online-user-box {
+    bottom: 2.5%;
+    width: min(92vw, 340px);
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .change-user-select,
+  .register-user-button {
+    width: 100%;
+  }
 }
 </style>

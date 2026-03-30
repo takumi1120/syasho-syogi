@@ -114,4 +114,19 @@ function updatePlayer2Character(value: string) {
     gap: 12px;
   }
 }
+@media (max-width: 430px) {
+  .local-lobby-content {
+    gap: 10px;
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .left-column,
+  .right-column {
+    gap: 12px;
+  }
+}
 </style>
