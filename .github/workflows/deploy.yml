@@ -90,6 +90,9 @@ jobs:
       GOBWEB_IMAGE: ghcr.io/takumi1120/syacho-gobblet-web@${{ needs.build-and-push.outputs.gobweb_digest }}
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
       - name: Setup SSH
         shell: bash
         run: |
