@@ -43,7 +43,7 @@ jobs:
           context: ./web
           push: true
           build-args: |
-            VITE_API_URL=http://54.252.191.199:3000
+            VITE_API_URL=http://54.66.189.66:3000
           tags: ghcr.io/takumi1120/syachosyogi-web:latest
 
       - name: Build and push gobapi
@@ -59,7 +59,7 @@ jobs:
           context: ./apps/Gobblet-gobblers/web
           push: true
           build-args: |
-            VITE_API_URL=http://54.252.191.199:3001
+            VITE_API_URL=http://54.66.189.66:3001
           tags: ghcr.io/takumi1120/syacho-gobblet-web:latest
 
   deploy:
