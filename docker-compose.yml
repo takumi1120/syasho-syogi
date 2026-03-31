@@ -13,9 +13,7 @@ services:
       - syachosyogi_db_data:/var/lib/postgresql/data
 
   api:
-    image: ${API_IMAGE:-syachosyogi-api:latest}
-    pull_policy: never
-    build: ./api
+    image: ghcr.io/takumi1120/syachosyogi-api:latest
     container_name: syachosyogi_api
     restart: always
     depends_on:
@@ -28,12 +26,7 @@ services:
       - "3000:3000"
 
   web:
-    image: ${WEB_IMAGE:-syachosyogi-web:latest}
-    pull_policy: never
-    build:
-      context: ./web
-      args:
-        VITE_API_URL: http://54.252.191.199:3000
+    image: ghcr.io/takumi1120/syachosyogi-web:latest
     container_name: syachosyogi_web
     restart: always
     depends_on:
@@ -55,9 +48,7 @@ services:
       - gob_db_data:/var/lib/postgresql/data
 
   gobapi:
-    image: ${GOBAPI_IMAGE:-syacho-gobblet-api:latest}
-    pull_policy: never
-    build: ./apps/Gobblet-gobblers/api
+    image: ghcr.io/takumi1120/syacho-gobblet-api:latest
     container_name: gob_api
     restart: always
     depends_on:
@@ -70,12 +61,7 @@ services:
       - "3001:3000"
 
   gobweb:
-    image: ${GOBWEB_IMAGE:-syacho-gobblet-web:latest}
-    pull_policy: never
-    build:
-      context: ./apps/Gobblet-gobblers/web
-      args:
-        VITE_API_URL: http://54.252.191.199:3001
+    image: ghcr.io/takumi1120/syacho-gobblet-web:latest
     container_name: gob_web
     restart: always
     depends_on:

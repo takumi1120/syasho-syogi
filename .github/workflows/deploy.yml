@@ -5,14 +5,68 @@ on:
     branches:
       - main
 
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push api
+        uses: docker/build-push-action@v6
+        with:
+          context: ./api
+          push: true
+          tags: ghcr.io/takumi1120/syachosyogi-api:latest
+
+      - name: Build and push web
+        uses: docker/build-push-action@v6
+        with:
+          context: ./web
+          push: true
+          build-args: |
+            VITE_API_URL=http://54.252.191.199:3000
+          tags: ghcr.io/takumi1120/syachosyogi-web:latest
+
+      - name: Build and push gobapi
+        uses: docker/build-push-action@v6
+        with:
+          context: ./apps/Gobblet-gobblers/api
+          push: true
+          tags: ghcr.io/takumi1120/syacho-gobblet-api:latest
+
+      - name: Build and push gobweb
+        uses: docker/build-push-action@v6
+        with:
+          context: ./apps/Gobblet-gobblers/web
+          push: true
+          build-args: |
+            VITE_API_URL=http://54.252.191.199:3001
+          tags: ghcr.io/takumi1120/syacho-gobblet-web:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+
+    steps:
       - name: Setup SSH
         shell: bash
         run: |
@@ -26,18 +80,13 @@ jobs:
       - name: Deploy to EC2
         shell: bash
         run: |
-          ssh -i ~/.ssh/id_ed25519 "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" << 'EOF'
-            set -e
+          ssh -i ~/.ssh/id_ed25519 "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" << EOF
+            set -euxo pipefail
 
             cd "${{ secrets.APP_DIR }}"
 
-            git fetch origin
-            git reset --hard origin/main
+            sudo docker compose pull
+            sudo docker compose up -d
 
-            sudo systemctl start docker
-            sudo systemctl is-active docker
-
-            sudo docker compose down --remove-orphans
-            sudo docker compose up -d --build
             sudo docker compose exec -T api npx prisma migrate deploy
           EOF
