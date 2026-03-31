@@ -13,6 +13,8 @@ services:
       - syachosyogi_db_data:/var/lib/postgresql/data
 
   api:
+    image: ${API_IMAGE:-syachosyogi-api:latest}
+    pull_policy: never
     build: ./api
     container_name: syachosyogi_api
     restart: always
@@ -20,16 +22,18 @@ services:
       - db
     environment:
       DATABASE_URL: postgresql://syachosyogi:syachosyogi@db:5432/syachosyogi?schema=public
-      CORS_ORIGIN: http://52.64.23.148
+      CORS_ORIGIN: http://54.252.191.199
       PORT: 3000
     ports:
       - "3000:3000"
 
   web:
+    image: ${WEB_IMAGE:-syachosyogi-web:latest}
+    pull_policy: never
     build:
       context: ./web
       args:
-        VITE_API_URL: http://52.64.23.148:3000
+        VITE_API_URL: http://54.252.191.199:3000
     container_name: syachosyogi_web
     restart: always
     depends_on:
@@ -51,6 +55,8 @@ services:
       - gob_db_data:/var/lib/postgresql/data
 
   gobapi:
+    image: ${GOBAPI_IMAGE:-syacho-gobblet-api:latest}
+    pull_policy: never
     build: ./apps/Gobblet-gobblers/api
     container_name: gob_api
     restart: always
@@ -58,16 +64,18 @@ services:
       - gobdb
     environment:
       DATABASE_URL: postgresql://gob:gob1234@gobdb:5432/gob?schema=public
-      CORS_ORIGIN: http://52.64.23.148:8080
+      CORS_ORIGIN: http://54.252.191.199:8080
       PORT: 3000
     ports:
       - "3001:3000"
 
   gobweb:
+    image: ${GOBWEB_IMAGE:-syacho-gobblet-web:latest}
+    pull_policy: never
     build:
       context: ./apps/Gobblet-gobblers/web
       args:
-        VITE_API_URL: http://52.64.23.148:3001
+        VITE_API_URL: http://54.252.191.199:3001
     container_name: gob_web
     restart: always
     depends_on:
