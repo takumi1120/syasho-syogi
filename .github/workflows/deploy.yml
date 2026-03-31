@@ -114,11 +114,7 @@ jobs:
           ssh -i ~/.ssh/id_ed25519 "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" << EOF
             set -euxo pipefail
 
-            PROJECT_DIR="${{ secrets.APP_DIR }}"
-            DEPLOY_COMPOSE_FILE="/tmp/syacho-deploy-compose.yml"
-            PROJECT_NAME="$(basename "${PROJECT_DIR}")"
-
-            cd "${PROJECT_DIR}"
+            cd "${{ secrets.APP_DIR }}"
 
             compose() {
               sudo env \
@@ -127,9 +123,9 @@ jobs:
                 GOBAPI_IMAGE="${GOBAPI_IMAGE}" \
                 GOBWEB_IMAGE="${GOBWEB_IMAGE}" \
                 docker compose \
-                  --project-directory "${PROJECT_DIR}" \
-                  --project-name "${PROJECT_NAME}" \
-                  -f "${DEPLOY_COMPOSE_FILE}" "\$@"
+                  --project-directory "${{ secrets.APP_DIR }}" \
+                  --project-name "$(basename "${{ secrets.APP_DIR }}")" \
+                  -f "/tmp/syacho-deploy-compose.yml" "\$@"
             }
 
             echo "Deploying images:"
@@ -137,7 +133,8 @@ jobs:
             echo "WEB_IMAGE=${WEB_IMAGE}"
             echo "GOBAPI_IMAGE=${GOBAPI_IMAGE}"
             echo "GOBWEB_IMAGE=${GOBWEB_IMAGE}"
-            echo "DEPLOY_COMPOSE_FILE=${DEPLOY_COMPOSE_FILE}"
+            echo "APP_DIR=${{ secrets.APP_DIR }}"
+            echo "DEPLOY_COMPOSE_FILE=/tmp/syacho-deploy-compose.yml"
 
             compose up -d db gobdb
 
