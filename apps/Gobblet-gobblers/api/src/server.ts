@@ -12,10 +12,38 @@ import onlineRouter from "./routes/online";
 console.log("server imported resultRouter");
 
 const app = express();
-const port = Number(process.env.PORT ?? 3000);
+const port = config.port;
+
+function isAllowedOrigin(origin: string) {
+    if (config.corsOrigins.includes(origin)) {
+        return true;
+    }
+
+    if (config.nodeEnv === "production") {
+        return false;
+    }
+
+    try {
+        const url = new URL(origin);
+        return url.protocol.startsWith("http") && ["localhost", "127.0.0.1"].includes(url.hostname);
+    } catch {
+        return false;
+    }
+}
 
 app.use(express.json());
-app.use(cors({ origin: config.corsOrigin }));
+app.use(
+    cors({
+        origin(origin, callback) {
+            if (!origin || isAllowedOrigin(origin)) {
+                callback(null, true);
+                return;
+            }
+
+            callback(new Error(`CORS blocked for origin: ${origin}`));
+        },
+    }),
+);
 
 app.use((req, _res, next) => {
     logInfo("request", { method: req.method, path: req.path });
