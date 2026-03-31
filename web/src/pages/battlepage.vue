@@ -3,7 +3,7 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import BattleBoard from "../features/battle/components/BattleBoard.vue";
 import BattleHands from "../features/battle/components/BattleHands.vue";
 import BattleStatusPanel from "../features/battle/components/BattleStatusPanel.vue";
-
+import { useFixedStage } from "../composables/useFixedStage";
 import { useLocalBattle } from "../features/battle/composables/useLocalBattle";
 
 const {
@@ -30,11 +30,14 @@ const {
   backToLobby,
 } = useLocalBattle();
 
-// ===== BGM =====
+const { stageShellStyle, stageStyle } = useFixedStage({
+  baseWidth: 1920,
+  baseHeight: 1080,
+});
+
 const BGM_SRC = "/bgm/battle-bgm.mp3";
 let bgm: HTMLAudioElement | null = null;
 const bgmStarted = ref(false);
-
 const isMusicPlaying = ref(true);
 
 async function handleToggleMusic() {
@@ -63,7 +66,6 @@ async function playBgm() {
     const audio = ensureBgm();
     await audio.play();
     bgmStarted.value = true;
-    console.log("battle bgm started:", BGM_SRC);
   } catch (error) {
     console.log("battle bgm blocked or failed:", error);
   }
@@ -101,81 +103,81 @@ onBeforeUnmount(() => {
 
 <template>
   <section class="battle-page" @pointerdown.once="unlockAndPlayBgm">
-    <div class="battle-scene">
-      <div class="nameplate nameplate-left" :class="{ active: currentPlayer === 1 }">
-        <p class="player-side">PLAYER 1 / 先手</p>
-        <p class="player-name">{{ player1Name }}</p>
-        <p class="player-character">{{ player1Character || "未設定" }}</p>
-      </div>
+    <div class="battle-stage-shell" :style="stageShellStyle">
+      <div class="battle-scene" :style="stageStyle">
+        <div class="nameplate nameplate-left" :class="{ active: currentPlayer === 1 }">
+          <p class="player-side">PLAYER 1 / 先手</p>
+          <p class="player-name">{{ player1Name }}</p>
+          <p class="player-character">{{ player1Character || "キャラクター未設定" }}</p>
+        </div>
 
-      <div class="nameplate nameplate-center">
-        <p class="center-mode">LOCAL BATTLE</p>
-        <p class="center-main">
-          {{ resultLabel || `${currentTurnName} の手番` }}
-        </p>
-        <p class="center-sub">
-          {{ winReasonLabel || "社長将棋" }}
-        </p>
-      </div>
+        <div class="nameplate nameplate-center">
+          <p class="center-mode">LOCAL BATTLE</p>
+          <p class="center-main">{{ resultLabel || `${currentTurnName} の手番` }}</p>
+          <p class="center-sub">{{ winReasonLabel || "社長将棋バトル" }}</p>
+        </div>
 
-      <div class="nameplate nameplate-right" :class="{ active: currentPlayer === 2 }">
-        <p class="player-side">PLAYER 2 / 後手</p>
-        <p class="player-name">{{ player2Name }}</p>
-        <p class="player-character">{{ player2Character || "未設定" }}</p>
-      </div>
+        <div class="nameplate nameplate-right" :class="{ active: currentPlayer === 2 }">
+          <p class="player-side">PLAYER 2 / 後手</p>
+          <p class="player-name">{{ player2Name }}</p>
+          <p class="player-character">{{ player2Character || "キャラクター未設定" }}</p>
+        </div>
 
-      <div class="board-area">
-        <BattleBoard
-          :board="boardRows"
-          :selected-square="selectedSquare"
-          :legal-targets="legalTargets"
-          :active-player="currentPlayer"
-          @cell-click="handleCellClick"
-        />
-      </div>
+        <div class="board-area">
+          <div class="board-stage-scale">
+            <BattleBoard
+              :board="boardRows"
+              :selected-square="selectedSquare"
+              :legal-targets="legalTargets"
+              :active-player="currentPlayer"
+              @cell-click="handleCellClick"
+            />
+          </div>
+        </div>
 
-      <div class="hand-panel hand-panel-left">
-        <BattleHands
-          title="先手の持ち駒"
-          :pieces="player1HandPieces"
-          :selectable="currentPlayer === 1"
-          :show-hint="false"
-          @select="handleHandClick"
-        />
-      </div>
+        <div class="hand-panel hand-panel-left">
+          <BattleHands
+            title="先手の持ち駒"
+            :pieces="player1HandPieces"
+            :selectable="currentPlayer === 1"
+            :show-hint="false"
+            @select="handleHandClick"
+          />
+        </div>
 
-      <div class="hand-panel hand-panel-right">
-        <BattleHands
-          title="後手の持ち駒"
-          :pieces="player2HandPieces"
-          :selectable="currentPlayer === 2"
-          :show-hint="false"
-          @select="handleHandClick"
-        />
-      </div>
+        <div class="hand-panel hand-panel-right">
+          <BattleHands
+            title="後手の持ち駒"
+            :pieces="player2HandPieces"
+            :selectable="currentPlayer === 2"
+            :show-hint="false"
+            @select="handleHandClick"
+          />
+        </div>
 
-      <div class="status-panel">
-        <BattleStatusPanel
-          :turn-label="currentTurnName"
-          :check-label="checkLabel"
-          :result-label="resultLabel"
-          :win-reason-label="winReasonLabel"
-          :last-action-label="lastActionLabel"
-          :message="message"
-          :error-message="errorMessage"
-        />
-      </div>
+        <div class="status-panel">
+          <BattleStatusPanel
+            :turn-label="currentTurnName"
+            :check-label="checkLabel"
+            :result-label="resultLabel"
+            :win-reason-label="winReasonLabel"
+            :last-action-label="lastActionLabel"
+            :message="message"
+            :error-message="errorMessage"
+          />
+        </div>
 
-      <div class="action-bar">
-        <button class="scene-button" type="button" @click="resetBattle">
-          リセット
-        </button>
-        <button class="scene-button" type="button" @click="handleBackToLobby">
-          戻る
-        </button>
-        <button class="music-toggle-button" type="button" @click="handleToggleMusic">
-          {{ isMusicPlaying ? "音楽停止" : "音楽再生" }}
-        </button>
+        <div class="action-bar">
+          <button class="scene-button" type="button" @click="resetBattle">
+            リセット
+          </button>
+          <button class="scene-button" type="button" @click="handleBackToLobby">
+            ロビーへ
+          </button>
+          <button class="music-toggle-button" type="button" @click="handleToggleMusic">
+            {{ isMusicPlaying ? "音楽停止" : "音楽再開" }}
+          </button>
+        </div>
       </div>
     </div>
   </section>
@@ -186,7 +188,7 @@ onBeforeUnmount(() => {
   min-height: 100dvh;
   display: grid;
   place-items: center;
-  padding: 12px;
+  padding: 0;
   box-sizing: border-box;
   background:
     radial-gradient(circle at center, rgba(79, 93, 255, 0.2), transparent 38%),
@@ -195,17 +197,18 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.battle-scene {
+.battle-stage-shell {
   position: relative;
-  width: min(calc(100vw - 24px), calc((100dvh - 24px) * 4 / 3));
-  height: min(calc(100dvh - 24px), calc((100vw - 24px) * 3 / 4));
-  max-width: 1365px;
-  max-height: 1024px;
-  border-radius: 28px;
+}
+
+.battle-scene {
+  position: absolute;
+  inset: 0;
+  border-radius: 36px;
   overflow: hidden;
   background:
-    url("/battle/backgrounds/rainbow_battle_bg_animated_stronger_hq.gif") center / 100% 100% no-repeat;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
+    url("/battle/backgrounds/rainbow_battle_bg_animated_stronger_hq.gif") center 3px / cover no-repeat;
+  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.38);
 }
 
 .battle-scene::after {
@@ -224,32 +227,32 @@ onBeforeUnmount(() => {
   flex-direction: column;
   justify-content: center;
   text-align: center;
-  padding: 0 14px;
+  padding: 0 18px;
   color: #ffffff;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
   pointer-events: none;
 }
 
 .nameplate-left {
-  top: 4%;
-  left: 5%;
-  width: 25.8%;
-  height: 10.5%;
+  top: 70px;
+  left: 180px;
+  width: 360px;
+  height: 116px;
 }
 
 .nameplate-center {
-  top: 7.5%;
-  left: 50%;
+  top: 50px;
+  left: 49%;
   transform: translateX(-50%);
-  width: 26%;
-  height: 9.8%;
+  width: 420px;
+  height: 108px;
 }
 
 .nameplate-right {
-  top: 4.3%;
-  right: 7%;
-  width: 25.8%;
-  height: 10.5%;
+  top: 70px;
+  right: 240px;
+  width: 360px;
+  height: 116px;
 }
 
 .nameplate.active .player-name {
@@ -258,22 +261,22 @@ onBeforeUnmount(() => {
 
 .player-side {
   margin: 0;
-  font-size: clamp(10px, 0.95vw, 13px);
+  font-size: 18px;
   font-weight: 800;
   letter-spacing: 0.12em;
 }
 
 .player-name {
-  margin: 3px 0 0;
-  font-size: clamp(18px, 1.7vw, 30px);
+  margin: 8px 0 0;
+  font-size: 42px;
   font-weight: 900;
   line-height: 1.1;
   word-break: break-word;
 }
 
 .player-character {
-  margin: 3px 0 0;
-  font-size: clamp(11px, 0.95vw, 15px);
+  margin: 8px 0 0;
+  font-size: 18px;
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
@@ -290,77 +293,84 @@ onBeforeUnmount(() => {
 
 .center-mode {
   margin: 0;
-  font-size: clamp(10px, 0.95vw, 13px);
+  font-size: 18px;
   font-weight: 800;
   letter-spacing: 0.16em;
   color: #fff4a8;
 }
 
 .center-main {
-  margin: 4px 0 0;
-  font-size: clamp(18px, 1.5vw, 28px);
+  margin: 8px 0 0;
+  font-size: 36px;
   font-weight: 900;
   line-height: 1.1;
 }
 
 .center-sub {
-  margin: 3px 0 0;
-  font-size: clamp(11px, 0.95vw, 14px);
+  margin: 6px 0 0;
+  font-size: 18px;
   color: #eef2ff;
 }
 
 .board-area {
   position: absolute;
-  top: 7%;
-  left: 45%;
+  top: 15px;
+  left: 42%;
+  width: 624px;
+  height: 780px;
   transform: translateX(-50%);
-  width: 44.2%;
-  aspect-ratio: 3 / 4;
   z-index: 2;
+}
+
+.board-stage-scale {
+  width: 400px;
+  height: 500px;
+  transform: scale(2.2);
+  transform-origin: top left;
 }
 
 .hand-panel {
   position: absolute;
   z-index: 4;
-  width: 22.5%;
+  width: 340px;
 }
 
 .hand-panel-left {
-  top: 60%;
-  left: 2.8%;
+  top: 648px;
+  left: 92px;
 }
 
 .hand-panel-right {
-  top: 22%;
-  right: 1.5%;
+  top: 248px;
+  right: 92px;
 }
 
 .status-panel {
   position: absolute;
-  left: 87.2%;
-  bottom: 8.8%;
-  transform: translateX(-50%);
+  right: 92px;
+  bottom: 136px;
   z-index: 4;
-  width: 20%;
-  max-width: 420px;
+  width: 360px;
 }
 
 .action-bar {
   position: absolute;
   left: 50%;
-  bottom: 2.4%;
+  bottom: 48px;
   transform: translateX(-50%);
   z-index: 5;
   display: flex;
-  gap: 12px;
+  gap: 16px;
 }
 
 .scene-button,
 .music-toggle-button {
+  min-width: 148px;
+  height: 58px;
+  padding: 0 26px;
   border: none;
   border-radius: 999px;
-  padding: 10px 18px;
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 900;
   color: #ffffff;
   cursor: pointer;
@@ -386,16 +396,70 @@ onBeforeUnmount(() => {
   backdrop-filter: blur(10px);
 }
 
-:deep(.panel h3) {
+.hand-panel :deep(.hands-root) {
+  padding: 22px 24px;
+  border-radius: 24px;
+}
+
+.hand-panel :deep(.hand-title) {
+  margin-bottom: 16px;
+  font-size: 26px;
+}
+
+.hand-panel :deep(.hand-list) {
+  gap: 14px;
+}
+
+.hand-panel :deep(.hand-image) {
+  width: 76px;
+  height: 76px;
+}
+
+.hand-panel :deep(.count) {
+  font-size: 24px;
+}
+
+.status-panel :deep(.panel) {
+  padding: 18px 20px;
+  border-radius: 24px;
+}
+
+.status-panel :deep(h3) {
+  margin-bottom: 14px;
+  font-size: 24px;
   color: #fff5b8;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
-:deep(.panel dt),
-:deep(.panel .hint),
-:deep(.panel .character),
-:deep(.panel .row dd) {
+.status-panel :deep(.status-list) {
+  gap: 10px;
+}
+
+.status-panel :deep(.row) {
+  grid-template-columns: 74px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.status-panel :deep(dt),
+.status-panel :deep(.hint),
+.status-panel :deep(.character),
+.status-panel :deep(.row dd) {
   color: #f2f6ff;
+}
+
+.status-panel :deep(dt) {
+  font-size: 15px;
+}
+
+.status-panel :deep(dd) {
+  font-size: 20px;
+  line-height: 1.45;
+}
+
+.status-panel :deep(.notice) {
+  margin-top: 12px;
+  padding: 12px 14px;
+  font-size: 18px;
 }
 
 :deep(.hand-chip) {
@@ -407,91 +471,5 @@ onBeforeUnmount(() => {
 :deep(.hand-chip.active) {
   background: transparent;
   outline: none;
-}
-
-@media (max-width: 900px) {
-  .board-area {
-    width: 46%;
-  }
-
-  .hand-panel {
-    width: 24%;
-  }
-
-  .status-panel {
-    width: 33%;
-  }
-}
-
-@media (max-width: 760px) {
-  .battle-page {
-    padding: 8px;
-  }
-
-  .battle-scene {
-    width: min(calc(100vw - 16px), calc((100dvh - 16px) * 4 / 3));
-    height: min(calc(100dvh - 16px), calc((100vw - 16px) * 3 / 4));
-    border-radius: 18px;
-  }
-
-  .nameplate-left,
-  .nameplate-right {
-    width: 29%;
-    height: 11%;
-  }
-
-  .nameplate-center {
-    width: 31%;
-  }
-
-  .hand-panel {
-    top: 18%;
-    width: 26%;
-  }
-
-  .board-area {
-    top: 10%;
-    width: 47%;
-  }
-
-  .status-panel {
-    width: 36%;
-    bottom: 7.2%;
-  }
-
-  .action-bar {
-    bottom: 1.6%;
-    gap: 8px;
-  }
-
-  .scene-button,
-  .music-toggle-button {
-    padding: 8px 14px;
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 560px) {
-  .board-area {
-    top: 10%;
-    width: 48.5%;
-  }
-
-  .hand-panel {
-    width: 29%;
-  }
-
-  .status-panel {
-    width: 39%;
-  }
-
-  .player-character,
-  .center-sub {
-    display: none;
-  }
-
-  :deep(.panel) {
-    padding: 10px 12px;
-  }
 }
 </style>

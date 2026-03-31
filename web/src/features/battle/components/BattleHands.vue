@@ -176,19 +176,4 @@ function handlePieceClick(piece: BattleHandPieceView) {
   line-height: 1.45;
   font-size: 12px;
 }
-
-@media (max-width: 560px) {
-  .hand-list {
-    grid-template-columns: 1fr;
-  }
-
-  .hand-image {
-    width: 42px;
-    height: 42px;
-  }
-
-  .count {
-    font-size: 12px;
-  }
-}
 </style>
