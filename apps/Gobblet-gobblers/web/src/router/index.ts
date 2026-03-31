@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import ModeSelectPage from "../pages/ModeSelectPage.vue";
 import StartPage from "../pages/StartPage.vue";
 import ResultPage from "../pages/ResultPage.vue";
@@ -39,7 +39,7 @@ const routes = [
 ];
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHashHistory(),
     routes,
 });
 

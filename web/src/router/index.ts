@@ -1,11 +1,11 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import LocalLobbyPage from "../pages/localrobypage.vue";
 import ModeSelectPage from "../pages/ModeSelectPage.vue";
 import OnlineLobbyPage from "../pages/onlinerobypage.vue";
 import OnlineUserEntryPage from "../pages/OnlineUserEntryPage.vue";
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHashHistory(),
     routes: [
         {
             path: "/",
