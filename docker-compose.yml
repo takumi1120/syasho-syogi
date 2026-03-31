@@ -13,7 +13,7 @@ services:
       - syachosyogi_db_data:/var/lib/postgresql/data
 
   api:
-    image: ghcr.io/takumi1120/syachosyogi-api:latest
+    image: ${API_IMAGE:-ghcr.io/takumi1120/syachosyogi-api:latest}
     container_name: syachosyogi_api
     restart: always
     depends_on:
@@ -26,7 +26,7 @@ services:
       - "3000:3000"
 
   web:
-    image: ghcr.io/takumi1120/syachosyogi-web:latest
+    image: ${WEB_IMAGE:-ghcr.io/takumi1120/syachosyogi-web:latest}
     container_name: syachosyogi_web
     restart: always
     depends_on:
@@ -48,7 +48,7 @@ services:
       - gob_db_data:/var/lib/postgresql/data
 
   gobapi:
-    image: ghcr.io/takumi1120/syacho-gobblet-api:latest
+    image: ${GOBAPI_IMAGE:-ghcr.io/takumi1120/syacho-gobblet-api:latest}
     container_name: gob_api
     restart: always
     depends_on:
@@ -61,7 +61,7 @@ services:
       - "3001:3000"
 
   gobweb:
-    image: ghcr.io/takumi1120/syacho-gobblet-web:latest
+    image: ${GOBWEB_IMAGE:-ghcr.io/takumi1120/syacho-gobblet-web:latest}
     container_name: gob_web
     restart: always
     depends_on:
