@@ -92,19 +92,19 @@ jobs:
 
             sudo docker compose pull api
             sudo docker compose run --rm api npx prisma migrate deploy
-            sudo docker compose up -d api
+            sudo docker compose up -d --force-recreate api
             sudo docker image prune -af
 
             sudo docker compose pull web
-            sudo docker compose up -d web
+            sudo docker compose up -d --force-recreate web
             sudo docker image prune -af
 
             sudo docker compose pull gobapi
             sudo docker compose run --rm gobapi npx prisma migrate deploy
-            sudo docker compose up -d gobapi
+            sudo docker compose up -d --force-recreate gobapi
             sudo docker image prune -af
 
             sudo docker compose pull gobweb
-            sudo docker compose up -d gobweb
+            sudo docker compose up -d --force-recreate gobweb
             sudo docker image prune -af
           EOF
