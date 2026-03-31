@@ -20,7 +20,7 @@ services:
       - db
     environment:
       DATABASE_URL: postgresql://syachosyogi:syachosyogi@db:5432/syachosyogi?schema=public
-      CORS_ORIGIN: http://54.66.189.66
+      CORS_ORIGIN: http://54.252.188.39
       PORT: 3000
     ports:
       - "3000:3000"
@@ -55,7 +55,7 @@ services:
       - gobdb
     environment:
       DATABASE_URL: postgresql://gob:gob1234@gobdb:5432/gob?schema=public
-      CORS_ORIGIN: http://54.66.189.66:8080
+      CORS_ORIGIN: http://54.252.188.39:8080
       PORT: 3000
     ports:
       - "3001:3000"
