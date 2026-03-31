@@ -86,7 +86,10 @@ jobs:
             cd "${{ secrets.APP_DIR }}"
 
             sudo docker compose pull
-            sudo docker compose up -d
+            sudo docker compose up -d db gobdb
 
-            sudo docker compose exec -T api npx prisma migrate deploy
+            sudo docker compose run --rm api npx prisma migrate deploy
+            sudo docker compose run --rm gobapi npx prisma migrate deploy
+
+            sudo docker compose up -d
           EOF
