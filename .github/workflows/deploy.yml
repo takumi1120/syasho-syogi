@@ -100,13 +100,22 @@ jobs:
           ssh-keygen -y -f ~/.ssh/id_ed25519 > /dev/null
           ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts
 
+      - name: Upload compose file
+        shell: bash
+        run: |
+          scp -i ~/.ssh/id_ed25519 docker-compose.yml "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/tmp/syacho-deploy-compose.yml"
+
       - name: Deploy to EC2
         shell: bash
         run: |
           ssh -i ~/.ssh/id_ed25519 "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" << EOF
             set -euxo pipefail
 
-            cd "${{ secrets.APP_DIR }}"
+            PROJECT_DIR="${{ secrets.APP_DIR }}"
+            DEPLOY_COMPOSE_FILE="/tmp/syacho-deploy-compose.yml"
+            PROJECT_NAME="$(basename "${PROJECT_DIR}")"
+
+            cd "${PROJECT_DIR}"
 
             compose() {
               sudo env \
@@ -114,7 +123,10 @@ jobs:
                 WEB_IMAGE="${WEB_IMAGE}" \
                 GOBAPI_IMAGE="${GOBAPI_IMAGE}" \
                 GOBWEB_IMAGE="${GOBWEB_IMAGE}" \
-                docker compose "\$@"
+                docker compose \
+                  --project-directory "${PROJECT_DIR}" \
+                  --project-name "${PROJECT_NAME}" \
+                  -f "${DEPLOY_COMPOSE_FILE}" "\$@"
             }
 
             echo "Deploying images:"
@@ -122,6 +134,7 @@ jobs:
             echo "WEB_IMAGE=${WEB_IMAGE}"
             echo "GOBAPI_IMAGE=${GOBAPI_IMAGE}"
             echo "GOBWEB_IMAGE=${GOBWEB_IMAGE}"
+            echo "DEPLOY_COMPOSE_FILE=${DEPLOY_COMPOSE_FILE}"
 
             compose up -d db gobdb
 
@@ -147,4 +160,7 @@ jobs:
             sudo docker image prune -af
 
             compose ps
+
+            sudo docker inspect syachosyogi_web --format 'syachosyogi_web={{.Image}}'
+            sudo docker inspect gob_web --format 'gob_web={{.Image}}'
           EOF
