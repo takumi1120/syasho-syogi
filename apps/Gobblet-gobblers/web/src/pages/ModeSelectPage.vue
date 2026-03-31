@@ -10,6 +10,10 @@ function goLocal() {
 function goOnline() {
   router.push("/online");
 }
+
+function goTopPage() {
+  window.location.href = "http://54.252.188.39/#/";
+}
 </script>
 
 <template>
@@ -42,6 +46,15 @@ function goOnline() {
           <span class="board-title">オンライン対戦</span>
           <span class="board-sub">ONLINE</span>
         </span>
+      </button>
+
+      <button
+        class="top-page-button"
+        type="button"
+        @click="goTopPage"
+        aria-label="トップページへ"
+      >
+        社長将棋へ
       </button>
     </div>
   </div>
@@ -168,6 +181,55 @@ function goOnline() {
     0 10px 24px rgba(0, 0, 0, 0.36);
 }
 
+/* 左下のトップボタン */
+.top-page-button {
+  position: absolute;
+  left: 2.8%;
+  bottom: 4.5%;
+  min-width: 148px;
+  height: 44px;
+  padding: 0 18px;
+  border: 1px solid rgba(255, 240, 205, 0.42);
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    rgba(92, 56, 24, 0.92) 0%,
+    rgba(58, 33, 13, 0.94) 100%
+  );
+  color: #f7dfb1;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  z-index: 6;
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 235, 200, 0.18);
+  transition:
+    transform 0.18s ease,
+    filter 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.top-page-button:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.06);
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 235, 200, 0.24);
+}
+
+.top-page-button:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.top-page-button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 4px rgba(255, 215, 130, 0.35),
+    0 10px 24px rgba(0, 0, 0, 0.36);
+}
+
 /* ボード中央に文字を固定 */
 .board-label {
   position: absolute;
@@ -257,6 +319,11 @@ function goOnline() {
     margin-top: 10px;
     font-size: clamp(10px, 1.1vw, 14px);
   }
+
+  .top-page-button {
+    left: 2.4%;
+    bottom: 4%;
+  }
 }
 
 @media (max-width: 768px) {
@@ -329,6 +396,14 @@ function goOnline() {
     font-size: clamp(8px, 1.8vw, 11px);
     letter-spacing: 0.14em;
   }
+
+  .top-page-button {
+    left: 3.2%;
+    bottom: 3.4%;
+    min-width: 134px;
+    height: 40px;
+    font-size: 13px;
+  }
 }
 
 @media (max-width: 430px) and (min-height: 850px) {
@@ -358,15 +433,15 @@ function goOnline() {
 
   .board-right {
     left: 53.1%;
-    
   }
 
   .board-label {
     padding: 0 9%;
   }
+
   .board-right .board-label {
-  transform: translateX(-7%);
-}
+    transform: translateX(-7%);
+  }
 
   .board-title {
     font-size: 13px;
@@ -377,6 +452,22 @@ function goOnline() {
     margin-top: 5px;
     font-size: 8px;
     letter-spacing: 0.12em;
+  }
+
+  .top-page-button {
+    left: 50%;
+    bottom: 3.2%;
+    transform: translateX(-50%);
+    min-width: min(72vw, 240px);
+    height: 40px;
+  }
+
+  .top-page-button:hover {
+    transform: translateX(-50%) translateY(-3px);
+  }
+
+  .top-page-button:active {
+    transform: translateX(-50%) translateY(-1px) scale(0.98);
   }
 }
 
@@ -416,6 +507,12 @@ function goOnline() {
   .board-sub {
     font-size: 7px;
     margin-top: 4px;
+  }
+
+  .top-page-button {
+    min-width: min(76vw, 220px);
+    height: 38px;
+    font-size: 12px;
   }
 }
 </style>

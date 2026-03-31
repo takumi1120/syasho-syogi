@@ -136,6 +136,10 @@ function goUserRegister() {
   router.push({ name: "online-user-entry" });
 }
 
+function goTopPage() {
+  window.location.href = "http://54.252.188.39:8080/#/";
+}
+
 function formatWinRate(rate: number) {
   return `${rate.toFixed(1)}%`;
 }
@@ -179,6 +183,10 @@ onMounted(async () => {
 
     <button class="music-toggle-button" @click="handleToggleMusic">
       {{ isMusicPlaying ? "音楽停止" : "音楽再生" }}
+    </button>
+
+    <button class="top-page-button" @click="goTopPage">
+      ゴブリンゴブラーズへ
     </button>
 
     <section class="online-user-box">
@@ -344,6 +352,40 @@ onMounted(async () => {
 
 .music-toggle-button:active {
   transform: translateX(-50%) scale(0.97);
+}
+
+.top-page-button {
+  position: absolute;
+  left: 3%;
+  bottom: 4%;
+  width: 160px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 900;
+  font-size: 14px;
+  color: #4f4a87;
+  background: linear-gradient(
+    135deg,
+    rgba(248, 236, 255, 0.94) 0%,
+    rgba(236, 245, 255, 0.96) 50%,
+    rgba(226, 239, 255, 0.94) 100%
+  );
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  z-index: 2;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.top-page-button:hover {
+  filter: brightness(1.03);
+  transform: translateY(-2px);
+}
+
+.top-page-button:active {
+  transform: scale(0.97);
 }
 
 .online-user-box {
@@ -554,6 +596,14 @@ onMounted(async () => {
     height: 40px;
     font-size: 12px;
   }
+
+  .top-page-button {
+    left: 4%;
+    bottom: 3%;
+    width: 154px;
+    height: 40px;
+    font-size: 12px;
+  }
 }
 
 @media (max-width: 560px) {
@@ -578,15 +628,23 @@ onMounted(async () => {
     font-size: 12px;
   }
 
+  .top-page-button {
+    left: 4%;
+    bottom: 3%;
+    width: 146px;
+    height: 36px;
+    font-size: 12px;
+  }
+
   .change-user-select,
   .register-user-button {
     width: 188px;
     height: 36px;
     font-size: 12px;
   }
- 
 }
- @media (max-width: 430px) {
+
+@media (max-width: 430px) {
   .btn {
     width: min(78vw, 280px);
     font-size: 17px;
@@ -615,6 +673,32 @@ onMounted(async () => {
   }
 
   .btn:active {
+    transform: translateX(-50%) scale(0.98);
+  }
+
+  .music-toggle-button {
+    top: 78%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(78vw, 280px);
+  }
+
+  .music-toggle-button:active {
+    transform: translateX(-50%) scale(0.97);
+  }
+
+  .top-page-button {
+    left: 50%;
+    bottom: 18%;
+    transform: translateX(-50%);
+    width: min(78vw, 280px);
+  }
+
+  .top-page-button:hover {
+    transform: translateX(-50%) translateY(-4px) scale(1.02);
+  }
+
+  .top-page-button:active {
     transform: translateX(-50%) scale(0.98);
   }
 
