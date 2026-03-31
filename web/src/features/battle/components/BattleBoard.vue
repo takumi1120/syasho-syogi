@@ -379,49 +379,4 @@ function pieceImageSrc(cell: SyahoShogiCell) {
 .piece-image.reverse {
   transform: rotate(180deg);
 }
-
-@media (max-width: 640px) {
-  .board-grid {
-    inset: 9.5% 8.5% 9.3% 8.5%;
-    gap: 1.6%;
-  }
-
-  .piece-token.owner-1 {
-    width: 60%;
-    height: 60%;
-  }
-
-  .piece-token.owner-2 {
-    width: 68%;
-    height: 68%;
-  }
-
-  .piece-token.boss-owner-1 {
-    width: 72%;
-    height: 72%;
-  }
-
-  .piece-token.boss-owner-2 {
-    width: 76%;
-    height: 76%;
-  }
-
-  .piece-token.promoted-1 {
-    width: 54%;
-    height: 54%;
-  }
-
-  .piece-token.promoted-2 {
-    width: 54%;
-    height: 54%;
-  }
-
-  .owner-badge {
-    top: -1px;
-    left: -1px;
-    min-width: 16px;
-    height: 16px;
-    font-size: 8px;
-  }
-}
 </style>
