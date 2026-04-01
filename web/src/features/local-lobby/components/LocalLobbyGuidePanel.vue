@@ -1,15 +1,22 @@
 <script setup lang="ts">
+import type { CpuDifficultyLevel } from "../../battle/utils/cpuConfig";
+
 defineProps<{
   player1Name: string;
   player2Name: string;
   player1Character: string;
   player2Character: string;
   canStart: boolean;
+  canStartCpu: boolean;
+  cpuLevels: readonly CpuDifficultyLevel[];
+  selectedCpuLevel: CpuDifficultyLevel;
 }>();
 
 defineEmits<{
   (e: "start"): void;
   (e: "reset"): void;
+  (e: "start-cpu"): void;
+  (e: "select-cpu-level", level: CpuDifficultyLevel): void;
 }>();
 </script>
 
@@ -46,7 +53,38 @@ defineEmits<{
       </button>
     </div>
 
-    <p class="hint">2人分の名前とキャラクターを選択すると開始できます。</p>
+    <div class="cpu-section">
+      <div class="cpu-section-head">
+        <p class="cpu-title">CPU対戦</p>
+        <p class="cpu-meta">KCEO固定 / 選択中 Lv{{ selectedCpuLevel }}</p>
+      </div>
+
+      <button
+        class="cpu-button"
+        type="button"
+        :disabled="!canStartCpu"
+        @click="$emit('start-cpu')"
+      >
+        CPU対戦を開始
+      </button>
+
+      <div class="level-grid">
+        <button
+          v-for="level in cpuLevels"
+          :key="level"
+          class="level-button"
+          :class="{ active: level === selectedCpuLevel }"
+          type="button"
+          @click="$emit('select-cpu-level', level)"
+        >
+          Lv{{ level }}
+        </button>
+      </div>
+    </div>
+
+    <p class="hint">
+      ローカル対戦は2人分、CPU対戦はPlayer 1の名前とキャラクターを選ぶと開始できます。
+    </p>
   </section>
 </template>
 
@@ -155,10 +193,47 @@ h2 {
   gap: 12px;
 }
 
+.cpu-section {
+  display: grid;
+  gap: 12px;
+  padding: 16px 16px 18px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 247, 221, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.cpu-section-head {
+  display: grid;
+  gap: 4px;
+}
+
+.cpu-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #fff4bf;
+}
+
+.cpu-meta {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255, 244, 207, 0.82);
+}
+
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
 .start-button,
-.ghost-button {
-  min-height: 48px;
-  padding: 0 16px;
+.ghost-button,
+.cpu-button,
+.level-button {
   border-radius: 14px;
   cursor: pointer;
   font-size: 14px;
@@ -167,14 +242,32 @@ h2 {
   backdrop-filter: blur(8px);
 }
 
+.start-button,
+.ghost-button,
+.cpu-button {
+  min-height: 48px;
+  padding: 0 16px;
+}
+
+.level-button {
+  min-height: 42px;
+  padding: 0 8px;
+  border: 1px solid rgba(255, 247, 221, 0.36);
+  color: #fff9df;
+  background: rgba(43, 58, 116, 0.42);
+}
+
 .start-button:hover,
-.ghost-button:hover {
+.ghost-button:hover,
+.cpu-button:hover,
+.level-button:hover {
   transform: translateY(-1px);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
 
 .start-button:disabled,
-.ghost-button:disabled {
+.ghost-button:disabled,
+.cpu-button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
   transform: none;
@@ -193,6 +286,18 @@ h2 {
   border: 1px solid rgba(255, 247, 221, 0.46);
 }
 
+.cpu-button {
+  color: #2f1f07;
+  background: linear-gradient(180deg, rgba(255, 246, 191, 0.94) 0%, rgba(255, 209, 116, 0.9) 100%);
+  border: 1px solid rgba(255, 245, 214, 0.52);
+}
+
+.level-button.active {
+  color: #3b2506;
+  background: linear-gradient(180deg, rgba(255, 235, 171, 0.96) 0%, rgba(255, 194, 105, 0.88) 100%);
+  border-color: rgba(255, 245, 214, 0.56);
+}
+
 .hint {
   margin: auto 0 0;
   color: #ffefbf;
@@ -202,5 +307,4 @@ h2 {
     0 1px 0 rgba(82, 48, 0, 0.28),
     0 2px 8px rgba(0, 0, 0, 0.14);
 }
-
 </style>

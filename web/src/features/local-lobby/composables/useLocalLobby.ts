@@ -1,5 +1,13 @@
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
+import {
+  CPU_BOSS_IMAGE_SRC,
+  CPU_BOSS_NAME,
+  CPU_LEVELS,
+  CPU_OPPONENT_NAME,
+  DEFAULT_CPU_LEVEL,
+  type CpuDifficultyLevel,
+} from "../../battle/utils/cpuConfig";
 
 const STORAGE_KEYS = {
   p1Name: "localP1Name",
@@ -37,6 +45,17 @@ function resolveCharacterImage(characterName: string): string {
   return CHARACTER_IMAGE_MAP[trimmed] ?? "";
 }
 
+function randomizeOrder<T>(first: T, second: T): [T, T] {
+  return Math.random() < 0.5 ? [first, second] : [second, first];
+}
+
+type CpuBattleEntry = {
+  role: "human" | "cpu";
+  name: string;
+  character: string;
+  image: string;
+};
+
 export function useLocalLobby() {
   const router = useRouter();
 
@@ -45,6 +64,7 @@ export function useLocalLobby() {
 
   const player1Character = ref(readStorage(STORAGE_KEYS.p1Character, ""));
   const player2Character = ref(readStorage(STORAGE_KEYS.p2Character, ""));
+  const selectedCpuLevel = ref<CpuDifficultyLevel>(DEFAULT_CPU_LEVEL);
 
   const enableNameValidation = ref(false);
 
@@ -79,6 +99,10 @@ export function useLocalLobby() {
     );
   });
 
+  const canStartCpu = computed(() => {
+    return trimmedPlayer1Name.value.length > 0 && trimmedPlayer1Character.value.length > 0;
+  });
+
   function swapPlayers() {
     const p1Name = player1Name.value;
     const p2Name = player2Name.value;
@@ -104,19 +128,68 @@ export function useLocalLobby() {
 
     if (!canStart.value) return;
 
-    const p1CharacterImage = resolveCharacterImage(trimmedPlayer1Character.value);
-    const p2CharacterImage = resolveCharacterImage(trimmedPlayer2Character.value);
+    const player1Entry = {
+      name: trimmedPlayer1Name.value,
+      character: trimmedPlayer1Character.value,
+      image: resolveCharacterImage(trimmedPlayer1Character.value),
+    };
+    const player2Entry = {
+      name: trimmedPlayer2Name.value,
+      character: trimmedPlayer2Character.value,
+      image: resolveCharacterImage(trimmedPlayer2Character.value),
+    };
+    const [firstPlayer, secondPlayer] = randomizeOrder(player1Entry, player2Entry);
 
     router.push({
       path: "/battle",
       query: {
         mode: "LOCAL",
-        p1Name: trimmedPlayer1Name.value,
-        p2Name: trimmedPlayer2Name.value,
-        p1Character: trimmedPlayer1Character.value,
-        p2Character: trimmedPlayer2Character.value,
-        ...(p1CharacterImage ? { p1CharacterImage } : {}),
-        ...(p2CharacterImage ? { p2CharacterImage } : {}),
+        p1Name: firstPlayer.name,
+        p2Name: secondPlayer.name,
+        p1Character: firstPlayer.character,
+        p2Character: secondPlayer.character,
+        ...(firstPlayer.image ? { p1CharacterImage: firstPlayer.image } : {}),
+        ...(secondPlayer.image ? { p2CharacterImage: secondPlayer.image } : {}),
+      },
+    });
+  }
+
+  function setCpuLevel(level: CpuDifficultyLevel) {
+    selectedCpuLevel.value = level;
+  }
+
+  function startCpuBattle() {
+    enableNameValidation.value = true;
+
+    if (!canStartCpu.value) return;
+
+    const humanEntry: CpuBattleEntry = {
+      role: "human" as const,
+      name: trimmedPlayer1Name.value,
+      character: trimmedPlayer1Character.value,
+      image: resolveCharacterImage(trimmedPlayer1Character.value),
+    };
+    const cpuEntry: CpuBattleEntry = {
+      role: "cpu" as const,
+      name: CPU_OPPONENT_NAME,
+      character: CPU_BOSS_NAME,
+      image: CPU_BOSS_IMAGE_SRC,
+    };
+    const [firstPlayer, secondPlayer] = randomizeOrder(humanEntry, cpuEntry);
+    const cpuPlayer = firstPlayer.role === "cpu" ? 1 : 2;
+
+    router.push({
+      path: "/battle",
+      query: {
+        mode: "CPU",
+        cpuLevel: String(selectedCpuLevel.value),
+        cpuPlayer: String(cpuPlayer),
+        p1Name: firstPlayer.name,
+        p2Name: secondPlayer.name,
+        p1Character: firstPlayer.character,
+        p2Character: secondPlayer.character,
+        ...(firstPlayer.image ? { p1CharacterImage: firstPlayer.image } : {}),
+        ...(secondPlayer.image ? { p2CharacterImage: secondPlayer.image } : {}),
       },
     });
   }
@@ -133,11 +206,16 @@ export function useLocalLobby() {
     trimmedPlayer1Character,
     trimmedPlayer2Character,
     canStart,
+    canStartCpu,
 
     characterOptions: LOCAL_CHARACTER_OPTIONS,
+    cpuLevels: CPU_LEVELS,
+    selectedCpuLevel,
 
     swapPlayers,
     clearInputs,
     startLocalBattle,
+    startCpuBattle,
+    setCpuLevel,
   };
 }

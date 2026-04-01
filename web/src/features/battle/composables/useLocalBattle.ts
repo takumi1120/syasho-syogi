@@ -1,10 +1,10 @@
-import { computed, ref } from "vue";
+import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
-  createInitialSyahoShogiState,
   applySyahoShogiAction,
-  getLegalMovesFrom,
+  createInitialSyahoShogiState,
   getLegalDropsForPiece,
+  getLegalMovesFrom,
   isPlayerInCheck,
   type SyahoShogiAction,
   type SyahoShogiHandPieceType,
@@ -12,9 +12,11 @@ import {
   type SyahoShogiPlayer,
   type SyahoShogiSquare,
 } from "../../../lib/syahosyogi";
+import { playCheckSe, playMoveSe } from "../utils/battleSe";
 import { getHandLabel, getPieceLabel } from "../utils/battleLabels";
+import { clampCpuLevel } from "../utils/cpuConfig";
+import { pickCpuAction } from "../utils/cpuEngine";
 import { getHandPieceImageSrc } from "../utils/pieceImages";
-import { playMoveSe, playCheckSe } from "../utils/battleSe";
 
 type BattleHandPieceView = {
   pieceType: SyahoShogiHandPieceType;
@@ -36,6 +38,17 @@ function readStringQuery(
   return typeof value === "string" && value.trim() !== "" ? value.trim() : fallback;
 }
 
+function readPlayerQuery(
+  query: Record<string, unknown>,
+  key: string,
+  fallback: SyahoShogiPlayer,
+): SyahoShogiPlayer {
+  const value = query[key];
+  if (value === 1 || value === "1") return 1;
+  if (value === 2 || value === "2") return 2;
+  return fallback;
+}
+
 function getActionPieceLabel(pieceType: SyahoShogiPieceType | SyahoShogiHandPieceType) {
   return getPieceLabel({ type: pieceType });
 }
@@ -43,6 +56,10 @@ function getActionPieceLabel(pieceType: SyahoShogiPieceType | SyahoShogiHandPiec
 export function useLocalBattle() {
   const route = useRoute();
   const router = useRouter();
+
+  const mode = readStringQuery(route.query, "mode", "LOCAL").toUpperCase() === "CPU"
+    ? ("CPU" as const)
+    : ("LOCAL" as const);
 
   const player1Name = computed(() => readStringQuery(route.query, "p1Name", "Player 1"));
   const player2Name = computed(() => readStringQuery(route.query, "p2Name", "Player 2"));
@@ -54,6 +71,9 @@ export function useLocalBattle() {
   const player2CharacterImage = computed(() =>
     readStringQuery(route.query, "p2CharacterImage", ""),
   );
+  const cpuBattleEnabled = computed(() => mode === "CPU");
+  const cpuPlayer = computed<SyahoShogiPlayer>(() => readPlayerQuery(route.query, "cpuPlayer", 2));
+  const cpuLevel = computed(() => clampCpuLevel(readStringQuery(route.query, "cpuLevel", "")));
 
   const state = ref(
     createInitialSyahoShogiState({
@@ -68,6 +88,8 @@ export function useLocalBattle() {
   const selectedHandPiece = ref<SyahoShogiHandPieceType | null>(null);
   const message = ref("");
   const errorMessage = ref("");
+  const cpuThinking = ref(false);
+  let cpuMoveTimer: number | null = null;
 
   const battleState = computed(() => state.value);
   const boardRows = computed(() => state.value.board);
@@ -123,10 +145,26 @@ export function useLocalBattle() {
     return state.value.hands[currentPlayer.value];
   });
 
+  function isCpuControlledPlayer(player: SyahoShogiPlayer): boolean {
+    return cpuBattleEnabled.value && player === cpuPlayer.value;
+  }
+
+  function isInteractionLocked(): boolean {
+    return (
+      state.value.status === "FINISHED" ||
+      cpuThinking.value ||
+      isCpuControlledPlayer(currentPlayer.value)
+    );
+  }
+
   function buildHandPieces(player: SyahoShogiPlayer): BattleHandPieceView[] {
     const hands = state.value.hands[player];
     const isTurnPlayer = currentPlayer.value === player;
-    const canSelectThisHand = isTurnPlayer && state.value.status !== "FINISHED";
+    const canSelectThisHand =
+      isTurnPlayer &&
+      state.value.status !== "FINISHED" &&
+      !cpuThinking.value &&
+      !isCpuControlledPlayer(player);
 
     return HAND_PIECE_TYPES.map((pieceType) => {
       const count = hands[pieceType] ?? 0;
@@ -136,7 +174,7 @@ export function useLocalBattle() {
         label: getHandLabel(pieceType),
         imageSrc: getHandPieceImageSrc(pieceType),
         count,
-        active: isTurnPlayer && selectedHandPiece.value === pieceType,
+        active: canSelectThisHand && selectedHandPiece.value === pieceType,
         disabled: count <= 0 || !canSelectThisHand,
       };
     });
@@ -146,13 +184,17 @@ export function useLocalBattle() {
   const player2HandPieces = computed<BattleHandPieceView[]>(() => buildHandPieces(2));
 
   const handPieces = computed<BattleHandPieceView[]>(() => {
-    return currentPlayer.value === 1
-      ? player1HandPieces.value
-      : player2HandPieces.value;
+    return currentPlayer.value === 1 ? player1HandPieces.value : player2HandPieces.value;
   });
 
   const legalTargets = computed<SyahoShogiSquare[]>(() => {
-    if (state.value.status === "FINISHED") return [];
+    if (
+      state.value.status === "FINISHED" ||
+      cpuThinking.value ||
+      isCpuControlledPlayer(currentPlayer.value)
+    ) {
+      return [];
+    }
 
     if (selectedHandPiece.value) {
       return getLegalDropsForPiece(
@@ -181,6 +223,13 @@ export function useLocalBattle() {
   function clearSelection() {
     selectedSquare.value = null;
     selectedHandPiece.value = null;
+  }
+
+  function clearCpuMoveTimer() {
+    if (cpuMoveTimer !== null) {
+      window.clearTimeout(cpuMoveTimer);
+      cpuMoveTimer = null;
+    }
   }
 
   function playActionSe(nextState: typeof state.value) {
@@ -215,8 +264,57 @@ export function useLocalBattle() {
 
     return true;
   }
+
+  function executeCpuTurn() {
+    cpuMoveTimer = null;
+
+    if (
+      !cpuBattleEnabled.value ||
+      state.value.status !== "PLAYING" ||
+      state.value.currentPlayer !== cpuPlayer.value
+    ) {
+      cpuThinking.value = false;
+      return;
+    }
+
+    clearSelection();
+
+    const action = pickCpuAction(state.value, cpuLevel.value);
+    cpuThinking.value = false;
+
+    if (!action) {
+      errorMessage.value = "CPUが指せる手がありません";
+      return;
+    }
+
+    submitLocalAction(action);
+  }
+
+  function getCpuDelayMs(level: number): number {
+    return Math.min(260 + level * 35, 640);
+  }
+
+  function queueCpuTurnIfNeeded() {
+    clearCpuMoveTimer();
+
+    if (
+      !cpuBattleEnabled.value ||
+      state.value.status !== "PLAYING" ||
+      state.value.currentPlayer !== cpuPlayer.value
+    ) {
+      cpuThinking.value = false;
+      return;
+    }
+
+    clearSelection();
+    cpuThinking.value = true;
+    cpuMoveTimer = window.setTimeout(() => {
+      executeCpuTurn();
+    }, getCpuDelayMs(cpuLevel.value));
+  }
+
   function handleHandClick(pieceType: SyahoShogiHandPieceType) {
-    if (state.value.status === "FINISHED") return;
+    if (isInteractionLocked()) return;
     if ((currentPlayerHands.value[pieceType] ?? 0) <= 0) return;
 
     clearNotice();
@@ -231,7 +329,7 @@ export function useLocalBattle() {
   }
 
   function handleCellClick(row: number, col: number) {
-    if (state.value.status === "FINISHED") return;
+    if (isInteractionLocked()) return;
 
     clearNotice();
 
@@ -286,6 +384,9 @@ export function useLocalBattle() {
   }
 
   function resetBattle() {
+    clearCpuMoveTimer();
+    cpuThinking.value = false;
+
     state.value = createInitialSyahoShogiState({
       player1BossCharacter: player1Character.value || null,
       player2BossCharacter: player2Character.value || null,
@@ -298,11 +399,30 @@ export function useLocalBattle() {
   }
 
   function backToLobby() {
+    clearCpuMoveTimer();
     router.back();
   }
 
+  watch(
+    () => [
+      state.value.currentPlayer,
+      state.value.status,
+      cpuBattleEnabled.value,
+      cpuPlayer.value,
+      cpuLevel.value,
+    ],
+    () => {
+      queueCpuTurnIfNeeded();
+    },
+    { immediate: true },
+  );
+
+  onBeforeUnmount(() => {
+    clearCpuMoveTimer();
+  });
+
   return {
-    mode: "LOCAL" as const,
+    mode,
     player1Name,
     player2Name,
     player1Character,

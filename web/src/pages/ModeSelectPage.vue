@@ -195,7 +195,7 @@ onMounted(async () => {
         </button>
 
         <button class="top-page-button" type="button" @click="goTopPage">
-          ゴブリンゴブラーズに戻る
+          ゴブリンゴブラーズへ
         </button>
 
         <section class="online-user-box">

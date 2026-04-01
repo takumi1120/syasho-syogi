@@ -16,12 +16,17 @@ const {
   trimmedPlayer1Character,
   trimmedPlayer2Character,
   canStart,
+  canStartCpu,
 
   characterOptions,
+  cpuLevels,
+  selectedCpuLevel,
 
   swapPlayers,
   clearInputs,
   startLocalBattle,
+  startCpuBattle,
+  setCpuLevel,
 } = useLocalLobby();
 
 function updatePlayer1Name(value: string) {
@@ -71,8 +76,13 @@ function updatePlayer2Character(value: string) {
           :player1-character="trimmedPlayer1Character"
           :player2-character="trimmedPlayer2Character"
           :can-start="canStart"
+          :can-start-cpu="canStartCpu"
+          :cpu-levels="cpuLevels"
+          :selected-cpu-level="selectedCpuLevel"
           @start="startLocalBattle"
           @reset="clearInputs"
+          @start-cpu="startCpuBattle"
+          @select-cpu-level="setCpuLevel"
         />
       </div>
     </div>
