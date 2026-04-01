@@ -147,6 +147,10 @@ function goTopPage() {
   window.location.href = "http://54.252.188.39:8080/#/";
 }
 
+function goOmake() {
+  router.push({ name: "omake" });
+}
+
 function formatWinRate(rate: number) {
   return `${rate.toFixed(1)}%`;
 }
@@ -196,6 +200,10 @@ onMounted(async () => {
 
         <button class="top-page-button" type="button" @click="goTopPage">
           ゴブリンゴブラーズへ
+        </button>
+
+        <button class="omake-page-button" type="button" @click="goOmake">
+          OMAKEへ
         </button>
 
         <section class="online-user-box">
@@ -333,6 +341,7 @@ onMounted(async () => {
 .btn,
 .music-toggle-button,
 .top-page-button,
+.omake-page-button,
 .online-user-box {
   position: absolute;
   z-index: 2;
@@ -379,6 +388,7 @@ onMounted(async () => {
 
 .music-toggle-button,
 .top-page-button,
+.omake-page-button,
 .register-user-button,
 .change-user-select {
   border: 1px solid rgba(255, 255, 255, 0.62);
@@ -397,6 +407,7 @@ onMounted(async () => {
 
 .music-toggle-button,
 .top-page-button,
+.omake-page-button,
 .register-user-button {
   cursor: pointer;
   font-weight: 900;
@@ -407,6 +418,7 @@ onMounted(async () => {
 
 .music-toggle-button:hover,
 .top-page-button:hover,
+.omake-page-button:hover,
 .register-user-button:hover,
 .change-user-select:hover {
   filter: brightness(1.03);
@@ -432,7 +444,16 @@ onMounted(async () => {
   font-size: 14px;
 }
 
+.omake-page-button {
+  left: 58px;
+  bottom: 100px;
+  width: 222px;
+  height: 44px;
+  font-size: 14px;
+}
+
 .top-page-button:active,
+.omake-page-button:active,
 .register-user-button:active {
   transform: scale(0.97);
 }

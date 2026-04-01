@@ -1,29 +1,79 @@
 <script setup lang="ts">
+import { onBeforeUnmount, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
+const MODE_SELECT_BGM_SRC = "/bgm/goblin.mp3";
+const MODE_SELECT_BGM_VOLUME = 0.34;
+
+let modeSelectBgm: HTMLAudioElement | null = null;
+
+function ensureModeSelectBgm() {
+  if (!modeSelectBgm) {
+    modeSelectBgm = new Audio(MODE_SELECT_BGM_SRC);
+    modeSelectBgm.loop = true;
+    modeSelectBgm.volume = MODE_SELECT_BGM_VOLUME;
+    modeSelectBgm.preload = "auto";
+  }
+
+  return modeSelectBgm;
+}
+
+async function playModeSelectBgm() {
+  try {
+    await ensureModeSelectBgm().play();
+  } catch {
+    // Autoplay may be blocked until the first user gesture.
+  }
+}
+
+function unlockModeSelectBgm() {
+  void playModeSelectBgm();
+}
+
+function stopModeSelectBgm(reset = false) {
+  if (!modeSelectBgm) return;
+
+  modeSelectBgm.pause();
+
+  if (reset) {
+    modeSelectBgm.currentTime = 0;
+  }
+}
 
 function goLocal() {
+  stopModeSelectBgm();
   router.push("/start");
 }
 
 function goOnline() {
+  stopModeSelectBgm();
   router.push("/online");
 }
 
 function goTopPage() {
+  stopModeSelectBgm();
   window.location.href = "http://54.252.188.39/#/";
 }
+
+onMounted(() => {
+  void playModeSelectBgm();
+});
+
+onBeforeUnmount(() => {
+  stopModeSelectBgm(true);
+});
 </script>
 
 <template>
-  <div class="mode-title">
+  <div @pointerdown.once="unlockModeSelectBgm">
+    <div class="mode-title">
     <div class="mode-title-main">Gobblet Gobblers</div>
     <div class="mode-title-sub">モードを選択してください</div>
   </div>
 
-  <div class="mode-page">
-    <div class="mode-stage">
+    <div class="mode-page">
+      <div class="mode-stage">
       <button
         class="board-button board-left"
         type="button"
@@ -56,6 +106,7 @@ function goTopPage() {
       >
         社長将棋へ
       </button>
+      </div>
     </div>
   </div>
 </template>
