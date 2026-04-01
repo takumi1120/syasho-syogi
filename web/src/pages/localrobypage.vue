@@ -1,14 +1,21 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { onBeforeRouteLeave, RouterLink } from "vue-router";
+import GlobalMusicButton from "../components/GlobalMusicButton.vue";
 import LobbyShell from "../components/lobby/LobbyShell.vue";
-import LocalLobbyContent from "../features/local-lobby/components/LocalLobbyContent.vue";
+import { useFixedStage } from "../composables/useFixedStage";
 import {
   playModeSelectBgm,
   stopModeSelectBgm,
   unlockModeSelectBgm,
 } from "../features/audio/modeSelectBgm";
-import GlobalMusicButton from "../components/GlobalMusicButton.vue";
+import LocalLobbyContent from "../features/local-lobby/components/LocalLobbyContent.vue";
+
+const { stageShellStyle, stageStyle } = useFixedStage({
+  baseWidth: 1920,
+  baseHeight: 1080,
+  viewportPadding: 0,
+});
 
 function isBattleDestination(to: { name?: unknown; path?: string }) {
   const nameText = String(to.name ?? "").toLowerCase();
@@ -30,29 +37,67 @@ onBeforeRouteLeave((to) => {
 
 <template>
   <section class="lobby-page" @pointerdown.once="unlockModeSelectBgm">
-    <div class="page-overlay"></div>
+    <div class="lobby-stage-shell" :style="stageShellStyle">
+      <div class="lobby-scene" :style="stageStyle">
+        <div class="page-overlay"></div>
 
-    <LobbyShell>
-      <LocalLobbyContent />
-    </LobbyShell>
+        <div class="lobby-frame">
+          <LobbyShell>
+            <LocalLobbyContent />
+          </LobbyShell>
 
-    <RouterLink class="back-link" to="/">
-      mode選択へ
-    </RouterLink>
-     <div class="page-root">
-    <GlobalMusicButton />
+          <RouterLink class="back-link" to="/">
+            mode選択へ
+          </RouterLink>
+
+          <div class="music-button-wrap">
+            <GlobalMusicButton />
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </template>
 
 <style scoped>
+:global(#app) {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  border-inline: none;
+}
+
 .lobby-page {
-  position: relative;
   min-height: 100dvh;
-  padding: 14px 16px 18px;
-  background: url("../assets/background/loby.png") center / cover no-repeat;
-  color: #fff8ea;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  box-sizing: border-box;
   overflow: hidden;
+  background: #ffffff;
+}
+
+.lobby-stage-shell {
+  position: relative;
+}
+
+.lobby-scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 36px;
+  background: url("../assets/background/loby.png") center / cover no-repeat;
+  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.32);
+  color: #fff8ea;
+}
+
+.lobby-frame {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  padding: 14px 16px 72px;
+  box-sizing: border-box;
 }
 
 .page-overlay {
@@ -62,9 +107,9 @@ onBeforeRouteLeave((to) => {
     radial-gradient(circle at 16% 14%, rgba(255, 242, 180, 0.16), transparent 24%),
     radial-gradient(circle at 18% 22%, rgba(112, 220, 255, 0.18), transparent 26%),
     radial-gradient(circle at 82% 18%, rgba(200, 146, 255, 0.16), transparent 24%),
-    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.10), transparent 30%),
-    radial-gradient(circle at 50% 100%, rgba(110, 205, 255, 0.10), transparent 32%),
- linear-gradient(
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.1), transparent 30%),
+    radial-gradient(circle at 50% 100%, rgba(110, 205, 255, 0.1), transparent 32%),
+    linear-gradient(
       180deg,
       rgba(6, 12, 24, 0.2) 0%,
       rgba(6, 12, 24, 0.2) 30%,
@@ -76,11 +121,12 @@ onBeforeRouteLeave((to) => {
 :deep(.lobby-shell) {
   position: relative;
   z-index: 1;
-  height: calc(100dvh - 32px);
+  height: 100%;
+  width: min(100%, 1520px);
 }
 
 .back-link {
-  position: fixed;
+  position: absolute;
   right: 16px;
   bottom: 14px;
   z-index: 3;
@@ -101,49 +147,16 @@ onBeforeRouteLeave((to) => {
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
 }
 
-@media (max-width: 980px) {
-  .lobby-page {
-    overflow: auto;
-    padding-bottom: 72px;
-  }
-
-  :deep(.lobby-shell) {
-    height: auto;
-  }
+.music-button-wrap {
+  position: absolute;
+  right: 110px;
+  bottom: 14px;
+  z-index: 3;
 }
 
-@media (max-width: 640px) {
-  .lobby-page {
-    padding: 12px 10px 72px;
-  }
-
-  .back-link {
-    right: 10px;
-    bottom: 10px;
-    min-height: 32px;
-    font-size: 11px;
-    padding: 0 10px;
-  }
-  
+:deep(.global-music-button) {
+  position: absolute;
+  right: 0;
+  bottom: 0;
 }
-@media (max-width: 430px) {
-  .lobby-page {
-    min-height: 100svh;
-    padding: 10px 8px 68px;
-    overflow: auto;
-  }
-
-  :deep(.lobby-shell) {
-    height: auto;
-    gap: 10px;
-  }
-
-  .back-link {
-    right: 8px;
-    bottom: 8px;
-    min-height: 30px;
-    padding: 0 10px;
-    font-size: 10px;
-  }
-}
-</style>  
+</style>

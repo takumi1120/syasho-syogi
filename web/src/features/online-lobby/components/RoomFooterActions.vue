@@ -148,18 +148,4 @@ const emit = defineEmits<{
   line-height: 1.6;
 }
 
-@media (max-width: 640px) {
-  .state-row,
-  .action-row {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .state-pill,
-  .ready-button,
-  .start-button,
-  .leave-button {
-    width: 100%;
-  }
-}
 </style>

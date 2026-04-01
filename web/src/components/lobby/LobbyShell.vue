@@ -18,7 +18,7 @@
 .lobby-shell {
   display: grid;
   gap: 12px;
-  width: min(100%, 1180px);
+  width: min(100%, 1800px);
   height: 100%;
   margin: 0 auto;
 }
@@ -28,6 +28,7 @@
   gap: 12px;
   min-height: 0;
   align-content: start;
+  margin-top: 5%;
 }
 
 .shell-header,

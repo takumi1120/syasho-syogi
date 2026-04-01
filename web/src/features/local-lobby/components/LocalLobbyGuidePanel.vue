@@ -52,14 +52,19 @@ defineEmits<{
 
 <style scoped>
 .guide-panel {
-  display: grid;
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   min-width: 0;
-  padding: 0;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  backdrop-filter: none;
+  min-height: 100%;
+  padding: 22px 24px 24px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(132, 205, 255, 0.24), rgba(60, 110, 205, 0.2));
+  border: 1px solid rgba(255, 247, 221, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 14px 28px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
 }
 
 .section-head {
@@ -80,7 +85,7 @@ defineEmits<{
 
 h2 {
   margin: 2px 0 0;
-  font-size: 20px;
+  font-size: 28px;
   color: #fff2a8;
   text-shadow:
     0 1px 0 rgba(96, 60, 0, 0.52),
@@ -88,14 +93,14 @@ h2 {
 }
 
 .preview-box {
-  padding: 16px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 247, 221, 0.14);
-  backdrop-filter: blur(5px);
+  padding: 18px 18px 20px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 247, 221, 0.18);
+  backdrop-filter: blur(6px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 6px 18px rgba(0, 0, 0, 0.06);
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .preview-title {
@@ -114,12 +119,12 @@ h2 {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin: 10px 0 0;
+  margin: 14px 0 0;
   color: #fff7d6;
 }
 
 .preview-line strong {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 900;
   text-shadow:
     0 1px 0 rgba(84, 52, 0, 0.38),
@@ -132,8 +137,8 @@ h2 {
 }
 
 .preview-sub {
-  margin: 8px 0 0;
-  font-size: 12px;
+  margin: 12px 0 0;
+  font-size: 13px;
   color: #ffefbf;
   text-shadow:
     0 1px 0 rgba(82, 48, 0, 0.28),
@@ -147,16 +152,16 @@ h2 {
 
 .action-stack {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .start-button,
 .ghost-button {
-  min-height: 42px;
-  padding: 0 14px;
+  min-height: 48px;
+  padding: 0 16px;
   border-radius: 14px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
   transition: transform 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease;
   backdrop-filter: blur(8px);
@@ -189,7 +194,7 @@ h2 {
 }
 
 .hint {
-  margin: 0;
+  margin: auto 0 0;
   color: #ffefbf;
   font-size: 12px;
   line-height: 1.6;
@@ -198,10 +203,4 @@ h2 {
     0 2px 8px rgba(0, 0, 0, 0.14);
 }
 
-@media (max-width: 640px) {
-  .preview-line {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
 </style>

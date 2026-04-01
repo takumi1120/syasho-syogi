@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import { useFixedStage } from "../composables/useFixedStage";
 import { resultService, type ResultStats } from "../services/resultService";
 import { userService, type User } from "../services/userServices";
 import {
@@ -10,6 +11,12 @@ import {
 } from "../features/audio/modeSelectBgm";
 
 const router = useRouter();
+
+const { stageShellStyle, stageStyle } = useFixedStage({
+  baseWidth: 1920,
+  baseHeight: 1080,
+  viewportPadding: 0,
+});
 
 const users = ref<User[]>([]);
 const loadingUsers = ref(false);
@@ -173,256 +180,300 @@ onMounted(async () => {
 
 <template>
   <div class="mode-select-page" @pointerdown.once="handleFirstPointerDown">
-    <button class="btn local" @click="goLocal">
-      ローカルマッチ
-    </button>
+    <div class="mode-stage-shell" :style="stageShellStyle">
+      <div class="mode-scene" :style="stageStyle">
+        <button class="btn local" type="button" @click="goLocal">
+          ローカルマッチ
+        </button>
 
-    <button class="btn online" @click="goOnline">
-      オンラインマッチ
-    </button>
+        <button class="btn online" type="button" @click="goOnline">
+          オンラインマッチ
+        </button>
 
-    <button class="music-toggle-button" @click="handleToggleMusic">
-      {{ isMusicPlaying ? "音楽停止" : "音楽再生" }}
-    </button>
+        <button class="music-toggle-button" type="button" @click="handleToggleMusic">
+          {{ isMusicPlaying ? "音楽停止" : "音楽再生" }}
+        </button>
 
-    <button class="top-page-button" @click="goTopPage">
-      ゴブリンゴブラーズに遷移
-    </button>
+        <button class="top-page-button" type="button" @click="goTopPage">
+          ゴブリンゴブラーズに戻る
+        </button>
 
-    <section class="online-user-box">
-      <select
-        class="change-user-select"
-        :value="selectedOnlineUserId"
-        :disabled="loadingUsers || users.length === 0"
-        @change="handleUserChange"
-      >
-        <option value="">
-          {{
-            loadingUsers
-              ? "ユーザー読込中..."
-              : users.length === 0
-                ? "登録済みユーザーなし"
-                : "ユーザーを選択"
-          }}
-        </option>
-        <option
-          v-for="user in users"
-          :key="user.id"
-          :value="String(user.id)"
-        >
-          {{ user.name }}
-        </option>
-      </select>
+        <section class="online-user-box">
+          <p class="panel-label">ONLINE USER</p>
 
-      <div class="record-strip">
-        <p class="record-heading">RESULT</p>
+          <select
+            class="change-user-select"
+            :value="selectedOnlineUserId"
+            :disabled="loadingUsers || users.length === 0"
+            @change="handleUserChange"
+          >
+            <option value="">
+              {{
+                loadingUsers
+                  ? "ユーザー読み込み中..."
+                  : users.length === 0
+                    ? "利用可能なユーザーがいません"
+                    : "ユーザーを選択"
+              }}
+            </option>
+            <option
+              v-for="user in users"
+              :key="user.id"
+              :value="String(user.id)"
+            >
+              {{ user.name }}
+            </option>
+          </select>
 
-        <p v-if="loadingStats" class="record-empty">
-          戦績を読み込み中...
-        </p>
+          <div class="record-strip">
+            <p class="record-heading">RESULT</p>
 
-        <template v-else-if="currentOnlineUserId && currentStats">
-          <div class="record-grid">
-            <div class="record-chip chip-win">
-              <span class="record-chip-label">勝</span>
-              <strong class="record-chip-value">{{ currentStats.totalWins }}</strong>
-            </div>
+            <p v-if="loadingStats" class="record-empty">
+              戦績を読み込み中...
+            </p>
 
-            <div class="record-chip chip-lose">
-              <span class="record-chip-label">敗</span>
-              <strong class="record-chip-value">{{ currentStats.totalLoses }}</strong>
-            </div>
+            <template v-else-if="currentOnlineUserId && currentStats">
+              <div class="record-grid">
+                <div class="record-chip chip-win">
+                  <span class="record-chip-label">勝</span>
+                  <strong class="record-chip-value">{{ currentStats.totalWins }}</strong>
+                </div>
 
-            <div class="record-chip chip-rate">
-              <span class="record-chip-label">勝率</span>
-              <strong class="record-chip-value">{{ formatWinRate(currentStats.winRate) }}</strong>
-            </div>
+                <div class="record-chip chip-lose">
+                  <span class="record-chip-label">負</span>
+                  <strong class="record-chip-value">{{ currentStats.totalLoses }}</strong>
+                </div>
 
-            <div class="record-chip chip-rank">
-              <span class="record-chip-label">順位</span>
-              <strong class="record-chip-value">
-                {{ currentStats.rank !== null ? `${currentStats.rank}位` : "-" }}
-              </strong>
-            </div>
+                <div class="record-chip chip-rate">
+                  <span class="record-chip-label">勝率</span>
+                  <strong class="record-chip-value">{{ formatWinRate(currentStats.winRate) }}</strong>
+                </div>
+
+                <div class="record-chip chip-rank">
+                  <span class="record-chip-label">順位</span>
+                  <strong class="record-chip-value">
+                    {{ currentStats.rank !== null ? `${currentStats.rank}位` : "-" }}
+                  </strong>
+                </div>
+              </div>
+            </template>
+
+            <p v-else class="record-empty">
+              戦績なし
+            </p>
           </div>
-        </template>
 
-        <p v-else class="record-empty">
-          戦績なし
-        </p>
+          <button class="register-user-button" type="button" @click="goUserRegister">
+            ユーザー登録
+          </button>
+
+          <p v-if="loadingUsers" class="helper-text">
+            ユーザー一覧を読み込み中...
+          </p>
+          <p v-else class="helper-text">
+            ユーザー変更はこの画面でいつでもできます。
+          </p>
+
+          <p v-if="statsErrorMessage" class="error-text">
+            {{ statsErrorMessage }}
+          </p>
+
+          <p v-if="errorMessage" class="error-text">
+            {{ errorMessage }}
+          </p>
+        </section>
       </div>
-
-      <button class="register-user-button" @click="goUserRegister">
-        ユーザー登録
-      </button>
-
-      <p v-if="loadingUsers" class="helper-text">
-        ユーザー一覧を読み込み中...
-      </p>
-      <p v-else class="helper-text">
-        ユーザー変更はこの画面でできます
-      </p>
-
-      <p v-if="statsErrorMessage" class="error-text">
-        {{ statsErrorMessage }}
-      </p>
-
-      <p v-if="errorMessage" class="error-text">
-        {{ errorMessage }}
-      </p>
-    </section>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.mode-select-page {
-  position: relative;
+:global(#app) {
   width: 100%;
-  min-height: 100vh;
+  max-width: 100%;
+  margin: 0;
+  border-inline: none;
+}
+
+.mode-select-page {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  box-sizing: border-box;
   overflow: hidden;
-  background: url("../assets/background/mode_select_particles_up_sweep_soft.gif") center / cover no-repeat;
+  background: #ffffff;
+}
+
+.mode-stage-shell {
+  position: relative;
+}
+
+.mode-scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 36px;
+  background:
+    url("../assets/background/mode_select_particles_up_sweep_soft.gif") center / cover no-repeat;
+  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.42);
+  color: #ffffff;
+}
+
+.mode-scene::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.2), transparent 38%),
+    linear-gradient(180deg, rgba(10, 18, 38, 0.1) 0%, rgba(6, 11, 24, 0.2) 100%);
+  pointer-events: none;
+}
+
+.btn,
+.music-toggle-button,
+.top-page-button,
+.online-user-box {
+  position: absolute;
+  z-index: 2;
 }
 
 .btn {
-  position: absolute;
+  width: 459px;
   border: none;
   background: transparent;
   cursor: pointer;
-  font-size: 32px;
+  font-size: 46px;
   font-weight: 900;
-  color: white;
-  letter-spacing: 2px;
+  color: #ffffff;
+  letter-spacing: 0.08em;
   text-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.8),
-    0 0 10px rgba(255, 255, 255, 0.6);
-  transition: all 0.2s ease;
+    0 4px 12px rgba(0, 0, 0, 0.82),
+    0 0 14px rgba(255, 255, 255, 0.64);
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
 }
 
 .btn:hover {
-  transform: translateY(-6px) scale(1.05);
-  filter: brightness(1.2);
+  transform: translateY(-6px) scale(1.03);
+  filter: brightness(1.15);
   text-shadow:
-    0 6px 18px rgba(0, 0, 0, 0.9),
-    0 0 18px rgba(255, 255, 255, 0.9);
+    0 8px 22px rgba(0, 0, 0, 0.9),
+    0 0 24px rgba(255, 255, 255, 0.88);
 }
 
 .btn:active {
-  transform: scale(0.95);
+  transform: scale(0.97);
 }
 
 .local {
-  left: 18%;
-  top: 70%;
+  left: 340px;
+  top: 750px;
 }
 
 .online {
-  right: 17%;
-  top: 70%;
+  right: 330px;
+  top: 750px;
+}
+
+.music-toggle-button,
+.top-page-button,
+.register-user-button,
+.change-user-select {
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 999px;
+  color: #4f4a87;
+  background: linear-gradient(
+    135deg,
+    rgba(248, 236, 255, 0.94) 0%,
+    rgba(236, 245, 255, 0.96) 50%,
+    rgba(226, 239, 255, 0.94) 100%
+  );
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.music-toggle-button,
+.top-page-button,
+.register-user-button {
+  cursor: pointer;
+  font-weight: 900;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
+}
+
+.music-toggle-button:hover,
+.top-page-button:hover,
+.register-user-button:hover,
+.change-user-select:hover {
+  filter: brightness(1.03);
 }
 
 .music-toggle-button {
-  position: absolute;
-  left: 95%;
-  top: 92%;
-  transform: translateX(-50%);
-  width: 50px;
-  height: 42px;
-  border: 1px solid rgba(255, 255, 255, 0.62);
-  border-radius: 999px;
-  cursor: pointer;
-  font-weight: 900;
+  right: 70px;
+  bottom: 44px;
+  width: 132px;
+  height: 44px;
   font-size: 13px;
-  color: #4f4a87;
-  background: linear-gradient(
-    135deg,
-    rgba(248, 236, 255, 0.94) 0%,
-    rgba(236, 245, 255, 0.96) 50%,
-    rgba(226, 239, 255, 0.94) 100%
-  );
-  box-shadow:
-    0 8px 18px rgba(0, 0, 0, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95);
-  z-index: 2;
-  transition: transform 0.2s ease, filter 0.2s ease;
-}
-
-.music-toggle-button:hover {
-  filter: brightness(1.03);
 }
 
 .music-toggle-button:active {
-  transform: translateX(-50%) scale(0.97);
+  transform: scale(0.97);
 }
 
 .top-page-button {
-  position: absolute;
-  left: 3%;
-  bottom: 4%;
-  width: 160px;
+  left: 58px;
+  bottom: 44px;
+  width: 222px;
   height: 44px;
-  border: 1px solid rgba(255, 255, 255, 0.62);
-  border-radius: 999px;
-  cursor: pointer;
-  font-weight: 900;
   font-size: 14px;
-  color: #4f4a87;
-  background: linear-gradient(
-    135deg,
-    rgba(248, 236, 255, 0.94) 0%,
-    rgba(236, 245, 255, 0.96) 50%,
-    rgba(226, 239, 255, 0.94) 100%
-  );
-  box-shadow:
-    0 8px 18px rgba(0, 0, 0, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95);
-  z-index: 2;
-  transition: transform 0.2s ease, filter 0.2s ease;
 }
 
-.top-page-button:hover {
-  filter: brightness(1.03);
-  transform: translateY(-2px);
-}
-
-.top-page-button:active {
+.top-page-button:active,
+.register-user-button:active {
   transform: scale(0.97);
 }
 
 .online-user-box {
-  position: absolute;
-  right: 4%;
-  top: 35%;
+  right: 76px;
+  top: 378px;
+  width: 280px;
   transform: translateY(-50%);
-  width: min(28vw, 280px);
-  padding: 0;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  backdrop-filter: none;
-  color: #b98f1c;
+  padding: 22px 18px 18px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(18, 83, 149, 0.86), rgba(10, 35, 76, 0.78));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 18px 32px rgba(0, 0, 0, 0.18);
   text-align: center;
-  box-shadow: none;
 }
 
-.change-user-select {
-  width: 208px;
-  height: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  border-radius: 999px;
-  background: linear-gradient(
-    180deg,
-    rgba(248, 252, 255, 0.92) 0%,
-    rgba(228, 242, 255, 0.88) 100%
-  );
-  color: #31507b;
+.panel-label {
+  margin: 0 0 14px;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  color: #d7efff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.change-user-select,
+.register-user-button {
+  width: 100%;
+  height: 42px;
   padding: 0 14px;
   font-size: 13px;
   font-weight: 800;
   outline: none;
+}
+
+.change-user-select {
   text-align: center;
-  box-shadow:
-    0 8px 18px rgba(0, 0, 0, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .change-user-select:disabled {
@@ -436,8 +487,7 @@ onMounted(async () => {
 }
 
 .record-strip {
-  margin-top: 12px;
-  margin-bottom: 12px;
+  margin: 14px 0 12px;
   padding: 12px 12px 10px;
   border-radius: 20px;
   background: linear-gradient(
@@ -449,7 +499,6 @@ onMounted(async () => {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     0 10px 18px rgba(0, 0, 0, 0.14);
-  backdrop-filter: blur(6px);
 }
 
 .record-heading {
@@ -519,31 +568,6 @@ onMounted(async () => {
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
-.register-user-button {
-  width: 208px;
-  height: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.62);
-  border-radius: 999px;
-  cursor: pointer;
-  font-weight: 900;
-  font-size: 13px;
-  color: #4f4a87;
-  background: linear-gradient(
-    135deg,
-    rgba(248, 236, 255, 0.94) 0%,
-    rgba(236, 245, 255, 0.96) 50%,
-    rgba(226, 239, 255, 0.94) 100%
-  );
-  box-shadow:
-    0 8px 18px rgba(0, 0, 0, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95);
-}
-
-.register-user-button:hover,
-.change-user-select:hover {
-  filter: brightness(1.03);
-}
-
 .helper-text {
   margin: 8px 0 0;
   font-size: 11px;
@@ -557,161 +581,5 @@ onMounted(async () => {
   font-weight: 700;
   color: #ffd1d1;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-}
-
-@media (max-width: 900px) {
-  .online-user-box {
-    right: 3%;
-    width: min(32vw, 248px);
-  }
-
-  .change-user-select,
-  .register-user-button {
-    width: 196px;
-  }
-
-  .record-chip-value {
-    font-size: 16px;
-  }
-}
-
-@media (max-width: 768px) {
-  .btn {
-    font-size: 22px;
-  }
-
-  .local {
-    left: 14%;
-    top: 72%;
-  }
-
-  .online {
-    right: 14%;
-    top: 72%;
-  }
-
-  .music-toggle-button {
-    top: 80%;
-    width: 154px;
-    height: 40px;
-    font-size: 12px;
-  }
-
-  .top-page-button {
-    left: 4%;
-    bottom: 3%;
-    width: 154px;
-    height: 40px;
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 560px) {
-  .btn {
-    font-size: 18px;
-  }
-
-  .local {
-    left: 11%;
-    top: 70%;
-  }
-
-  .online {
-    right: 10%;
-    top: 70%;
-  }
-
-  .music-toggle-button {
-    top: 78%;
-    width: 146px;
-    height: 36px;
-    font-size: 12px;
-  }
-
-  .top-page-button {
-    left: 4%;
-    bottom: 3%;
-    width: 146px;
-    height: 36px;
-    font-size: 12px;
-  }
-
-  .change-user-select,
-  .register-user-button {
-    width: 188px;
-    height: 36px;
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 430px) {
-  .btn {
-    width: min(78vw, 280px);
-    font-size: 17px;
-    letter-spacing: 1px;
-    text-align: center;
-    white-space: nowrap;
-  }
-
-  .local,
-  .online {
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-  }
-
-  .local {
-    top: 61%;
-  }
-
-  .online {
-    top: 69%;
-  }
-
-  .btn:hover {
-    transform: translateX(-50%) translateY(-4px) scale(1.02);
-  }
-
-  .btn:active {
-    transform: translateX(-50%) scale(0.98);
-  }
-
-  .music-toggle-button {
-    top: 78%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(78vw, 280px);
-  }
-
-  .music-toggle-button:active {
-    transform: translateX(-50%) scale(0.97);
-  }
-
-  .top-page-button {
-    left: 50%;
-    bottom: 18%;
-    transform: translateX(-50%);
-    width: min(78vw, 280px);
-  }
-
-  .top-page-button:hover {
-    transform: translateX(-50%) translateY(-4px) scale(1.02);
-  }
-
-  .top-page-button:active {
-    transform: translateX(-50%) scale(0.98);
-  }
-
-  .online-user-box {
-    bottom: 2.5%;
-    width: min(92vw, 340px);
-    padding: 12px;
-    border-radius: 14px;
-  }
-
-  .change-user-select,
-  .register-user-button {
-    width: 100%;
-  }
 }
 </style>

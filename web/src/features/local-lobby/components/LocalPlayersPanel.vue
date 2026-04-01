@@ -137,20 +137,23 @@ const trimmedPlayer2Character = computed(() => props.player2Character.trim());
 <style scoped>
 .players-panel {
   display: grid;
-  gap: 12px;
+  gap: 18px;
   min-width: 0;
-  padding: 0;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  backdrop-filter: none;
+  padding: 22px 24px 24px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(130, 208, 255, 0.24), rgba(51, 110, 188, 0.2));
+  border: 1px solid rgba(255, 247, 221, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 14px 28px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
 }
 
 .panel-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 16px;
 }
 
 .title-wrap {
@@ -170,7 +173,7 @@ const trimmedPlayer2Character = computed(() => props.player2Character.trim());
 
 h2 {
   margin: 2px 0 0;
-  font-size: 20px;
+  font-size: 28px;
   color: #fff2a8;
   text-shadow:
     0 1px 0 rgba(96, 60, 0, 0.52),
@@ -178,8 +181,8 @@ h2 {
 }
 
 .swap-button {
-  min-height: 38px;
-  padding: 0 14px;
+  min-height: 42px;
+  padding: 0 18px;
   border-radius: 12px;
   border: 1px solid rgba(255, 247, 221, 0.5);
   background: linear-gradient(180deg, rgba(145, 227, 255, 0.82) 0%, rgba(196, 161, 255, 0.74) 100%);
@@ -193,22 +196,23 @@ h2 {
 
 .players-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: 1fr;
+  gap: 18px;
 }
 
 .player-card {
   display: grid;
-  gap: 8px;
+  gap: 10px;
   min-width: 0;
-  padding: 14px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 247, 221, 0.14);
-  backdrop-filter: blur(5px);
+  min-height: 198px;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 247, 221, 0.18);
+  backdrop-filter: blur(6px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 6px 18px rgba(0, 0, 0, 0.06);
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .player-topline {
@@ -240,7 +244,7 @@ h2 {
 
 .player-title {
   color: #fff7d6;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 900;
   text-shadow:
     0 1px 0 rgba(84, 52, 0, 0.38),
@@ -249,7 +253,7 @@ h2 {
 
 .field-label {
   margin-top: 2px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;
   color: #ffd96a;
@@ -261,13 +265,13 @@ h2 {
 .text-input {
   width: 100%;
   min-width: 0;
-  height: 42px;
-  padding: 0 12px;
+  height: 48px;
+  padding: 0 14px;
   border-radius: 12px;
   border: 1px solid rgba(255, 244, 214, 0.16);
   background: rgba(22, 34, 64, 0.28);
   color: #fff4cf;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   outline: none;
   box-sizing: border-box;
@@ -305,20 +309,4 @@ h2 {
     0 2px 8px rgba(0, 0, 0, 0.14);
 }
 
-@media (max-width: 980px) {
-  .players-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 640px) {
-  .panel-head {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .swap-button {
-    width: 100%;
-  }
-}
 </style>

@@ -213,9 +213,4 @@ h2 {
   color: #fff4f7;
 }
 
-@media (max-width: 640px) {
-  .join-row {
-    grid-template-columns: 1fr;
-  }
-}
 </style>

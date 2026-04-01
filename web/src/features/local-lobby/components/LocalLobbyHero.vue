@@ -31,7 +31,7 @@
 
 h1 {
   margin: 0;
-  font-size: clamp(34px, 4.2vw, 56px);
+  font-size: 56px;
   line-height: 1.02;
   font-weight: 900;
   color: #fff9e2;
@@ -58,19 +58,4 @@ h1 {
   backdrop-filter: blur(6px);
 }
 
-@media (max-width: 640px) {
-  .hero-card {
-    gap: 6px;
-    padding-top: 2px;
-  }
-
-  h1 {
-    font-size: 34px;
-  }
-
-  .description {
-    font-size: 13px;
-    border-radius: 18px;
-  }
-}
 </style>

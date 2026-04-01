@@ -82,51 +82,35 @@ function updatePlayer2Character(value: string) {
 <style scoped>
 .local-lobby-content {
   display: grid;
-  gap: 10px;
+  gap: 18px;
   min-height: 0;
+  height: 100%;
   color: #fff8ea;
 }
 
 .content-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 336px;
-  gap: 18px;
-  min-height: 0;
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr) 430px;
+  gap: 28px;
+  min-height: 660px;
+  height: 100%;
+  align-items: stretch;
 }
 
 .left-column,
 .right-column {
   display: grid;
-  gap: 14px;
+  gap: 18px;
   min-height: 0;
-  align-self: start;
+  height: 100%;
 }
 
-@media (max-width: 980px) {
-  .content-grid {
-    grid-template-columns: 1fr;
-  }
+.left-column {
+  align-content: start;
 }
 
-@media (max-width: 640px) {
-  .local-lobby-content {
-    gap: 12px;
-  }
+.right-column {
+  align-content: stretch;
 }
-@media (max-width: 430px) {
-  .local-lobby-content {
-    gap: 10px;
-  }
 
-  .content-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .left-column,
-  .right-column {
-    gap: 12px;
-  }
-}
 </style>

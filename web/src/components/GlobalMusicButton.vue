@@ -61,15 +61,4 @@
     .global-music-button:active {
         transform: scale(0.97);
     }
-
-    @media (max-width: 640px) {
-        .global-music-button {
-            right: 12px;
-            bottom: 12px;
-            min-width: 96px;
-            height: 40px;
-            padding: 0 14px;
-            font-size: 12px;
-        }
-    }
 </style>

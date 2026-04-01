@@ -173,7 +173,7 @@ h2 {
   border-radius: 14px;
   background: rgba(16, 22, 40, 0.34);
   border: 1px solid rgba(255, 245, 214, 0.18);
-  font-size: clamp(20px, 3vw, 28px);
+  font-size: 28px;
   font-weight: 900;
   letter-spacing: 0.14em;
   color: #fffaf0;
@@ -258,21 +258,4 @@ h2 {
   backdrop-filter: blur(8px);
 }
 
-@media (max-width: 820px) {
-  .room-code-line,
-  .topline,
-  .member-row {
-    flex-wrap: wrap;
-  }
-
-  .copy-button {
-    width: 100%;
-  }
-
-  .member-name,
-  .member-character {
-    width: 100%;
-    white-space: normal;
-  }
-}
 </style>
