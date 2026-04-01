@@ -64,6 +64,7 @@ const emit = defineEmits<{
   display: grid;
   gap: 10px;
   padding: 4px 0 0;
+  min-height: var(--online-lobby-footer-area-min-height, 0px);
 }
 
 .state-row,
@@ -74,7 +75,7 @@ const emit = defineEmits<{
 }
 
 .state-pill {
-  min-width: 132px;
+  min-width: var(--online-lobby-state-pill-min-width, 132px);
   padding: 9px 12px;
   border-radius: 15px;
   background: rgba(255, 255, 255, 0.14);
@@ -97,7 +98,7 @@ const emit = defineEmits<{
 .ready-button,
 .start-button,
 .leave-button {
-  min-height: 42px;
+  min-height: var(--online-lobby-footer-button-height, 42px);
   padding: 0 14px;
   border-radius: 14px;
   cursor: pointer;

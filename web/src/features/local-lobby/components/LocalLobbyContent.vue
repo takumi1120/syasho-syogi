@@ -92,7 +92,7 @@ function updatePlayer2Character(value: string) {
 <style scoped>
 .local-lobby-content {
   display: grid;
-  gap: 18px;
+  gap: 24px;
   min-height: 0;
   height: 100%;
   color: #fff8ea;
@@ -100,9 +100,9 @@ function updatePlayer2Character(value: string) {
 
 .content-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 430px;
-  gap: 28px;
-  min-height: 660px;
+  grid-template-columns: minmax(0, 1fr) 520px;
+  gap: 40px;
+  min-height: 760px;
   height: 100%;
   align-items: stretch;
 }
@@ -110,7 +110,7 @@ function updatePlayer2Character(value: string) {
 .left-column,
 .right-column {
   display: grid;
-  gap: 18px;
+  gap: 22px;
   min-height: 0;
   height: 100%;
 }

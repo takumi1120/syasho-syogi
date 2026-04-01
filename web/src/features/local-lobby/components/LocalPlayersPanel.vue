@@ -137,10 +137,10 @@ const trimmedPlayer2Character = computed(() => props.player2Character.trim());
 <style scoped>
 .players-panel {
   display: grid;
-  gap: 18px;
+  gap: 24px;
   min-width: 0;
-  padding: 22px 24px 24px;
-  border-radius: 28px;
+  padding: 28px 30px 30px;
+  border-radius: 32px;
   background: linear-gradient(180deg, rgba(130, 208, 255, 0.24), rgba(51, 110, 188, 0.2));
   border: 1px solid rgba(255, 247, 221, 0.22);
   box-shadow:
@@ -153,7 +153,7 @@ const trimmedPlayer2Character = computed(() => props.player2Character.trim());
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 20px;
 }
 
 .title-wrap {
@@ -163,7 +163,7 @@ const trimmedPlayer2Character = computed(() => props.player2Character.trim());
 .mini-label {
   margin: 0;
   letter-spacing: 0.18em;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 900;
   color: #ffe27a;
   text-shadow:
@@ -173,7 +173,7 @@ const trimmedPlayer2Character = computed(() => props.player2Character.trim());
 
 h2 {
   margin: 2px 0 0;
-  font-size: 28px;
+  font-size: 36px;
   color: #fff2a8;
   text-shadow:
     0 1px 0 rgba(96, 60, 0, 0.52),
@@ -181,14 +181,14 @@ h2 {
 }
 
 .swap-button {
-  min-height: 42px;
-  padding: 0 18px;
-  border-radius: 12px;
+  min-height: 52px;
+  padding: 0 22px;
+  border-radius: 14px;
   border: 1px solid rgba(255, 247, 221, 0.5);
   background: linear-gradient(180deg, rgba(145, 227, 255, 0.82) 0%, rgba(196, 161, 255, 0.74) 100%);
   color: #3a2b16;
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 900;
   cursor: pointer;
   backdrop-filter: blur(8px);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
@@ -197,16 +197,16 @@ h2 {
 .players-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 18px;
+  gap: 22px;
 }
 
 .player-card {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
-  min-height: 198px;
-  padding: 18px;
-  border-radius: 22px;
+  min-height: 232px;
+  padding: 22px;
+  border-radius: 24px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 247, 221, 0.18);
   backdrop-filter: blur(6px);
@@ -218,21 +218,21 @@ h2 {
 .player-topline {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .player-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 46px;
-  height: 26px;
-  padding: 0 10px;
+  min-width: 56px;
+  height: 32px;
+  padding: 0 12px;
   border-radius: 999px;
   background: rgba(255, 208, 120, 0.16);
   border: 1px solid rgba(255, 245, 214, 0.18);
   color: #fff2c1;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.16em;
 }
@@ -244,7 +244,7 @@ h2 {
 
 .player-title {
   color: #fff7d6;
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 900;
   text-shadow:
     0 1px 0 rgba(84, 52, 0, 0.38),
@@ -253,8 +253,8 @@ h2 {
 
 .field-label {
   margin-top: 2px;
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 900;
   letter-spacing: 0.08em;
   color: #ffd96a;
   text-shadow:
@@ -265,14 +265,14 @@ h2 {
 .text-input {
   width: 100%;
   min-width: 0;
-  height: 48px;
-  padding: 0 14px;
-  border-radius: 12px;
+  height: 56px;
+  padding: 0 18px;
+  border-radius: 14px;
   border: 1px solid rgba(255, 244, 214, 0.16);
   background: rgba(22, 34, 64, 0.28);
   color: #fff4cf;
-  font-size: 15px;
-  font-weight: 800;
+  font-size: 18px;
+  font-weight: 900;
   outline: none;
   box-sizing: border-box;
   text-shadow: none;
@@ -302,7 +302,8 @@ h2 {
 .field-error {
   margin: -2px 0 0;
   color: #ffe0c4;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 700;
   line-height: 1.5;
   text-shadow:
     0 1px 0 rgba(92, 28, 38, 0.22),

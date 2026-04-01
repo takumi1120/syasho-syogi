@@ -168,16 +168,28 @@ function handleCharacterChange(event: Event) {
 
 <style scoped>
 .online-lobby-content {
+  --online-lobby-content-gap: 10px;
+  --online-lobby-column-gap: 18px;
+  --online-lobby-stack-gap: 14px;
+  --online-lobby-column-offset: -30px;
+  --online-lobby-user-area-gap: 10px;
+  --online-lobby-user-area-offset: -75px;
+  --online-lobby-user-area-min-height: 0px;
+  --online-lobby-user-grid-gap: 8px;
+  --online-lobby-user-card-min-height: 0px;
+  --online-lobby-user-card-padding-block: 10px;
+  --online-lobby-user-card-padding-inline: 12px;
+  --online-lobby-user-select-height: 38px;
   display: grid;
-  gap: 10px;
+  gap: var(--online-lobby-content-gap);
   min-height: 0;
   color: #fff8ea;
 }
 
 .content-grid {
   display: grid;
-  grid-template-columns: 340px minmax(0, 1fr);
-  gap: 18px;
+  grid-template-columns: var(--online-lobby-left-column-width, 340px) minmax(0, 1fr);
+  gap: var(--online-lobby-column-gap);
   min-height: 0;
   align-items: start;
 }
@@ -185,17 +197,18 @@ function handleCharacterChange(event: Event) {
 .left-column,
 .right-column {
   display: grid;
-  gap: 14px;
+  gap: var(--online-lobby-stack-gap);
   min-height: 0;
   align-self: start;
-  margin-top: -30px;
+  margin-top: var(--online-lobby-column-offset);
 }
 
 .user-area {
   display: grid;
-  gap: 10px;
+  gap: var(--online-lobby-user-area-gap);
   padding: 0;
-  margin-top: -75px;
+  margin-top: var(--online-lobby-user-area-offset);
+  min-height: var(--online-lobby-user-area-min-height);
 }
 
 .user-head {
@@ -226,7 +239,7 @@ h2 {
 .user-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: var(--online-lobby-user-grid-gap);
   align-items: stretch;
 }
 
@@ -234,7 +247,10 @@ h2 {
   display: grid;
   gap: 6px;
   min-width: 0;
-  padding: 10px 12px;
+  min-height: var(--online-lobby-user-card-min-height);
+  padding:
+    var(--online-lobby-user-card-padding-block)
+    var(--online-lobby-user-card-padding-inline);
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.20);
   border: 1px solid rgba(255, 247, 221, 0.28);
@@ -271,7 +287,7 @@ h2 {
 .character-select {
   width: 100%;
   min-width: 0;
-  height: 38px;
+  height: var(--online-lobby-user-select-height);
   padding: 0 12px;
   border-radius: 12px;
   border: 1px solid rgba(255, 244, 214, 0.30);

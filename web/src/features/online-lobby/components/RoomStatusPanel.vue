@@ -78,6 +78,7 @@ const emit = defineEmits<{
   display: grid;
   gap: 10px;
   padding: 8px 0;
+  min-height: var(--online-lobby-status-area-min-height, 0px);
 }
 
 .topline,
@@ -131,7 +132,7 @@ h2 {
 }
 
 .status-badge {
-  min-width: 92px;
+  min-width: var(--online-lobby-status-badge-width, 92px);
   height: 30px;
   padding: 0 12px;
   background: rgba(255, 255, 255, 0.14);
@@ -168,12 +169,12 @@ h2 {
 .room-code {
   display: inline-flex;
   align-items: center;
-  min-height: 40px;
+  min-height: var(--online-lobby-room-code-height, 40px);
   padding: 0 14px;
   border-radius: 14px;
   background: rgba(16, 22, 40, 0.34);
   border: 1px solid rgba(255, 245, 214, 0.18);
-  font-size: 28px;
+  font-size: var(--online-lobby-room-code-font-size, 28px);
   font-weight: 900;
   letter-spacing: 0.14em;
   color: #fffaf0;
@@ -182,7 +183,7 @@ h2 {
 
 .copy-button {
   min-width: 78px;
-  min-height: 40px;
+  min-height: var(--online-lobby-room-code-height, 40px);
   padding: 0 12px;
   border-radius: 12px;
   border: 1px solid rgba(255, 247, 221, 0.56);
@@ -199,6 +200,7 @@ h2 {
 }
 
 .member-row {
+  min-height: var(--online-lobby-member-row-min-height, 0px);
   padding: 10px 12px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.14);

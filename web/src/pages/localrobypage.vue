@@ -122,7 +122,11 @@ onBeforeRouteLeave((to) => {
   position: relative;
   z-index: 1;
   height: 100%;
-  width: min(100%, 1520px);
+  width: min(100%, 1680px);
+}
+
+.lobby-page :deep(.shell-body) {
+  margin-top: 0;
 }
 
 .back-link {

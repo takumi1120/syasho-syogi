@@ -71,6 +71,7 @@ function onInput(event: Event) {
   display: grid;
   gap: 8px;
   padding: 8px 0;
+  min-height: var(--online-lobby-action-area-min-height, 0px);
 }
 
 .section-head {
@@ -122,7 +123,7 @@ h2 {
 .room-code-input {
   min-width: 0;
   width: 100%;
-  height: 44px;
+  height: var(--online-lobby-action-control-height, 44px);
   padding: 0 14px;
   border-radius: 14px;
   border: 1px solid rgba(255, 244, 214, 0.28);
@@ -167,7 +168,7 @@ h2 {
 .join-button {
   min-width: 0;
   width: 100%;
-  min-height: 44px;
+  min-height: var(--online-lobby-action-control-height, 44px);
   padding: 0 10px;
   border-radius: 14px;
   white-space: nowrap;
@@ -179,7 +180,7 @@ h2 {
 
 .create-button {
   width: 100%;
-  min-height: 46px;
+  min-height: var(--online-lobby-action-primary-button-height, 46px);
   margin-top: 2px;
   border-radius: 14px;
   color: #2d2238;

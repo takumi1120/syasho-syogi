@@ -92,11 +92,11 @@ defineEmits<{
 .guide-panel {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   min-width: 0;
   min-height: 100%;
-  padding: 22px 24px 24px;
-  border-radius: 28px;
+  padding: 28px 30px 30px;
+  border-radius: 32px;
   background: linear-gradient(180deg, rgba(132, 205, 255, 0.24), rgba(60, 110, 205, 0.2));
   border: 1px solid rgba(255, 247, 221, 0.22);
   box-shadow:
@@ -113,7 +113,7 @@ defineEmits<{
 .mini-label {
   margin: 0;
   letter-spacing: 0.18em;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 900;
   color: #ffe27a;
   text-shadow:
@@ -123,7 +123,7 @@ defineEmits<{
 
 h2 {
   margin: 2px 0 0;
-  font-size: 28px;
+  font-size: 36px;
   color: #fff2a8;
   text-shadow:
     0 1px 0 rgba(96, 60, 0, 0.52),
@@ -131,8 +131,8 @@ h2 {
 }
 
 .preview-box {
-  padding: 18px 18px 20px;
-  border-radius: 22px;
+  padding: 22px 22px 24px;
+  border-radius: 24px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 247, 221, 0.18);
   backdrop-filter: blur(6px);
@@ -144,7 +144,7 @@ h2 {
 .preview-title {
   margin: 0;
   letter-spacing: 0.16em;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 900;
   color: #ffd96a;
   text-shadow:
@@ -156,13 +156,13 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  margin: 14px 0 0;
+  gap: 12px;
+  margin: 18px 0 0;
   color: #fff7d6;
 }
 
 .preview-line strong {
-  font-size: 22px;
+  font-size: 28px;
   font-weight: 900;
   text-shadow:
     0 1px 0 rgba(84, 52, 0, 0.38),
@@ -170,13 +170,15 @@ h2 {
 }
 
 .preview-line span {
-  font-size: 12px;
+  font-size: 15px;
+  font-weight: 900;
   color: #ffe49a;
 }
 
 .preview-sub {
-  margin: 12px 0 0;
-  font-size: 13px;
+  margin: 14px 0 0;
+  font-size: 16px;
+  font-weight: 700;
   color: #ffefbf;
   text-shadow:
     0 1px 0 rgba(82, 48, 0, 0.28),
@@ -190,14 +192,14 @@ h2 {
 
 .action-stack {
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
 .cpu-section {
   display: grid;
-  gap: 12px;
-  padding: 16px 16px 18px;
-  border-radius: 20px;
+  gap: 16px;
+  padding: 20px 20px 22px;
+  border-radius: 22px;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 247, 221, 0.14);
   box-shadow:
@@ -207,12 +209,12 @@ h2 {
 
 .cpu-section-head {
   display: grid;
-  gap: 4px;
+  gap: 6px;
 }
 
 .cpu-title {
   margin: 0;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 900;
   letter-spacing: 0.08em;
   color: #fff4bf;
@@ -220,14 +222,15 @@ h2 {
 
 .cpu-meta {
   margin: 0;
-  font-size: 12px;
+  font-size: 15px;
+  font-weight: 700;
   color: rgba(255, 244, 207, 0.82);
 }
 
 .level-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px;
+  gap: 10px;
 }
 
 .start-button,
@@ -236,8 +239,8 @@ h2 {
 .level-button {
   border-radius: 14px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 18px;
+  font-weight: 900;
   transition: transform 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease;
   backdrop-filter: blur(8px);
 }
@@ -245,13 +248,13 @@ h2 {
 .start-button,
 .ghost-button,
 .cpu-button {
-  min-height: 48px;
-  padding: 0 16px;
+  min-height: 58px;
+  padding: 0 20px;
 }
 
 .level-button {
-  min-height: 42px;
-  padding: 0 8px;
+  min-height: 50px;
+  padding: 0 10px;
   border: 1px solid rgba(255, 247, 221, 0.36);
   color: #fff9df;
   background: rgba(43, 58, 116, 0.42);
@@ -301,7 +304,8 @@ h2 {
 .hint {
   margin: auto 0 0;
   color: #ffefbf;
-  font-size: 12px;
+  font-size: 15px;
+  font-weight: 700;
   line-height: 1.6;
   text-shadow:
     0 1px 0 rgba(82, 48, 0, 0.28),

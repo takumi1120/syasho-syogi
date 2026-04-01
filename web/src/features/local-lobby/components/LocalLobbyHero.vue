@@ -13,15 +13,15 @@
   display: grid;
   justify-items: center;
   text-align: center;
-  gap: 8px;
-  padding: 6px 0 0;
+  gap: 12px;
+  padding: 10px 0 0;
 }
 
 .eyebrow {
   margin: 0;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 900;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.28em;
   color: #fff0a8;
   text-shadow:
     0 1px 0 rgba(72, 42, 0, 0.45),
@@ -31,7 +31,7 @@
 
 h1 {
   margin: 0;
-  font-size: 56px;
+  font-size: 76px;
   line-height: 1.02;
   font-weight: 900;
   color: #fff9e2;
@@ -44,11 +44,11 @@ h1 {
 
 .description {
   margin: 0;
-  max-width: 760px;
-  padding: 6px 14px;
+  max-width: 900px;
+  padding: 10px 18px;
   border-radius: 999px;
-  font-size: 14px;
-  line-height: 1.7;
+  font-size: 18px;
+  line-height: 1.8;
   color: #fffdf6;
   background: rgba(24, 38, 74, 0.18);
   border: 1px solid rgba(255, 247, 221, 0.18);
