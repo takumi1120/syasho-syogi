@@ -11,11 +11,13 @@ import {
 } from "../features/audio/modeSelectBgm";
 
 const router = useRouter();
+const viewportRef = ref<HTMLElement | null>(null);
 
 const { stageShellStyle, stageStyle } = useFixedStage({
   baseWidth: 1920,
   baseHeight: 1080,
   viewportPadding: 0,
+  viewportRef,
 });
 
 const users = ref<User[]>([]);
@@ -187,7 +189,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="mode-select-page" @pointerdown.once="handleFirstPointerDown">
+  <div ref="viewportRef" class="mode-select-page" @pointerdown.once="handleFirstPointerDown">
     <div class="mode-stage-shell" :style="stageShellStyle">
       <div class="mode-scene" :style="stageStyle">
         <button class="btn local" type="button" @click="goLocal">
@@ -312,6 +314,7 @@ onMounted(async () => {
 }
 
 .mode-select-page {
+  height: 100dvh;
   min-height: 100dvh;
   display: grid;
   place-items: center;
