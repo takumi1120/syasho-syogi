@@ -1611,6 +1611,7 @@ onBeforeUnmount(() => {
     gap: 22px;
     align-items: start;
     z-index: 2;
+    pointer-events: none;
 }
 
 .eyebrow {
@@ -1649,6 +1650,7 @@ onBeforeUnmount(() => {
     border-radius: 999px;
     background: rgb(255 255 255 / 0.05);
     border: 1px solid rgb(255 255 255 / 0.08);
+    pointer-events: auto;
 }
 
 .mode-switch__button,
@@ -1665,6 +1667,7 @@ onBeforeUnmount(() => {
     border-radius: 999px;
     color: rgb(255 244 216 / 0.72);
     background: transparent;
+    pointer-events: auto;
     transition:
         background 0.2s ease,
         color 0.2s ease,
@@ -1724,6 +1727,7 @@ onBeforeUnmount(() => {
     box-shadow:
         0 10px 20px rgb(0 0 0 / 0.18),
         inset 0 1px 0 rgb(255 255 255 / 0.08);
+    pointer-events: auto;
     transition:
         transform 0.18s ease,
         filter 0.18s ease;
