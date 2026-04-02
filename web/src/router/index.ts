@@ -36,6 +36,11 @@ const router = createRouter({
             component: () => import("../pages/omake.vue"),
         },
         {
+            path: "/omake2",
+            name: "omake2",
+            component: () => import("../pages/omake2.vue"),
+        },
+        {
             path: "/:pathMatch(.*)*",
             redirect: { name: "mode-select" },
 

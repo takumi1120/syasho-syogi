@@ -151,6 +151,10 @@ function goOmake() {
   router.push({ name: "omake" });
 }
 
+function goOmake2() {
+  router.push({ name: "omake2" });
+}
+
 function formatWinRate(rate: number) {
   return `${rate.toFixed(1)}%`;
 }
@@ -204,6 +208,10 @@ onMounted(async () => {
 
         <button class="omake-page-button" type="button" @click="goOmake">
           OMAKEへ
+        </button>
+
+        <button class="omake2-page-button" type="button" @click="goOmake2">
+          OMAKE2へ
         </button>
 
         <section class="online-user-box">
@@ -342,6 +350,7 @@ onMounted(async () => {
 .music-toggle-button,
 .top-page-button,
 .omake-page-button,
+.omake2-page-button,
 .online-user-box {
   position: absolute;
   z-index: 2;
@@ -389,6 +398,7 @@ onMounted(async () => {
 .music-toggle-button,
 .top-page-button,
 .omake-page-button,
+.omake2-page-button,
 .register-user-button,
 .change-user-select {
   border: 1px solid rgba(255, 255, 255, 0.62);
@@ -408,6 +418,7 @@ onMounted(async () => {
 .music-toggle-button,
 .top-page-button,
 .omake-page-button,
+.omake2-page-button,
 .register-user-button {
   cursor: pointer;
   font-weight: 900;
@@ -419,6 +430,7 @@ onMounted(async () => {
 .music-toggle-button:hover,
 .top-page-button:hover,
 .omake-page-button:hover,
+.omake2-page-button:hover,
 .register-user-button:hover,
 .change-user-select:hover {
   filter: brightness(1.03);
@@ -452,8 +464,17 @@ onMounted(async () => {
   font-size: 14px;
 }
 
+.omake2-page-button {
+  left: 58px;
+  bottom: 156px;
+  width: 222px;
+  height: 44px;
+  font-size: 14px;
+}
+
 .top-page-button:active,
 .omake-page-button:active,
+.omake2-page-button:active,
 .register-user-button:active {
   transform: scale(0.97);
 }
