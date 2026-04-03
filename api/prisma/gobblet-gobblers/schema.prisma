@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../src/generated/gobblet-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("GOB_DATABASE_URL")
+}
+
+model User {
+  id      Int      @id @default(autoincrement())
+  name    String   @map("name")
+  results Result[]
+
+  @@map("users")
+}
+
+model Character {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique @map("name")
+  image String?
+
+  @@map("characters")
+}
+
+model Result {
+  id     Int   @id @default(autoincrement())
+  win    Int
+  lose   Int
+  userId Int?  @map("user_id")
+  user   User? @relation(fields: [userId], references: [id])
+
+  @@map("results")
+}

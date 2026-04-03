@@ -1,19 +1,17 @@
 {
-  "name": "api",
+  "name": "syasho-syogi-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "Unified API for syasho-syogi and gobblet-gobblers",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only ./src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "prisma:generate": "prisma generate",
-    "prisma:studio": "prisma studio"
+    "prisma:generate": "npx prisma generate --schema=prisma/syasho-syogi/schema.prisma && npx prisma generate --schema=prisma/gobblet-gobblers/schema.prisma",
+    "prisma:migrate:syasho": "npx prisma migrate deploy --schema=prisma/syasho-syogi/schema.prisma",
+    "prisma:migrate:gobblet": "npx prisma migrate deploy --schema=prisma/gobblet-gobblers/schema.prisma",
+    "prisma:migrate:all": "npm run prisma:migrate:syasho && npm run prisma:migrate:gobblet"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "@prisma/client": "^6.19.2",

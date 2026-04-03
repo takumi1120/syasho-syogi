@@ -10,5 +10,5 @@
     "outDir": "dist"
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["src/routes/auth.ts", "src/generated"]
+  "exclude": ["src/generated"]
 }
