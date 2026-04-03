@@ -40,7 +40,7 @@ jobs:
         id: build_api
         uses: docker/build-push-action@v6
         with:
-          context: ./api
+          context: ./api/syasho-syogi
           push: true
           tags: |
             ghcr.io/takumi1120/syachosyogi-api:latest
@@ -50,7 +50,7 @@ jobs:
         id: build_web
         uses: docker/build-push-action@v6
         with:
-          context: ./web
+          context: ./web/syasho-syogi
           push: true
           build-args: |
             VITE_API_URL=http://54.252.188.39:3000
@@ -62,7 +62,7 @@ jobs:
         id: build_gobapi
         uses: docker/build-push-action@v6
         with:
-          context: ./apps/Gobblet-gobblers/api
+          context: ./api/gobblet-gobblers
           push: true
           tags: |
             ghcr.io/takumi1120/syacho-gobblet-api:latest
@@ -72,7 +72,7 @@ jobs:
         id: build_gobweb
         uses: docker/build-push-action@v6
         with:
-          context: ./apps/Gobblet-gobblers/web
+          context: ./web/gobblet-gobblers
           push: true
           build-args: |
             VITE_API_URL=http://54.252.188.39:3001

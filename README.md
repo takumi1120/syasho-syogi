@@ -1,37 +1,43 @@
-"# shacho-syogi" 
+# syasho-syogi
 
-# ルール
-動物将棋のルールに準ずる
+社長将棋 & ゴブレットゴブラーズ — オンライン対戦ボードゲームプラットフォーム
 
-追加機能
+## ディレクトリ構造
 
-ユーザー登録
-キャラクター選択
-戦績表示機能
+```
+syasho-syogi/
+├── api/
+│   ├── syasho-syogi/        # 社長将棋 API（Express + Prisma + PostgreSQL）
+│   └── gobblet-gobblers/    # ゴブレットゴブラーズ API（Express + Prisma + PostgreSQL）
+├── web/
+│   ├── syasho-syogi/        # 社長将棋 Web（Vue3 + Vite）
+│   └── gobblet-gobblers/    # ゴブレットゴブラーズ Web（Vue3 + Vite）
+├── docker-compose.yml       # 全サービス定義（DB x2 + API x2 + Web x2）
+└── .github/workflows/
+    └── deploy.yml           # CI/CD（GHCR push → EC2 deploy）
+```
 
-#画面一覧
-・スタート画面（character選択を内包する、ユーザー登録画面に遷移するボタン、対戦開始し対戦画面に遷移する、ユーザー
-戦績画面のへの遷移
-・ユーザー登録画面
-・対戦画面
-・戦績表示画面
-・決着時の画面
+## アプリ一覧
 
-#DB設計
-・user
-id:number
-name:string
+| アプリ | API ポート | Web ポート | DB |
+|--------|-----------|-----------|-----|
+| 社長将棋 | 3000 | 80 | PostgreSQL (5432) |
+| ゴブレットゴブラーズ | 3001 | 8080 | PostgreSQL (5433) |
 
+## ローカル開発
 
-・result
-id:number
-win:number
-lose:number
-userid:number
+```bash
+# 各アプリのAPIを起動
+cd api/syasho-syogi && npm install && npm run dev
+cd api/gobblet-gobblers && npm install && npm run dev
 
-#API設計
-・ユーザー　CRUD
-・result　CRUD
+# 各アプリのWebを起動
+cd web/syasho-syogi && npm install && npm run dev
+cd web/gobblet-gobblers && npm install && npm run dev
+```
 
+## デプロイ
 
--- public."characters" definition -- Drop table -- DROP TABLE public."characters"; CREATE TABLE public."characters" ( id serial4 NOT NULL, "name" text NOT NULL, image text NULL, CONSTRAINT characters_pkey PRIMARY KEY (id) ); -- public.results definition -- Drop table -- DROP TABLE public.results; CREATE TABLE public.results ( id serial4 NOT NULL, win int4 NOT NULL, lose int4 NOT NULL, user_id int4 NULL, CONSTRAINT results_pkey PRIMARY KEY (id) ); -- public.results foreign keys ALTER TABLE public.results ADD CONSTRAINT results_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id); -- public.users definition -- Drop table -- DROP TABLE public.users; CREATE TABLE public.users ( id serial4 NOT NULL, "name" text NOT NULL, CONSTRAINT users_pkey PRIMARY KEY (id) );"# syasho-syogi" 
+`main` ブランチにpushすると GitHub Actions が自動で:
+1. 4つのDockerイメージをビルド → GHCR にpush
+2. EC2にSSH接続 → docker compose でデプロイ

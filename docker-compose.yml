@@ -14,6 +14,7 @@ services:
 
   api:
     image: ${API_IMAGE:-ghcr.io/takumi1120/syachosyogi-api:latest}
+    # build: ./api/syasho-syogi  # ローカルビルド時
     container_name: syachosyogi_api
     restart: always
     depends_on:
@@ -27,6 +28,7 @@ services:
 
   web:
     image: ${WEB_IMAGE:-ghcr.io/takumi1120/syachosyogi-web:latest}
+    # build: ./web/syasho-syogi  # ローカルビルド時
     container_name: syachosyogi_web
     restart: always
     depends_on:
@@ -49,6 +51,7 @@ services:
 
   gobapi:
     image: ${GOBAPI_IMAGE:-ghcr.io/takumi1120/syacho-gobblet-api:latest}
+    # build: ./api/gobblet-gobblers  # ローカルビルド時
     container_name: gob_api
     restart: always
     depends_on:
@@ -62,6 +65,7 @@ services:
 
   gobweb:
     image: ${GOBWEB_IMAGE:-ghcr.io/takumi1120/syacho-gobblet-web:latest}
+    # build: ./web/gobblet-gobblers  # ローカルビルド時
     container_name: gob_web
     restart: always
     depends_on:
