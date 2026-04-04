@@ -3,7 +3,8 @@ import { onBeforeUnmount, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-const MODE_SELECT_BGM_SRC = "/bgm/goblin.mp3";
+const MODE_SELECT_BGM_SRC = import.meta.env.BASE_URL + "bgm/goblin.mp3";
+const modeStageBg = `url("${import.meta.env.BASE_URL}backgrounds/mode-bg.jpg") center center / contain no-repeat`;
 const MODE_SELECT_BGM_VOLUME = 0.34;
 
 let modeSelectBgm: HTMLAudioElement | null = null;
@@ -175,7 +176,7 @@ onBeforeUnmount(() => {
   position: relative;
   width: min(1520px, 100vw);
   aspect-ratio: 16 / 9;
-  background: url("/backgrounds/mode-bg.jpg") center center / contain no-repeat;
+  background: v-bind(modeStageBg);
 }
 
 /* 透明クリック領域 */

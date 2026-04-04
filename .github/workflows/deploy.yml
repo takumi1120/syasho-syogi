@@ -51,7 +51,7 @@ jobs:
           context: ./web
           push: true
           build-args: |
-            VITE_API_URL=http://54.252.188.39:3000
+            VITE_API_URL=http://54.252.188.39/api
           tags: |
             ghcr.io/takumi1120/syachosyogi-web:latest
             ghcr.io/takumi1120/syachosyogi-web:${{ github.sha }}

@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import { api } from "../lib/api";
 
 const router = useRouter();
+const lobbyBg = `url("${import.meta.env.BASE_URL}backgrounds/mode-bg2.jpg") center center / contain no-repeat`;
 
 type User = {
   id: number;
@@ -278,7 +279,7 @@ async function joinRoom() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: url("/backgrounds/mode-bg2.jpg") center center / contain no-repeat;
+  background: v-bind(lobbyBg);
 }
 
 .lobby-card {
