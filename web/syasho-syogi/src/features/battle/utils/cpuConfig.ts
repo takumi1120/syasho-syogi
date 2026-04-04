@@ -5,7 +5,7 @@ export type CpuDifficultyLevel = (typeof CPU_LEVELS)[number];
 export const DEFAULT_CPU_LEVEL: CpuDifficultyLevel = 1;
 export const CPU_OPPONENT_NAME = "CPU";
 export const CPU_BOSS_NAME = "KCEO";
-export const CPU_BOSS_IMAGE_SRC = "/characters/kceo.png";
+export const CPU_BOSS_IMAGE_SRC = import.meta.env.BASE_URL + "characters/kceo.png";
 
 export function clampCpuLevel(value: unknown): CpuDifficultyLevel {
   const numeric =

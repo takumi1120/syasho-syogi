@@ -1,5 +1,5 @@
-const MOVE_SE_SRC = "/se/move.mp3";
-const CHECK_SE_SRC = "/se/check.mp3";
+const MOVE_SE_SRC = import.meta.env.BASE_URL + "se/move.mp3";
+const CHECK_SE_SRC = import.meta.env.BASE_URL + "se/check.mp3";
 
 let moveSe: HTMLAudioElement | null = null;
 let checkSe: HTMLAudioElement | null = null;

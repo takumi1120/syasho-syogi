@@ -1,4 +1,4 @@
-const MODE_SELECT_BGM_SRC = "/bgm/mode-select-bgm.mp3";
+const MODE_SELECT_BGM_SRC = import.meta.env.BASE_URL + "bgm/mode-select-bgm.mp3";
 
 let modeSelectBgm: HTMLAudioElement | null = null;
 let modeSelectBgmStarted = false;

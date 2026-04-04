@@ -102,7 +102,8 @@ const OBSTACLE_DRAG = 320;
 const RESTITUTION = 1;
 const OBSTACLE_RESTITUTION = 0.8;
 const STOP_SPEED = 11;
-const BGM_SRC = "/bgm/kesigomu.mp3";
+const BASE = import.meta.env.BASE_URL;
+const BGM_SRC = BASE + "bgm/kesigomu.mp3";
 const BGM_VOLUME = 0.38;
 
 const characters: CharacterDef[] = [
@@ -112,7 +113,7 @@ const characters: CharacterDef[] = [
         title: "World Builder",
         trait: "重めの万能型",
         description: "重心が安定していて押し負けにくい、扱いやすい基準駒。",
-        image: "/characters/bil.png",
+        image: `${BASE}characters/bil.png`,
         accent: "#6cd3ff",
         stats: { power: 1.03, weight: 1.12, grip: 1.08, obstacle: 1.02, radius: 33, maxCharge: 214 },
     },
@@ -122,7 +123,7 @@ const characters: CharacterDef[] = [
         title: "Rocket Flick",
         trait: "高速突進型",
         description: "初速が最強クラス。そのぶん滑りやすく、自爆の危険も高い。",
-        image: "/characters/elon.png",
+        image: `${BASE}characters/elon.png`,
         accent: "#ff7859",
         stats: { power: 1.22, weight: 0.9, grip: 0.82, obstacle: 1.05, radius: 31, maxCharge: 232 },
     },
@@ -132,7 +133,7 @@ const characters: CharacterDef[] = [
         title: "Sharp Designer",
         trait: "小型の精密型",
         description: "小さくて狙いが細い。コントロール重視で障害物のすき間を抜きやすい。",
-        image: "/characters/jobs.png",
+        image: `${BASE}characters/jobs.png`,
         accent: "#f4d566",
         stats: { power: 1.08, weight: 0.92, grip: 1.18, obstacle: 0.95, radius: 29, maxCharge: 206 },
     },
@@ -142,7 +143,7 @@ const characters: CharacterDef[] = [
         title: "Platinum Drive",
         trait: "高火力の重量型",
         description: "重さと押し込み性能が高く、正面衝突に強いパワー駒。",
-        image: "/characters/kceo.png",
+        image: `${BASE}characters/kceo.png`,
         accent: "#59b2ff",
         stats: { power: 1.16, weight: 1.24, grip: 0.96, obstacle: 1.12, radius: 35, maxCharge: 210 },
     },
@@ -152,7 +153,7 @@ const characters: CharacterDef[] = [
         title: "Prompt Engine",
         trait: "障害物操作型",
         description: "障害物を動かす力が高く、盤面の形を崩して主導権を取れる。",
-        image: "/characters/sum.png",
+        image: `${BASE}characters/sum.png`,
         accent: "#68f0c3",
         stats: { power: 1.01, weight: 1, grip: 1.04, obstacle: 1.28, radius: 32, maxCharge: 212 },
     },
@@ -162,7 +163,7 @@ const characters: CharacterDef[] = [
         title: "Safe Operator",
         trait: "高グリップ防御型",
         description: "止まりやすく、端際の細かな調整がしやすい守備寄りの駒。",
-        image: "/characters/thim.png",
+        image: `${BASE}characters/thim.png`,
         accent: "#ffe18a",
         stats: { power: 0.96, weight: 1.13, grip: 1.28, obstacle: 0.92, radius: 33, maxCharge: 198 },
     },
@@ -172,7 +173,7 @@ const characters: CharacterDef[] = [
         title: "Champion Rush",
         trait: "近距離の押し切り型",
         description: "中距離からの押し出しが強力。やや大きく、ぶつけ合いに強い。",
-        image: "/battle/pieces/pin/mikuru.png",
+        image: `${BASE}battle/pieces/pin/mikuru.png`,
         accent: "#ffb255",
         stats: { power: 1.18, weight: 1.09, grip: 0.91, obstacle: 1.04, radius: 34, maxCharge: 218 },
     },
@@ -182,7 +183,7 @@ const characters: CharacterDef[] = [
         title: "Breakdown Trick",
         trait: "軽快な崩し型",
         description: "軽めで角度がつけやすく、障害物を経由した崩しが得意。",
-        image: "/battle/pieces/pin/mizoguchi.png",
+        image: `${BASE}battle/pieces/pin/mizoguchi.png`,
         accent: "#ffd164",
         stats: { power: 1, weight: 0.94, grip: 1.11, obstacle: 1.23, radius: 30, maxCharge: 214 },
     },
@@ -192,7 +193,7 @@ const characters: CharacterDef[] = [
         title: "Momentum King",
         trait: "慣性特化型",
         description: "止まりにくい大振りの一撃型。端まで流れ込む豪快さが持ち味。",
-        image: "/battle/pieces/pin/son.png",
+        image: `${BASE}battle/pieces/pin/son.png`,
         accent: "#fff36d",
         stats: { power: 1.2, weight: 1.18, grip: 0.86, obstacle: 1.1, radius: 34, maxCharge: 226 },
     },
