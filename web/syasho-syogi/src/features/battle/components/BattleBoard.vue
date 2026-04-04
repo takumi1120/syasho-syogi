@@ -174,6 +174,8 @@ function pieceLabel(cell: SyahoShogiCell) {
 function pieceImageSrc(cell: SyahoShogiCell) {
   return cell ? getPieceImageSrc(cell) : "";
 }
+
+const boardBg = `url("${import.meta.env.BASE_URL}battle/board.png") center / 100% 100% no-repeat`;
 </script>
 
 <template>
@@ -242,7 +244,7 @@ function pieceImageSrc(cell: SyahoShogiCell) {
   position: relative;
   width: 400px;
   height: 500px;
-  background: url("/battle/board.png") center / 100% 100% no-repeat;
+  background: v-bind(boardBg);
 }
 
 .board-grid {

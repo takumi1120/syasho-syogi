@@ -16,13 +16,15 @@ const STORAGE_KEYS = {
   p2Character: "localP2Character",
 } as const;
 
+const BASE = import.meta.env.BASE_URL;
+
 const CHARACTER_IMAGE_MAP: Record<string, string> = {
-  "ティムクック": "/characters/thim.png",
-  "サムアルトマン": "/characters/sum.png",
-  "Kプラチナム代表": "/characters/kceo.png",
-  "スティーブ・ジョブズ": "/characters/jobs.png",
-  "ビル・ゲイツ": "/characters/bil.png",
-  "イーロン・マスク": "/characters/elon.png",
+  "ティムクック": `${BASE}characters/thim.png`,
+  "サムアルトマン": `${BASE}characters/sum.png`,
+  "Kプラチナム代表": `${BASE}characters/kceo.png`,
+  "スティーブ・ジョブズ": `${BASE}characters/jobs.png`,
+  "ビル・ゲイツ": `${BASE}characters/bil.png`,
+  "イーロン・マスク": `${BASE}characters/elon.png`,
 };
 
 export const LOCAL_CHARACTER_OPTIONS = [

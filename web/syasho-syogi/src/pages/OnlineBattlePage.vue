@@ -53,7 +53,8 @@ const exitNoticeSubText = computed(() => {
   return "オンライン対戦";
 });
 
-const BGM_SRC = "/bgm/battle-bgm.mp3";
+const BGM_SRC = import.meta.env.BASE_URL + "bgm/battle-bgm.mp3";
+const battleBg = `url("${import.meta.env.BASE_URL}battle/backgrounds/rainbow_battle_bg_animated_stronger_hq.gif") center 3px / cover no-repeat`;
 let bgm: HTMLAudioElement | null = null;
 const bgmStarted = ref(false);
 const isMusicPlaying = ref(true);
@@ -251,7 +252,7 @@ onBeforeUnmount(() => {
   border-radius: 36px;
   overflow: hidden;
   background:
-    url("/battle/backgrounds/rainbow_battle_bg_animated_stronger_hq.gif") center 3px / cover no-repeat;
+    v-bind(battleBg);
   box-shadow: 0 28px 72px rgba(0, 0, 0, 0.38);
 }
 

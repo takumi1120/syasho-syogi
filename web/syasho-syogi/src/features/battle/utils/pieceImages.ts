@@ -3,15 +3,17 @@ import type {
   SyahoShogiPiece,
 } from "../../../lib/syahosyogi";
 
+const BASE = import.meta.env.BASE_URL;
+
 const PIECE_IMAGE_MAP: Record<
   "BOSS" | "SON" | "MIKITANI" | "MIZOGUCHI" | "MIKURU",
   string
 > = {
-  BOSS: "/battle/pieces/pin/boss.png",
-  SON: "/battle/pieces/pin/son.png",
-  MIKITANI: "/battle/pieces/pin/mikitani.png",
-  MIZOGUCHI: "/battle/pieces/pin/mizoguchi.png",
-  MIKURU: "/battle/pieces/pin/mikuru.png",
+  BOSS: `${BASE}battle/pieces/pin/boss.png`,
+  SON: `${BASE}battle/pieces/pin/son.png`,
+  MIKITANI: `${BASE}battle/pieces/pin/mikitani.png`,
+  MIZOGUCHI: `${BASE}battle/pieces/pin/mizoguchi.png`,
+  MIKURU: `${BASE}battle/pieces/pin/mikuru.png`,
 };
 
 export function getPieceImageSrc(piece: SyahoShogiPiece): string {
