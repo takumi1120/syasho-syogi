@@ -123,4 +123,11 @@ jobs:
             compose ps
 
             sudo docker inspect syachosyogi_web --format 'syachosyogi_web={{.Image}}'
+
+            echo "=== API logs ==="
+            sudo docker logs syachosyogi_api --tail 50 || true
+
+            echo "=== API health ==="
+            sleep 3
+            curl -sf http://localhost/api/health && echo "API OK" || echo "API UNREACHABLE"
           EOF

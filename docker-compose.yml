@@ -11,6 +11,11 @@ services:
       - "5432:5432"
     volumes:
       - syachosyogi_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U syachosyogi"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   gobdb:
     image: postgres:16
@@ -24,6 +29,11 @@ services:
       - "5433:5432"
     volumes:
       - gob_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gob"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   api:
     image: ${API_IMAGE:-ghcr.io/takumi1120/syachosyogi-api:latest}
@@ -31,8 +41,10 @@ services:
     container_name: syachosyogi_api
     restart: always
     depends_on:
-      - db
-      - gobdb
+      db:
+        condition: service_healthy
+      gobdb:
+        condition: service_healthy
     environment:
       SYASHO_DATABASE_URL: postgresql://syachosyogi:syachosyogi@db:5432/syachosyogi?schema=public
       GOB_DATABASE_URL: postgresql://gob:gob1234@gobdb:5432/gob?schema=public
