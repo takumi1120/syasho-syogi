@@ -1,10 +1,10 @@
 import { db } from "./db";
 
 const CHARACTER_SEEDS = [
-    { name: "スティーブ・ジョブズ", image: "/characters/steve-jobs.png" },
-    { name: "Kプラチナム代表", image: "/characters/KCEO.png" },
-    { name: "イーロンマスク", image: "/characters/Elon.png" },
-    { name: "ビルゲイツ", image: "/characters/bil.png" },
+    { name: "スティーブ・ジョブズ", image: "/gobblet-gobblers/characters/steve-jobs.png" },
+    { name: "Kプラチナム代表", image: "/gobblet-gobblers/characters/KCEO.png" },
+    { name: "イーロンマスク", image: "/gobblet-gobblers/characters/Elon.png" },
+    { name: "ビルゲイツ", image: "/gobblet-gobblers/characters/bil.png" },
 ] as const;
 
 export async function seedCharacters(): Promise<void> {
