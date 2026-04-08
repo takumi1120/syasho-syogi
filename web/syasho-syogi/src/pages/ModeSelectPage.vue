@@ -146,7 +146,7 @@ function goUserRegister() {
 }
 
 function goTopPage() {
-  window.location.href = "http://54.252.188.39:8080/#/";
+  window.location.href = "/gobblet-gobblers/";
 }
 
 function goOmake() {
