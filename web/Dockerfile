@@ -29,6 +29,7 @@ RUN npm run build
 FROM nginx:alpine
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY public/ /usr/share/nginx/html/
 COPY --from=builder-syasho /app/syasho-syogi/dist /usr/share/nginx/html/syasho-syogi
 COPY --from=builder-gobblet /app/gobblet-gobblers/dist /usr/share/nginx/html/gobblet-gobblers
 

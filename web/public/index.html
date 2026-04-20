@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ポートフォリオ</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+    color: #222;
+    background: #f5f7fa;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  header {
+    background: #2c3e50;
+    color: #fff;
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header h1 { font-size: 1.4rem; margin: 0; }
+  header nav a {
+    color: #fff;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 0.95rem;
+    opacity: 0.85;
+  }
+  header nav a:hover { opacity: 1; text-decoration: underline; }
+  main {
+    flex: 1;
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+  main h2 {
+    text-align: center;
+    font-size: 2rem;
+    margin: 0 0 40px;
+    letter-spacing: 0.1em;
+  }
+  .works {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 32px;
+  }
+  .work {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .work:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+  .work h3 { margin: 0 0 12px; }
+  .work h3 a { color: #2a7ae4; text-decoration: none; }
+  .work h3 a:hover { text-decoration: underline; }
+  .thumb {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #e0e4ea;
+    margin-bottom: 16px;
+  }
+  .work dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 7em 1fr;
+    row-gap: 6px;
+    column-gap: 8px;
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+  .work dt { color: #666; font-weight: 500; }
+  .work dd { margin: 0; }
+  footer {
+    background: #2c3e50;
+    color: #c8d0d8;
+    text-align: center;
+    padding: 16px;
+    font-size: 0.85rem;
+  }
+  footer a { color: #c8d0d8; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Takumi's Portfolio</h1>
+  <nav>
+    <a href="#works">作品一覧</a>
+  </nav>
+</header>
+
+<main>
+  <h2 id="works">ポートフォリオ</h2>
+
+  <div class="works">
+    <article class="work">
+      <a href="/syasho-syogi/">
+        <img class="thumb" src="/images/syasho-syogi.png" alt="社長将棋" />
+      </a>
+      <h3><a href="/syasho-syogi/">社長将棋</a></h3>
+      <dl>
+        <dt>概要</dt><dd>動物将棋のオマージュゲーム</dd>
+        <dt>工夫点</dt><dd>オンライン対戦の導入、CPU対戦のレベル実装</dd>
+        <dt>使用言語</dt><dd>TypeScript</dd>
+        <dt>フレームワーク</dt><dd>Vue 3 / Vite / Express</dd>
+        <dt>使用DB</dt><dd>PostgreSQL (Prisma)</dd>
+        <dt>制作期間</dt><dd>約1週間</dd>
+      </dl>
+    </article>
+
+    <article class="work">
+      <a href="/gobblet-gobblers/">
+        <img class="thumb" src="/images/gobblet-gobblers.png" alt="ゴブレットゴブラーズ" />
+      </a>
+      <h3><a href="/gobblet-gobblers/">ゴブレットゴブラーズ</a></h3>
+      <dl>
+        <dt>概要</dt><dd>●×ゲームの派生ゲーム</dd>
+        <dt>工夫点</dt><dd>オンライン対戦の導入</dd>
+        <dt>使用言語</dt><dd>TypeScript</dd>
+        <dt>フレームワーク</dt><dd>Vue 3 / Vite / Express</dd>
+        <dt>使用DB</dt><dd>PostgreSQL (Prisma)</dd>
+        <dt>制作期間</dt><dd>約1週間</dd>
+      </dl>
+    </article>
+  </div>
+</main>
+
+<footer>
+  &copy; 2026 Takumi — Built with Vue 3 &amp; nginx
+</footer>
+</body>
+</html>
